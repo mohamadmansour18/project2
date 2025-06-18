@@ -63,4 +63,9 @@ class User extends Authenticatable implements JWTSubject
     {
         return [];
     }
+
+    public function message()
+    {
+        echo("ddd");
+    }
 }
