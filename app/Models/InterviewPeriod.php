@@ -1,15 +1,15 @@
 <?php
 
-namespace {{ namespace }};
+namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class {{ class }} extends Model
+class InterviewPeriod extends Model
 {
     use HasFactory;
 
-    protected $table = '';
+    protected $table = 'interview_periods';
 
     /**
      * The attributes that are mass assignable.
@@ -17,12 +17,13 @@ class {{ class }} extends Model
      * @var array<int, string>
      */
     protected $fillable = [
-        '' ,
-        '' ,
-        '' ,
+        'start_date' ,
+        'end_date' ,
+        'days' ,
+        'duration' ,
     ];
 
     protected $casts = [
-
+        'days' => 'array'
     ];
 }

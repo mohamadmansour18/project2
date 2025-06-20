@@ -11,15 +11,15 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('users', function (Blueprint $table) {
+        Schema::create('groups', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->string('university_number' , 30)->unique()->nullable();
-            $table->string('email')->unique();
-            $table->timestamp('email_verified_at')->nullable();
-            $table->string('password');
-            $table->string('role' , 20);
-            $table->rememberToken();
+            $table->text('description')->nullable();
+            $table->string('speciality_needed');
+            $table->json('framework_needed')->nullable();
+            $table->string('type' , 10);
+            $table->string('qr_code');
+            $table->unsignedSmallInteger('number_of_members');
             $table->timestamps();
         });
     }
@@ -29,6 +29,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('users');
+        Schema::dropIfExists('groups');
     }
 };

@@ -1,15 +1,16 @@
 <?php
 
-namespace {{ namespace }};
+namespace App\Models;
 
+use App\Enums\GroupMemberRole;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class {{ class }} extends Model
+class GroupMember extends Model
 {
     use HasFactory;
 
-    protected $table = '';
+    protected $table = 'group_members';
 
     /**
      * The attributes that are mass assignable.
@@ -17,12 +18,12 @@ class {{ class }} extends Model
      * @var array<int, string>
      */
     protected $fillable = [
-        '' ,
-        '' ,
-        '' ,
+        'group_id' ,
+        'user_id' ,
+        'role' ,
     ];
 
     protected $casts = [
-
+        'role' => GroupMemberRole::class ,
     ];
 }

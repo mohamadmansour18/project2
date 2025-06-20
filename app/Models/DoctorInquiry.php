@@ -1,15 +1,15 @@
 <?php
 
-namespace {{ namespace }};
+namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class {{ class }} extends Model
+class DoctorInquiry extends Model
 {
     use HasFactory;
 
-    protected $table = '';
+    protected $table = 'doctor_inquiries';
 
     /**
      * The attributes that are mass assignable.
@@ -17,12 +17,11 @@ class {{ class }} extends Model
      * @var array<int, string>
      */
     protected $fillable = [
-        '' ,
-        '' ,
-        '' ,
+        'doctor_id' ,
+        'question' ,
+        'answer' ,
+        'is_answered' ,
+        'answered_at' ,
     ];
 
-    protected $casts = [
-
-    ];
 }
