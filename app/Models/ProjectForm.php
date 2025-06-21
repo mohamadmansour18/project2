@@ -42,4 +42,14 @@ class ProjectForm extends Model
     {
         return $this->belongsTo(User::class , 'user_id' , 'id')->withDefault();
     }
+
+    public function group(): BelongsTo
+    {
+        return $this->belongsTo(Group::class, 'group_id', 'id');
+    }
+
+    public function signatures(): HasMany
+    {
+        return $this->hasMany(FormSignature::class, 'project_form_id', 'id');
+    }
 }

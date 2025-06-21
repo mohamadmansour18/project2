@@ -31,11 +31,21 @@ class GroupInvitation extends Model
 
     public function invitedBy(): BelongsTo
     {
-        return $this->belongsTo(User::class , 'invited_by_user_id' , 'id')->withDefault();
+        return $this->belongsTo(User::class , 'invited_by_user_id' , 'id');
     }
 
     public function invitedUser(): BelongsTo
     {
-        return $this->belongsTo(User::class , 'invited_user_id' , 'id')->withDefault();
+        return $this->belongsTo(User::class , 'invited_user_id' , 'id');
+    }
+
+    public function group(): BelongsTo
+    {
+        return $this->belongsTo(Group::class, 'group_id', 'id');
+    }
+
+    public function invitedByUser(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'invited_by_user_id', 'id');
     }
 }

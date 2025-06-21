@@ -24,4 +24,9 @@ class FAQ extends Model
     protected $casts = [
 
     ];
+
+    public function messages(): HasMany
+    {
+        return $this->hasMany(Message::class, 'faq_id', 'id');
+    }
 }

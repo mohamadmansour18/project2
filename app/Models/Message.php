@@ -34,4 +34,14 @@ class Message extends Model
     {
         return $this->belongsTo(User::class , 'sender_id' , 'id')->withDefault();
     }
+
+    public function conversation(): BelongsTo
+    {
+        return $this->belongsTo(Conversation::class, 'conversation_id', 'id');
+    }
+
+    public function FAQ(): BelongsTo
+    {
+        return $this->belongsTo(FAQ::class, 'faq_id', 'id');
+    }
 }

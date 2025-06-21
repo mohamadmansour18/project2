@@ -33,4 +33,9 @@ class ProjectForm2 extends Model
     protected $casts = [
         'status' => ProjectForm2Status::class
     ];
+
+    public function group(): BelongsTo
+    {
+        return $this->belongsTo(Group::class, 'group_id', 'id');
+    }
 }

@@ -30,6 +30,11 @@ class GroupMember extends Model
 
     public function user(): BelongsTo
     {
-        return $this->belongsTo(User::class , 'user_id' , 'id')->withDefault();
+        return $this->belongsTo(User::class , 'user_id' , 'id');
+    }
+
+    public function group(): BelongsTo
+    {
+        return $this->belongsTo(Group::class, 'group_id', 'id');
     }
 }

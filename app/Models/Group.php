@@ -33,4 +33,39 @@ class Group extends Model
         'type' => GroupType::class ,
         'framework_needed' => 'array' ,
     ];
+
+    public function members(): HasMany
+    {
+        return $this->hasMany(GroupMember::class, 'group_id', 'id');
+    }
+
+    public function joinRequests(): HasMany
+    {
+        return $this->hasMany(JoinRequest::class, 'group_id', 'id');
+    }
+
+    public function invitations(): HasMany
+    {
+        return $this->hasMany(GroupInvitation::class, 'group_id', 'id');
+    }
+
+    public function projectForms(): HasMany
+    {
+        return $this->hasMany(ProjectForm::class, 'group_id', 'id');
+    }
+
+    public function interviewSchedules(): HasMany
+    {
+        return $this->hasMany(InterviewSchedule::class, 'group_id', 'id');
+    }
+
+    public function projectForm2(): HasOne
+    {
+        return $this->hasOne(ProjectForm2::class, 'group_id', 'id');
+    }
+
+    public function projectGrade(): HasOne
+    {
+        return $this->hasOne(ProjectGrade::class, 'group_id', 'id');
+    }
 }

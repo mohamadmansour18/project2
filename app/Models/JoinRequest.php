@@ -33,4 +33,9 @@ class JoinRequest extends Model
     {
         return $this->belongsTo(User::class , 'user_id' , 'id')->withDefault();
     }
+
+    public function group(): BelongsTo
+    {
+        return $this->belongsTo(Group::class, 'group_id', 'id');
+    }
 }

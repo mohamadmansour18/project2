@@ -28,4 +28,14 @@ class InterviewSchedules extends Model
     protected $casts = [
         'interview_day' => 'array' ,
     ];
+
+    public function committee(): BelongsTo
+    {
+        return $this->belongsTo(InterviewCommittee::class, 'committee_id', 'id');
+    }
+
+    public function group(): BelongsTo
+    {
+        return $this->belongsTo(Group::class, 'group_id', 'id');
+    }
 }

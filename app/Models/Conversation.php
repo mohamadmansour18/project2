@@ -37,4 +37,9 @@ class Conversation extends Model
     {
         return $this->belongsTo(User::class , 'user_two_id' , 'id')->withDefault();
     }
+
+    public function messages(): HasMany
+    {
+        return $this->hasMany(Message::class, 'conversation_id', 'id');
+    }
 }

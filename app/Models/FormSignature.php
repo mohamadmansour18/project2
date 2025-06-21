@@ -26,4 +26,9 @@ class FormSignature extends Model
     {
         return $this->belongsTo(User::class , 'user_id' , 'id')->withDefault();
     }
+
+    public function projectForm(): BelongsTo
+    {
+        return $this->belongsTo(ProjectForm::class, 'project_form_id', 'id');
+    }
 }
