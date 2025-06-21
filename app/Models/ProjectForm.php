@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Enums\ProjectFormStatus;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class ProjectForm extends Model
 {
@@ -36,4 +37,9 @@ class ProjectForm extends Model
     protected $casts = [
         'status' => ProjectFormStatus::class ,
     ];
+
+    public function users(): BelongsTo
+    {
+        return $this->belongsTo(User::class , 'user_id' , 'id')->withDefault();
+    }
 }

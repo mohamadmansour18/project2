@@ -28,4 +28,9 @@ class Announcements extends Model
         'type' => AnnouncementType::class ,
         'audience' => AnnouncementAudience::class
     ];
+
+    public function users()
+    {
+        return $this->belongsToMany(User::class , 'favorites' , 'user_id' , 'announcement_id');
+    }
 }

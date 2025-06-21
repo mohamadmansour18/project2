@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Enums\ConversationType;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Conversation extends Model
 {
@@ -26,4 +27,14 @@ class Conversation extends Model
     protected $casts = [
         'type' => ConversationType::class
     ];
+
+    public function firstUser(): BelongsTo
+    {
+        return $this->belongsTo(User::class , 'user_one_id' , 'id')->withDefault();
+    }
+
+    public function secondUser(): BelongsTo
+    {
+        return $this->belongsTo(User::class , 'user_two_id' , 'id')->withDefault();
+    }
 }

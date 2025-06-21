@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Enums\GroupInvitationStatus;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class GroupInvitation extends Model
 {
@@ -27,4 +28,14 @@ class GroupInvitation extends Model
     protected $casts = [
         'status' => GroupInvitationStatus::class ,
     ];
+
+    public function invitedBy(): BelongsTo
+    {
+        return $this->belongsTo(User::class , 'invited_by_user_id' , 'id')->withDefault();
+    }
+
+    public function invitedUser(): BelongsTo
+    {
+        return $this->belongsTo(User::class , 'invited_user_id' , 'id')->withDefault();
+    }
 }
