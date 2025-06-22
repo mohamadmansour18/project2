@@ -6,6 +6,8 @@ use App\Enums\GroupSpecialityNeeded;
 use App\Enums\GroupType;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Group extends Model
 {
@@ -56,7 +58,7 @@ class Group extends Model
 
     public function interviewSchedules(): HasMany
     {
-        return $this->hasMany(InterviewSchedule::class, 'group_id', 'id');
+        return $this->hasMany(InterviewSchedules::class, 'group_id', 'id');
     }
 
     public function projectForm2(): HasOne

@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Enums\ProjectForm2Status;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class ProjectForm2 extends Model
 {
@@ -36,6 +37,6 @@ class ProjectForm2 extends Model
 
     public function group(): BelongsTo
     {
-        return $this->belongsTo(Group::class, 'group_id', 'id');
+        return $this->belongsTo(Group::class, 'group_id', 'id')->withDefault();
     }
 }

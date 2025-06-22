@@ -29,7 +29,7 @@ class GradeException extends Model
 
     public function grade(): BelongsTo
     {
-        return $this->belongsTo(ProjectGrade::class, 'grade_id', 'id');
+        return $this->belongsTo(ProjectGrade::class, 'grade_id', 'id')->withDefault();
     }
 
 }
