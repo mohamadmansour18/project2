@@ -28,4 +28,16 @@ class OtpCode extends Model
     {
         return $this->belongsTo(User::class , 'user_id' , 'id')->withDefault();
     }
+
+    public static function createOtpFor(int $userId , string $purpose): self
+    {
+        return self::create([
+            'user_id' => $userId ,
+            'otp_code' => random_int(100000 , 999999),
+            'expires_at' => now()->addMinutes(5),
+            'is_used' => false ,
+            'purpose' => $purpose
+        ]);
+    }
+
 }

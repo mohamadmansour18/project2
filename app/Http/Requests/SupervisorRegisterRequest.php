@@ -1,11 +1,14 @@
 <?php
 
-namespace {{ namespace }};
+namespace App\Http\Requests;
 
-use Illuminate\Foundation\Http\FormRequest;
+use App\Enums\ProfileGovernorate;
 use App\Traits\ValidationFailedResponse;
+use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rules\Enum;
+use Illuminate\Validation\Rules\Password as password_rule;
 
-class {{ class }} extends FormRequest
+class SupervisorRegisterRequest extends FormRequest
 {
     use ValidationFailedResponse ;
 
@@ -27,7 +30,9 @@ class {{ class }} extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'email' => 'required|email|exists:users,email' ,
+            'governorate' => ['required' , new Enum(ProfileGovernorate::class)],
+            'password' => ['required' , password_rule::min(6)->numbers()->letters()]
         ];
     }
 

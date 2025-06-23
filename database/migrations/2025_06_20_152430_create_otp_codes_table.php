@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string('otp_code');
             $table->timestamp('expires_at');
             $table->boolean('is_used')->default(0);
-            $table->enum('purpose' , ['email_verification' , 'password_reset']);
+            $table->string('purpose' , 24);
             $table->timestamps();
         });
     }
