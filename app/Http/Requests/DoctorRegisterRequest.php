@@ -8,7 +8,7 @@ use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rules\Enum;
 use Illuminate\Validation\Rules\Password as password_rule;
 
-class SupervisorRegisterRequest extends FormRequest
+class DoctorRegisterRequest extends FormRequest
 {
     use ValidationFailedResponse ;
 

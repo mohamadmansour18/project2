@@ -2,19 +2,44 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\SupervisorRegisterRequest;
-use App\Services\SupervisorService;
+use App\Http\Requests\OtpResendRequest;
+use App\Http\Requests\OtpVerificationRequest;
+use App\Http\Requests\DoctorRegisterRequest;
+use App\Services\DoctorService;
+use App\Traits\ApiSuccessTrait;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class AuthenticationController extends Controller
 {
-    public function adminRegister(SupervisorRegisterRequest $request , SupervisorService $supervisorService): JsonResponse
-    {
-        $supervisorService->registerSupervisor($request->validated());
+    use ApiSuccessTrait ;
 
-        return response()->json([
-            'message' => 'تم إرسال رمز التحقق إلى بريدك الإلكتروني.'
-        ] ,200);
+    public DoctorService $supervisorService ;
+
+    public function __construct(DoctorService $supervisorService)
+    {
+        $this->supervisorService = $supervisorService ;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////////
+    public function doctorRegister(DoctorRegisterRequest $request ): JsonResponse
+    {
+        $this->supervisorService->registerDoctor($request->validated());
+
+        return $this->successResponse('انشاء الحساب !' , 'تم إرسال رمز التحقق إلى بريدك الإلكتروني.' , 201);
+    }
+
+    public function verifyDoctorOtp(OtpVerificationRequest $request ): JsonResponse
+    {
+        $this->supervisorService->verifyOtp($request->validated());
+
+        return $this->successResponse('تأكيد الحساب !' , 'تم تأكيد بريدك الالكتروني بنجاح');
+    }
+
+    public function resendDoctorOtp(OtpResendRequest $request ): JsonResponse
+    {
+        $this->supervisorService->resendOtp($request->validated());
+
+        return $this->successResponse('اعادة ارسال الرمز !' , 'تم إرسال رمز تحقق جديد إلى بريدك.');
     }
 }
