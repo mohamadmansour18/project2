@@ -5,7 +5,9 @@ namespace App\Http\Controllers;
 use App\Http\Requests\OtpResendRequest;
 use App\Http\Requests\OtpVerificationRequest;
 use App\Http\Requests\DoctorRegisterRequest;
+use App\Http\Requests\RegisterStudentRequest;
 use App\Services\DoctorService;
+use App\Services\StudentRegistrationService;
 use App\Traits\ApiSuccessTrait;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -25,6 +27,13 @@ class AuthenticationController extends Controller
     public function doctorRegister(DoctorRegisterRequest $request ): JsonResponse
     {
         $this->supervisorService->registerDoctor($request->validated());
+
+        return $this->successResponse('انشاء الحساب !' , 'تم إرسال رمز التحقق إلى بريدك الإلكتروني.' , 201);
+    }
+
+    public function studentRegister(RegisterStudentRequest $request, StudentRegistrationService $studentService)
+    {
+        $studentService->register($request->validated());
 
         return $this->successResponse('انشاء الحساب !' , 'تم إرسال رمز التحقق إلى بريدك الإلكتروني.' , 201);
     }
