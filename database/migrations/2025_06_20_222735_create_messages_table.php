@@ -1,5 +1,6 @@
 <?php
 
+use App\Enums\MessageType;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -16,7 +17,7 @@ return new class extends Migration
             $table->foreignId('conversation_id')->constrained('conversations' , 'id')->onDelete('cascade')->onUpdate('cascade');
             $table->foreignId('sender_id')->nullable()->constrained('users' , 'id')->onDelete('cascade')->onUpdate('cascade');
             $table->foreignId('faq_id')->nullable()->constrained('f_a_q_s' , 'id')->onDelete('cascade')->onUpdate('cascade');
-            $table->string('message_type');
+            $table->enum('message_type' , MessageType::convertEnumToArray())->default(MessageType::Text->value);
             $table->text('content');
             $table->timestamps();
         });

@@ -1,5 +1,6 @@
 <?php
 
+use App\Enums\FormSubmissionPeriodFormName;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -13,7 +14,7 @@ return new class extends Migration
     {
         Schema::create('form_submission_periods', function (Blueprint $table) {
             $table->id();
-            $table->string('form_name' , 20);
+            $table->enum('form_name' , FormSubmissionPeriodFormName::convertEnumToArray())->nullable();
             $table->timestamp('start_date')->nullable();
             $table->timestamp('end_date')->nullable();
             $table->timestamps();

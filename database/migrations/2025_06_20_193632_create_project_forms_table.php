@@ -26,7 +26,7 @@ return new class extends Migration
             $table->string('supervisor_signature')->nullable();
             $table->string('filled_form_file_path')->nullable();
             $table->timestamp('submission_date')->nullable();
-            $table->string('status' , 12)->default(ProjectFormStatus::Pending->value);
+            $table->enum('status' , ProjectFormStatus::convertEnumToArray())->default(ProjectFormStatus::Pending->value);
             $table->timestamps();
         });
     }

@@ -22,8 +22,8 @@ return new class extends Migration
             $table->string('roadmap_file');
             $table->string('work_plan_file');
             $table->string('filled_form_file_path');
-            $table->string('status' , 12)->default('');
-            $table->timestamp('submission_date')->nullable(ProjectForm2Status::Pending->value);
+            $table->enum('status' , ProjectForm2Status::convertEnumToArray())->default(ProjectForm2Status::Pending->value);
+            $table->timestamp('submission_date')->nullable();
             $table->timestamps();
         });
     }

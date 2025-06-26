@@ -1,5 +1,6 @@
 <?php
 
+use App\Enums\GroupMemberRole;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -15,7 +16,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('group_id')->constrained('groups' , 'id')->onDelete('cascade')->onUpdate('cascade');
             $table->foreignId('user_id')->constrained('users' , 'id')->onDelete('cascade')->onUpdate('cascade');
-            $table->string('role');
+            $table->enum('role', GroupMemberRole::convertEnumToArray());
             $table->timestamps();
         });
     }

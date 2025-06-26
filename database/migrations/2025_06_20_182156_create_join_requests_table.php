@@ -16,7 +16,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('group_id')->constrained('groups' , 'id')->onDelete('cascade')->onUpdate('cascade');
             $table->foreignId('user_id')->constrained('users' , 'id')->onDelete('cascade')->onUpdate('cascade');
-            $table->string('status' , 12)->default(JoinRequestStatus::Pending->value);
+            $table->enum('status' , JoinRequestStatus::convertEnumToArray())->default(JoinRequestStatus::Pending->value);
             $table->timestamp('reviewed_at')->nullable();
             $table->text('description')->nullable();
             $table->timestamps();

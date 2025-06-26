@@ -46,9 +46,12 @@ class MakeEnumCommand extends Command
         <?php
 
         namespace App\Enums;
+        use App\Traits\EnumToArray;
 
         enum {$enumName}: string
         {
+            use EnumToArray;
+
             case Example = 'example';
         }
         EOT;

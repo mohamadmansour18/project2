@@ -2,8 +2,11 @@
 
 namespace App\Enums;
 
+use App\Traits\EnumToArray;
+
 enum ProfileGovernorate: string
 {
+    use EnumToArray;
     case Al_Quneitra = 'القنيطرة';
     case Aleppo = 'حلب';
     case Tartus = 'طرطوس' ;

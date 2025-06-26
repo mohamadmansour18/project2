@@ -1,5 +1,6 @@
 <?php
 
+use App\Enums\AnnouncementAudience;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -16,7 +17,7 @@ return new class extends Migration
             $table->string('title');
             $table->string('type' , 10);
             $table->string('attachment_path');
-            $table->string('audience' , 12);
+            $table->enum('audience' , AnnouncementAudience::convertEnumToArray())->default(AnnouncementAudience::All->value);
             $table->timestamps();
         });
     }

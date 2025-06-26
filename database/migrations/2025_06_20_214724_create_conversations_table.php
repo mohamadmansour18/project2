@@ -1,5 +1,6 @@
 <?php
 
+use App\Enums\ConversationType;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -15,7 +16,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('user_one_id')->constrained('users' , 'id')->onDelete('cascade')->onUpdate('cascade');
             $table->foreignId('user_two_id')->nullable()->constrained('users' , 'id')->onDelete('cascade')->onUpdate('cascade');
-            $table->string('type');
+            $table->enum('type' , ConversationType::convertEnumToArray())->default(ConversationType::Self->value);
             $table->timestamps();
         });
     }
