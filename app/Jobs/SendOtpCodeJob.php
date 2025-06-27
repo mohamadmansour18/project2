@@ -16,7 +16,7 @@ class SendOtpCodeJob implements ShouldQueue
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     public $tries = 2 ;
-    public $timeout = 10 ;
+    public $backoff = 5 ;
     public string $email ;
     public string $name ;
     public string $otp ;
@@ -40,7 +40,7 @@ class SendOtpCodeJob implements ShouldQueue
 
     public function failed(\Throwable $exception): void
     {
-        Log::error('Send OTP email job failed for user : ' . $this->email . 'has name : ' . $this->name);
+        Log::error('Send OTP email job failed for user : ' . $this->email . ' || has name : ' . $this->name);
         Log::error($exception->getMessage());
     }
 }

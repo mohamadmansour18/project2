@@ -22,7 +22,7 @@ return new class extends Migration
             $table->string('phone_number' , 12)->nullable();
             $table->string('profile_image')->nullable();
             $table->enum('student_speciality', ProfileStudentSpeciality::convertEnumToArray())->nullable();
-            $table->enum('student_status' , ProfileStudentStatus::convertEnumToArray())->default(ProfileStudentStatus::Fourth_Year->value);
+            $table->enum('student_status' , ProfileStudentStatus::convertEnumToArray())->nullable();
             $table->string('signature')->nullable();
             $table->timestamps();
         });

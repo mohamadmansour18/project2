@@ -30,7 +30,7 @@ class SendOtpMail extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'رمز التحقق الخاص بك لتأكيد البريد',
+            subject: 'رمز التحقق الخاص بك لتأكيد بريدك الالكتروني !',
         );
     }
 

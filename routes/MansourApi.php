@@ -1,7 +1,6 @@
 <?php
 
-use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
+use App\Http\Controllers\Auth\AuthenticationDoctorController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -15,20 +14,16 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::namespace('Dashboard')->group(function(){
-    //Route::get(/getAll/Category/{category_id?});
-    //Route::post();
-
-    Route::controller(Controller::class)->group(function (){
-        //Route::get('/auth' , 'logIn');
-    });
-
-    Route::middleware(['throttle:mansour'])->group(function () {
-        Route::get('/man' , function (){
-            return response()->json('hello world');
-        });
-    });
+Route::controller(AuthenticationDoctorController::class)->group(function (){
+    Route::post('/doctor/register' , 'doctorRegister');
 });
+
+//    Route::middleware(['throttle:mansour'])->group(function () {
+//        Route::get('/man' , function (){
+//            return response()->json('hello world');
+//        });
+//    });
+
 
 
 
@@ -40,4 +35,4 @@ Route::fallback(function (){
 });
 
 
-//Route cash
+

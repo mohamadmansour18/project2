@@ -2,75 +2,120 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <title>رسالة تحقق</title>
+    <title>رمز التحقق - {{ config('app.name') }}</title>
+    <meta name="color-scheme" content="light dark">
+    <meta name="supported-color-schemes" content="light dark">
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap');
+
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f4f6f8;
-            color: #333333;
+            font-family: 'Tajawal', sans-serif;
             margin: 0;
             padding: 0;
+            background-color: #f2f4f7;
+            color: #333;
         }
+
         .container {
             max-width: 600px;
             margin: 40px auto;
-            background: white;
+            background-color: #fff;
             padding: 30px;
-            border-radius: 8px;
-            box-shadow: 0 8px 24px rgb(149 157 165 / 0.2);
+            border-radius: 12px;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.06);
         }
-        .logo {
-            text-align: center;
-            margin-bottom: 20px;
-        }
-        .logo img {
-            max-width: 120px;
-            height: auto;
-        }
-        h1 {
+
+        h2 {
             color: #0d6efd;
-            font-weight: bold;
+            text-align: center;
+            margin-bottom: 10px;
         }
-        .greeting {
-            margin-bottom: 20px;
-            font-size: 18px;
+
+        p {
+            font-size: 16px;
+            line-height: 1.7;
+            text-align: center;
+            margin: 10px 0;
         }
-        .otp-box {
-            background-color: #e7f3ff;
-            border: 2px solid #0d6efd;
-            padding: 15px 20px;
+
+        .otp {
             font-size: 28px;
-            font-weight: 700;
-            letter-spacing: 8px;
+            font-weight: bold;
+            letter-spacing: 10px;
             text-align: center;
-            border-radius: 6px;
             color: #0d6efd;
+            background-color: #e9f2ff;
+            border: 2px dashed #0d6efd;
+            border-radius: 8px;
+            padding: 15px;
             width: fit-content;
-            margin: 0 auto 30px auto;
+            margin: 20px auto;
             user-select: all;
         }
-        .footer {
-            font-size: 14px;
-            color: #888888;
+
+        .signature {
             text-align: center;
-            border-top: 1px solid #dddddd;
+            margin-top: 40px;
+            font-size: 15px;
+            color: #666;
+        }
+
+        .footer {
+            text-align: center;
+            font-size: 13px;
+            color: #999;
+            margin-top: 30px;
+            border-top: 1px solid #ddd;
             padding-top: 15px;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            body {
+                background-color: #1e1e1e;
+                color: #f1f1f1;
+            }
+
+            .container {
+                background-color: #2c2c2c;
+                color: #f1f1f1;
+            }
+
+            .otp {
+                background-color: #112244;
+                color: #91caff;
+                border-color: #91caff;
+            }
+
+            p {
+                color: #f1f1f1 !important;
+            }
+
+            .signature {
+                color: #aaa;
+            }
+
+            .footer {
+                color: #777;
+                border-top: 1px solid #444;
+            }
         }
     </style>
 </head>
 <body>
 <div class="container">
-    <div class="logo">
-        <img src="{{ asset('logo/logo.png') }}" alt="{{ config('app.name') }}">
+    <h2>مرحبًا {{ $name }}!</h2>
+    <p>رمز التحقق الخاص بك لتأكيد البريد الإلكتروني هو:</p>
+    <div class="otp">{{ $otp }}</div>
+    <p>يرجى استخدام هذا الرمز خلال <strong>5 دقائق</strong> لضمان الأمان</p>
+    <p>نحن سعداء بانضمامك إلى {{ config('app.name') }}</p>
+
+    <div class="signature">
+        مع تحيات<br>
+        <strong>فريق {{ config('app.name') }}</strong>
     </div>
-    <h1>مرحبًا {{ $name }}!</h1>
-    <p class="greeting">رمز التحقق الخاص بك هو:</p>
-    <div class="otp-box">{{ $otp }}</div>
-    <p> يرجى استخدام هذا الرمز خلال 5 دقائق لتأكيد البريد الإلكتروني</p>
-    <p>شكراً لاستخدامك تطبيق {{ config('app.name') }}.</p>
 
     <div class="footer">
-        هذا البريد الإلكتروني مُرسل تلقائيًا، الرجاء عدم الرد عليه.
+        تم إرسال هذه الرسالة تلقائيًا – الرجاء عدم الرد.
     </div>
 </div>
 </body>
