@@ -15,7 +15,7 @@ class DoctorService
 {
     public function __construct()
     {
-        //
+
     }
 
     public function registerDoctor(array $data): void
