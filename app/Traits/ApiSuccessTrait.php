@@ -14,4 +14,10 @@ trait ApiSuccessTrait
             'statusCode' => $statusCode
         ] , $statusCode);
     }
+
+    public function dataResponse(array $data , int $statusCode = 200): JsonResponse
+    {
+        $data['statusCode'] = $statusCode ;
+        return response()->json($data , $statusCode);
+    }
 }

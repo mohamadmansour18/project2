@@ -2,13 +2,10 @@
 
 namespace App\Http\Requests;
 
-
 use App\Traits\ValidationFailedResponse;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Contracts\Validation\Validator;
-use Illuminate\Http\Exceptions\HttpResponseException;
 
-class LoginRequest extends FormRequest
+class LoginDocktorRequest extends FormRequest
 {
     use ValidationFailedResponse ;
 
@@ -30,17 +27,9 @@ class LoginRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'title' => 'required|max:255',
-            'body' => 'required',
+            'email' => 'required|email|exists:users,email' ,
+            'password' => 'required'
         ];
     }
-
-
-//    public function messages(): array
-//    {
-//        return [
-//            'title.required' => 'please enter a custom message !'
-//        ];
-//    }
 
 }

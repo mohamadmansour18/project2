@@ -4,12 +4,14 @@ namespace App\Services;
 
 use App\Enums\OtpCodePurpose;
 use App\Enums\UserRole;
+use App\Exceptions\LoginException;
 use App\Exceptions\RegistrationException;
 use App\Jobs\SendOtpCodeJob;
 use App\Models\OtpCode;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use PHPOpenSourceSaver\JWTAuth\Facades\JWTAuth;
 
 class DoctorService
 {
@@ -91,6 +93,35 @@ class DoctorService
 
         $otp = OtpCode::createOtpFor($user->id , OtpCodePurpose::Verification->value);
 
-        SendOtpCodeJob::dispatch($user->email , $user->name , $otp->otp_code);
+        SendOtpCodeJob::dispatch($user->email , $otp->otp_code , $user->name);
     }
+
+    ///////////////////////////////////////////////////////////////////
+
+    public function login(array $data): array
+    {
+        $user = User::query()->where('email' , $data['email'])->where('role' , UserRole::Doctor->value)->first();
+
+        if(!$user || !Hash::check($data['password'] , $user->password))
+        {
+            throw new LoginException('فشل تسجيل الدخول !' , 'البريد الإلكتروني أو كلمة المرور غير صحيحة' , true );
+        }
+
+        if(is_null($user->email_verified_at))
+        {
+            throw new LoginException('فشل تسجيل الدخول !' , 'يرجى القيام بتأكيد بريدك الالكتروني وللقيام بذلك اضغط هنا' , false );
+        }
+
+        $token = JWTAuth::fromUser($user);
+
+        return [
+            'token' => $token ,
+            'name' => "! $user->name مرحبا دكتور "  ,
+            'profile_image' => $user->profile->profile_image ,
+        ];
+    }
+
+    ///////////////////////////////////////////////////////////////////
+
+
 }

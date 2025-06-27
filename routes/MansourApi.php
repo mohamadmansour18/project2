@@ -16,6 +16,10 @@ use Illuminate\Support\Facades\Route;
 
 Route::controller(AuthenticationDoctorController::class)->group(function (){
     Route::post('/doctor/register' , 'doctorRegister');
+    Route::post('/doctor/verifyOtp' , 'verifyDoctorOtp');
+    Route::post('/doctor/resendOtp' , 'resendDoctorOtp')->middleware('throttle:resendOtp');
+
+    Route::post('/doctor/login' , 'doctorLogin')->middleware('throttle:login');
 });
 
 //    Route::middleware(['throttle:mansour'])->group(function () {
@@ -23,7 +27,6 @@ Route::controller(AuthenticationDoctorController::class)->group(function (){
 //            return response()->json('hello world');
 //        });
 //    });
-
 
 
 

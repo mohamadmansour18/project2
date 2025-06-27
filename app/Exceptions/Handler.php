@@ -33,7 +33,8 @@ class Handler extends ExceptionHandler
     {
         if ($e instanceof TooManyRequestsHttpException) {
             return response()->json([
-                'message' => 'to many requests try again later please',
+                'title' => 'محاولات كثيرة !' ,
+                'body' => 'لقد قمت بفعل محاولات كثيرة يرجى التجربة لاحقا',
                 'code' => 429
             ], 429);
         }

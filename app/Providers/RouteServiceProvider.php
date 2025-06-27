@@ -48,7 +48,11 @@ class RouteServiceProvider extends ServiceProvider
             return Limit::perMinute(15)->by($request->user()?->id ?: $request->ip());
         });
 
-        RateLimiter::for('mansour' , function (Request $request) {
+        RateLimiter::for('resendOtp' , function (Request $request) {
+            return Limit::perMinute(3)->by($request->user()?->id ?: $request->ip());
+        });
+
+        RateLimiter::for('login' , function (Request $request){
             return Limit::perMinute(4)->by($request->user()?->id ?: $request->ip());
         });
 
