@@ -15,12 +15,24 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::controller(AuthenticationDoctorController::class)->group(function (){
-    Route::post('/doctor/register' , 'doctorRegister');
-    Route::post('/doctor/verifyOtp' , 'verifyDoctorOtp');
-    Route::post('/doctor/resendOtp' , 'resendDoctorOtp')->middleware('throttle:resendOtp');
 
-    Route::post('/doctor/login' , 'doctorLogin')->middleware('throttle:login');
+    Route::prefix('/doctor')->group(function (){
+
+        Route::post('/register' , 'doctorRegister');
+        Route::post('/verifyOtp' , 'verifyDoctorOtp');
+        Route::post('/resendOtp' , 'resendDoctorOtp')->middleware('throttle:resendOtp');
+
+        Route::post('/login' , 'doctorLogin')->middleware('throttle:login');
+
+        Route::post('/forgetPassword/sendOtp' , 'forgotPassword')->middleware('throttle:resendOtp');
+        Route::post('/forgetPassword/verifyOtp' , 'forgotPasswordOtp');
+        Route::post('/forgetPassword/resetPassword' , 'resetPassword');
+        Route::post('/forgetPassword/resendOtp' , 'resendPasswordResetOtp')->middleware('throttle:resendOtp');
+
+    });
+
 });
+
 
 //    Route::middleware(['throttle:mansour'])->group(function () {
 //        Route::get('/man' , function (){

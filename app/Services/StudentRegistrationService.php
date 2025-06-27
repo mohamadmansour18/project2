@@ -4,7 +4,6 @@ namespace App\Services;
 
 use App\Enums\OtpCodePurpose;
 use App\Enums\UserRole;
-use App\Events\StudentRegistered;
 use App\Exceptions\RegistrationException;
 use App\Jobs\SendOtpCodeJob;
 use App\Models\OtpCode;
@@ -47,7 +46,7 @@ class StudentRegistrationService
 
         $otp = OtpCode::createOtpFor($user->id , OtpCodePurpose::Verification->value);
 
-        SendOtpCodeJob::dispatch($user->email , $otp->otp_code , $user->name);
+        SendOtpCodeJob::dispatch($user->email , $otp->otp_code , $user->name , $otp->purpose);
 
 
     }

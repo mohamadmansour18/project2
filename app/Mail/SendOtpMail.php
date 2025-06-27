@@ -2,6 +2,7 @@
 
 namespace App\Mail;
 
+use App\Enums\OtpCodePurpose;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
@@ -15,13 +16,15 @@ class SendOtpMail extends Mailable
 
     public string $otp ;
     public string $name ;
+    public string $purpose ;
     /**
      * Create a new message instance.
      */
-    public function __construct(string $otp , string $name)
+    public function __construct(string $otp , string $name , string $purpose)
     {
         $this->otp = $otp ;
         $this->name = $name ;
+        $this->purpose = $purpose ;
     }
 
     /**
@@ -29,9 +32,18 @@ class SendOtpMail extends Mailable
      */
     public function envelope(): Envelope
     {
-        return new Envelope(
-            subject: 'رمز التحقق الخاص بك لتأكيد بريدك الالكتروني !',
-        );
+        if($this->purpose == OtpCodePurpose::Verification->value)
+        {
+            return new Envelope(
+                subject: 'رمز التحقق الخاص بك لتأكيد بريدك الالكتروني !',
+            );
+        }
+        else{
+            return new Envelope(
+                subject: 'رمز التحقق الخاص بك لاعادة تعين كلمة المرور !',
+            );
+        }
+
     }
 
     /**

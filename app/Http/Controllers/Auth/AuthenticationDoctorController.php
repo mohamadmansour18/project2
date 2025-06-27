@@ -4,7 +4,9 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\DoctorRegisterRequest;
+use App\Http\Requests\ForgotPasswordRequest;
 use App\Http\Requests\LoginDocktorRequest;
+use App\Http\Requests\NewPasswordRequest;
 use App\Http\Requests\OtpResendRequest;
 use App\Http\Requests\OtpVerificationRequest;
 use App\Services\DoctorService;
@@ -41,7 +43,7 @@ class AuthenticationDoctorController extends Controller
     {
         $this->doctorService->resendOtp($request->validated());
 
-        return $this->successResponse('اعادة ارسال الرمز !' , 'تم إرسال رمز تحقق جديد إلى بريدك.');
+        return $this->successResponse('اعادة ارسال الرمز !' , 'تم إرسال رمز تحقق جديد إلى بريدك .');
     }
 
     ///////////////////////////////////////////////////////////////////////////////////
@@ -53,4 +55,33 @@ class AuthenticationDoctorController extends Controller
         return $this->dataResponse($response , 200);
     }
 
+    ///////////////////////////////////////////////////////////////////////////////////
+
+    public function forgotPassword(ForgotPasswordRequest $request): JsonResponse
+    {
+        $this->doctorService->sendPasswordResetOtp($request->email);
+
+        return $this->successResponse('تأكيد البريد المدخل !' , 'تم إرسال رمز التحقق إلى بريدك الإلكتروني المدخل .');
+    }
+
+    public function forgotPasswordOtp(OtpVerificationRequest $request): JsonResponse
+    {
+        $this->doctorService->verifyPasswordResetOtp($request->validated());
+
+        return $this->successResponse('تم التأكيد بنجاح !' , 'تم تأكيد بريدك الالكتروني المستخدم لاعادة تعين كلمة المرور .');
+    }
+
+    public function resetPassword(NewPasswordRequest $request): JsonResponse
+    {
+        $this->doctorService->resetPassword($request->validated());
+
+        return $this->successResponse('كلمة مرور جديدة !' , 'تم تعيين كلمة المرور الجديدة بنجاح ، يمكنك تسجيل الدخول الآن');
+    }
+
+    public function resendPasswordResetOtp(ForgotPasswordRequest $request): JsonResponse
+    {
+        $this->doctorService->resendPasswordResetOtp($request->validated());
+
+        return $this->successResponse('اعادة ارسال الرمز !' , 'تم إرسال رمز تحقق جديد إلى بريدك .');
+    }
 }

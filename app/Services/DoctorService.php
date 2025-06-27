@@ -6,6 +6,7 @@ use App\Enums\OtpCodePurpose;
 use App\Enums\UserRole;
 use App\Exceptions\LoginException;
 use App\Exceptions\RegistrationException;
+use App\Exceptions\ResetPasswordException;
 use App\Jobs\SendOtpCodeJob;
 use App\Models\OtpCode;
 use App\Models\User;
@@ -42,12 +43,12 @@ class DoctorService
 
         $otp = OtpCode::createOtpFor($user->id , OtpCodePurpose::Verification->value);
 
-        SendOtpCodeJob::dispatch($user->email , $otp->otp_code , $user->name);
+        SendOtpCodeJob::dispatch($user->email , $otp->otp_code , $user->name , $otp->purpose);
     }
 
     public function verifyOtp(array $data): void
     {
-        $user = User::query()->where('email' , $data['email'])->first();
+        $user = User::query()->where('email' , $data['email'])->where('role' , UserRole::Doctor->value)->first();
 
         if(!$user)
         {
@@ -59,6 +60,7 @@ class DoctorService
                                ->where('expires_at' , '>' , now())
                                ->where('is_used' , false)
                                ->where('purpose' , OtpCodePurpose::Verification->value)
+                               ->orderByDesc('created_at')
                                ->first();
 
         if(!$otp)
@@ -93,7 +95,7 @@ class DoctorService
 
         $otp = OtpCode::createOtpFor($user->id , OtpCodePurpose::Verification->value);
 
-        SendOtpCodeJob::dispatch($user->email , $otp->otp_code , $user->name);
+        SendOtpCodeJob::dispatch($user->email , $otp->otp_code , $user->name , $otp->purpose);
     }
 
     ///////////////////////////////////////////////////////////////////
@@ -123,5 +125,78 @@ class DoctorService
 
     ///////////////////////////////////////////////////////////////////
 
+    public function sendPasswordResetOtp(string $email): void
+    {
+        $user = User::query()->where('email' , $email)->where('role' , UserRole::Doctor->value)->first();
 
+        if(!$user)
+        {
+            throw new ResetPasswordException('غير مصرح به !' , 'هذا البريد غير مرتبط بحساب لمشرف في النظام');
+        }
+
+        $otp = OtpCode::createOtpFor($user->id , OtpCodePurpose::Reset->value);
+
+        SendOtpCodeJob::dispatch($email , $otp->otp_code , $user->name , $otp->purpose);
+    }
+
+    public function verifyPasswordResetOtp(array $data): void
+    {
+        $user = User::query()->where('email' , $data['email'])->where('role' , UserRole::Doctor->value)->first();
+
+        if(!$user)
+        {
+            throw new ResetPasswordException('غير مصرح به !' , 'هذا البريد غير مرتبط بحساب لمشرف في النظام');
+        }
+
+        $otp = OtpCode::query()->where('user_id' , $user->id)
+                               ->where('otp_code' , $data['otp_code'])
+                               ->where('is_used' , false)
+                               ->where('expires_at' , '>' , now())
+                               ->where('purpose' , OtpCodePurpose::Reset->value)
+                               ->orderByDesc('created_at')
+                               ->first();
+
+        if(!$otp)
+        {
+            throw new RegistrationException('رمز غير صالح !' , 'عذرا الرمز الذي قمت باستخدامه غير صالح ، يرجى ادخال الرمز الصحيح');
+        }
+
+        $otp->update([
+            'is_used' => true
+        ]);
+    }
+
+    public function resetPassword(array $data): void
+    {
+        $user = User::query()->where('email' , $data['email'])->where('role' , UserRole::Doctor->value)->first();
+
+        if(!$user)
+        {
+            throw new ResetPasswordException('غير مصرح به !' , 'هذا البريد غير مرتبط بحساب لمشرف في النظام');
+        }
+
+        if(Hash::check($data['password'] , $user->password))
+        {
+            throw new ResetPasswordException('كلمة مرور غير صالحة !' , 'يرجى اختيار كلمة مرور مختلفة عن الحالية');
+        }
+
+        $user->update([
+            'password' => Hash::make($data['password']) ,
+        ]);
+    }
+
+    public function resendPasswordResetOtp(string $email): void
+    {
+        $user = User::query()->where('email' , $email)->where('role' , UserRole::Doctor->value)->first();
+
+        if(!$user)
+        {
+            throw new RegistrationException('المستخدم غير موجود !' , 'لايوجد مستخدم مرتبط بالبريد المدخل لايمكننا ارسال الرمز');
+        }
+
+
+        $otp = OtpCode::createOtpFor($user->id , OtpCodePurpose::Reset->value);
+
+        SendOtpCodeJob::dispatch($user->email , $otp->otp_code , $user->name , $otp->purpose);
+    }
 }

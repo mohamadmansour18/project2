@@ -20,14 +20,16 @@ class SendOtpCodeJob implements ShouldQueue
     public string $email ;
     public string $name ;
     public string $otp ;
+    public string $purpose ;
     /**
      * Create a new job instance.
      */
-    public function __construct(string $email , string $otp , string $name)
+    public function __construct(string $email , string $otp , string $name , string $purpose)
     {
         $this->email = $email ;
         $this->otp = $otp ;
         $this->name = $name ;
+        $this->purpose = $purpose ;
     }
 
     /**
@@ -35,12 +37,12 @@ class SendOtpCodeJob implements ShouldQueue
      */
     public function handle(): void
     {
-        Mail::to($this->email)->send(new SendOtpMail($this->otp , $this->name));
+        Mail::to($this->email)->send(new SendOtpMail($this->otp , $this->name , $this->purpose));
     }
 
     public function failed(\Throwable $exception): void
     {
-        Log::error('Send OTP email job failed for user : ' . $this->email . ' || has name : ' . $this->name);
+        Log::error('Send OTP email job failed for user : ' . $this->email . ' || has name : ' . $this->name . ' || purpose is : ' . $this->purpose);
         Log::error($exception->getMessage());
     }
 }
