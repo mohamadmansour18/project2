@@ -13,24 +13,28 @@ use Illuminate\Support\Facades\Route;
 | be assigned to the "api" middleware group. Make something great!
 |
 */
+Route::prefix('/doctor')->group(function (){
 
-Route::controller(AuthenticationDoctorController::class)->group(function (){
+    Route::controller(AuthenticationDoctorController::class)->group(function (){
 
-    Route::prefix('/doctor')->group(function (){
+            Route::post('/register' , 'doctorRegister');
+            Route::post('/verifyOtp' , 'verifyDoctorOtp');
+            Route::post('/resendOtp' , 'resendDoctorOtp')->middleware('throttle:resendOtp');
 
-        Route::post('/register' , 'doctorRegister');
-        Route::post('/verifyOtp' , 'verifyDoctorOtp');
-        Route::post('/resendOtp' , 'resendDoctorOtp')->middleware('throttle:resendOtp');
+            Route::post('/login' , 'doctorLogin')->middleware('throttle:login');
 
-        Route::post('/login' , 'doctorLogin')->middleware('throttle:login');
-
-        Route::post('/forgetPassword/sendOtp' , 'forgotPassword')->middleware('throttle:resendOtp');
-        Route::post('/forgetPassword/verifyOtp' , 'forgotPasswordOtp');
-        Route::post('/forgetPassword/resetPassword' , 'resetPassword');
-        Route::post('/forgetPassword/resendOtp' , 'resendPasswordResetOtp')->middleware('throttle:resendOtp');
+            Route::post('/forgetPassword/sendOtp' , 'forgotPassword')->middleware('throttle:resendOtp');
+            Route::post('/forgetPassword/verifyOtp' , 'forgotPasswordOtp');
+            Route::post('/forgetPassword/resetPassword' , 'resetPassword');
+            Route::post('/forgetPassword/resendOtp' , 'resendPasswordResetOtp')->middleware('throttle:resendOtp');
 
     });
 
+    Route::middleware(['auth:api' , 'role:doctor'])->group(function (){
+
+        Route::get('/logout' , [AuthenticationDoctorController::class , 'logout']);
+
+    });
 });
 
 

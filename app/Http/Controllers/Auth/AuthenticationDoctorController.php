@@ -12,6 +12,7 @@ use App\Http\Requests\OtpVerificationRequest;
 use App\Services\DoctorService;
 use App\Traits\ApiSuccessTrait;
 use Illuminate\Http\JsonResponse;
+use PHPOpenSourceSaver\JWTAuth\Facades\JWTAuth;
 
 class AuthenticationDoctorController extends Controller
 {
@@ -84,4 +85,14 @@ class AuthenticationDoctorController extends Controller
 
         return $this->successResponse('اعادة ارسال الرمز !' , 'تم إرسال رمز تحقق جديد إلى بريدك .');
     }
+
+    ///////////////////////////////////////////////////////////////////////////////////
+
+    public function logout(): JsonResponse
+    {
+        JWTAuth::invalidate(JWTAuth::getToken());
+
+        return $this->successResponse('عملية تسجيل الخروج !' , 'تم تسجيل الخروج من حسابك بنجاح شكرا لاستخدامك تطبيق جامعتي');
+    }
+
 }
