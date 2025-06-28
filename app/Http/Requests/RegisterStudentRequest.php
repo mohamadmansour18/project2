@@ -3,8 +3,10 @@
 
 namespace App\Http\Requests;
 
+use App\Enums\ProfileStudentSpeciality;
 use App\Traits\ValidationFailedResponse;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rules\Enum;
 use Illuminate\Validation\Rules\Password as password_rule;
 
 class RegisterStudentRequest extends FormRequest
@@ -31,7 +33,8 @@ class RegisterStudentRequest extends FormRequest
         return [
             'email' => 'required|email|unique:users,email',
             'university_id' => 'required|exists:users,university_number',
-            'password' => ['required', password_rule::min(6)->numbers()->letters()]
+            'password' => ['required', password_rule::min(6)->numbers()->letters()],
+            'student_speciality' => ['required', new Enum(ProfileStudentSpeciality::class)],
         ];
     }
 

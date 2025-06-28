@@ -1,6 +1,6 @@
 <?php
 
-use Illuminate\Http\Request;
+use App\Http\Controllers\Auth\AuthenticationStudentController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -13,5 +13,26 @@ use Illuminate\Support\Facades\Route;
 | be assigned to the "api" middleware group. Make something great!
 |
 */
+Route::prefix('/student')->group(function (){
 
+    Route::controller(AuthenticationStudentController::class)->group(function (){
+
+        Route::post('/register' , 'studentRegister');
+        Route::post('/verifyOtp' , 'verifyStudentOtp');
+        Route::post('/resendOtp' , 'resendStudentOtp')->middleware('throttle:resendOtp');
+
+        Route::post('/login' , 'studentLogin')->middleware('throttle:login');
+
+        Route::post('/forgetPassword/sendOtp' , 'forgotPassword')->middleware('throttle:resendOtp');
+        Route::post('/forgetPassword/verifyOtp' , 'forgotPasswordOtp');
+        Route::post('/forgetPassword/resetPassword' , 'resetPassword');
+        Route::post('/forgetPassword/resendOtp' , 'resendPasswordResetOtp')->middleware('throttle:resendOtp');
+
+    });
+    Route::middleware(['auth:api' , 'role:student'])->group(function (){
+
+        Route::get('/logout' , [AuthenticationStudentController::class , 'logout']);
+
+    });
+});
 
