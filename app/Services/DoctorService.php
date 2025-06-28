@@ -23,7 +23,7 @@ class DoctorService
 
     public function registerDoctor(array $data): void
     {
-        $user = User::query()->where('email' , $data['email'])->where('role' , UserRole::Admin->value)->first();
+        $user = User::query()->where('email' , $data['email'])->where('role' , UserRole::Doctor->value)->first();
 
         if(!$user || $user->password)
         {
@@ -55,25 +55,23 @@ class DoctorService
             throw new RegistrationException('المستخدم غير موجود !'  , 'لم يتم العثور على مستخدم بهذا البريد');
         }
 
-        $otp = OtpCode::query()->where('user_id' , $user->id)
-                               ->where('otp_code' , $data['otp_code'])
-                               ->where('expires_at' , '>' , now())
-                               ->where('is_used' , false)
-                               ->where('purpose' , OtpCodePurpose::Verification->value)
-                               ->orderByDesc('created_at')
-                               ->first();
+        $latestOtp = OtpCode::query()
+            ->where('user_id', $user->id)
+            ->where('purpose', OtpCodePurpose::Verification->value)
+            ->orderByDesc('created_at')
+            ->first();
 
-        if(!$otp)
+        if(!$latestOtp || $latestOtp->otp_code !== $data['otp_code'] || $latestOtp->is_used || $latestOtp->expires_at < now())
         {
             throw new RegistrationException('رمز غير صالح !' , 'عذرا الرمز الذي قمت باستخدامه غير صالح ، يرجى ادخال الرمز الصحيح');
         }
 
-        DB::transaction(function () use ($user , $otp){
+        DB::transaction(function () use ($user , $latestOtp){
             $user->update([
                 'email_verified_at' => now()
             ]);
 
-            $otp->update([
+            $latestOtp->update([
                 'is_used' => true
             ]);
         });
@@ -129,7 +127,7 @@ class DoctorService
     {
         $user = User::query()->where('email' , $email)->where('role' , UserRole::Doctor->value)->first();
 
-        if(!$user)
+        if(!$user || !$user->password)
         {
             throw new ResetPasswordException('غير مصرح به !' , 'هذا البريد غير مرتبط بحساب لمشرف في النظام');
         }
@@ -143,25 +141,23 @@ class DoctorService
     {
         $user = User::query()->where('email' , $data['email'])->where('role' , UserRole::Doctor->value)->first();
 
-        if(!$user)
+        if(!$user || !$user->password)
         {
             throw new ResetPasswordException('غير مصرح به !' , 'هذا البريد غير مرتبط بحساب لمشرف في النظام');
         }
 
-        $otp = OtpCode::query()->where('user_id' , $user->id)
-                               ->where('otp_code' , $data['otp_code'])
-                               ->where('is_used' , false)
-                               ->where('expires_at' , '>' , now())
-                               ->where('purpose' , OtpCodePurpose::Reset->value)
-                               ->orderByDesc('created_at')
-                               ->first();
+        $latestOtp = OtpCode::query()
+            ->where('user_id', $user->id)
+            ->where('purpose', OtpCodePurpose::Reset->value)
+            ->orderByDesc('created_at')
+            ->first();
 
-        if(!$otp)
+        if(!$latestOtp || $latestOtp->otp_code !== $data['otp_code'] || $latestOtp->is_used || $latestOtp->expires_at < now())
         {
             throw new RegistrationException('رمز غير صالح !' , 'عذرا الرمز الذي قمت باستخدامه غير صالح ، يرجى ادخال الرمز الصحيح');
         }
 
-        $otp->update([
+        $latestOtp->update([
             'is_used' => true
         ]);
     }
@@ -170,7 +166,7 @@ class DoctorService
     {
         $user = User::query()->where('email' , $data['email'])->where('role' , UserRole::Doctor->value)->first();
 
-        if(!$user)
+        if(!$user || !$user->password)
         {
             throw new ResetPasswordException('غير مصرح به !' , 'هذا البريد غير مرتبط بحساب لمشرف في النظام');
         }
@@ -189,7 +185,7 @@ class DoctorService
     {
         $user = User::query()->where('email' , $email)->where('role' , UserRole::Doctor->value)->first();
 
-        if(!$user)
+        if(!$user || !$user->password)
         {
             throw new RegistrationException('المستخدم غير موجود !' , 'لايوجد مستخدم مرتبط بالبريد المدخل لايمكننا ارسال الرمز');
         }

@@ -19,7 +19,7 @@ class RoleMiddleware
     {
         $user = Auth::user();
 
-        if(!$user || $user->role !== $role)
+        if(!$user || $user->role->value !== $role)
         {
             return response()->json([
                 'title' => 'غير مصرح لك بالدخول !',

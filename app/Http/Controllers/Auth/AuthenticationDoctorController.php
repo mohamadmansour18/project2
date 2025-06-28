@@ -81,7 +81,7 @@ class AuthenticationDoctorController extends Controller
 
     public function resendPasswordResetOtp(ForgotPasswordRequest $request): JsonResponse
     {
-        $this->doctorService->resendPasswordResetOtp($request->validated());
+        $this->doctorService->resendPasswordResetOtp($request->email);
 
         return $this->successResponse('اعادة ارسال الرمز !' , 'تم إرسال رمز تحقق جديد إلى بريدك .');
     }
