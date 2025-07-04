@@ -102,6 +102,10 @@ class DoctorRegistrationService
     {
         $user = User::query()->where('email' , $data['email'])->where('role' , UserRole::Doctor->value)->first();
 
+        if(!$user->password){
+            throw new LoginException('فشل تسجيل الدخول !' , 'هذا الحساب غير موجود في النظام بعد قم بانشائه اولا ثم حاول مرة اخرى' , false );
+        }
+
         if(!$user || !Hash::check($data['password'] , $user->password))
         {
             throw new LoginException('فشل تسجيل الدخول !' , 'البريد الإلكتروني أو كلمة المرور غير صحيحة' , true );
