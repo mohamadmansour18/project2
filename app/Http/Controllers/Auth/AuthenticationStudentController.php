@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ForgotPasswordRequest;
-use App\Http\Requests\LoginDocktorRequest;
+use App\Http\Requests\LoginRequest;
 use App\Http\Requests\NewPasswordRequest;
 use App\Http\Requests\OtpResendRequest;
 use App\Http\Requests\OtpVerificationRequest;
@@ -49,7 +49,7 @@ class AuthenticationStudentController extends Controller
 
     ///////////////////////////////////////////////////////////////////////////////////
 
-    public function studentLogin(LoginDocktorRequest $request): JsonResponse
+    public function studentLogin(LoginRequest $request): JsonResponse
     {
         $response = $this->studentService->login($request->validated());
 

@@ -5,7 +5,7 @@ namespace App\Http\Requests;
 use App\Traits\ValidationFailedResponse;
 use Illuminate\Foundation\Http\FormRequest;
 
-class LoginDocktorRequest extends FormRequest
+class LoginRequest extends FormRequest
 {
     use ValidationFailedResponse ;
 

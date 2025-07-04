@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Auth\AuthenticationAdminController;
 use App\Http\Controllers\Auth\AuthenticationDoctorController;
 use Illuminate\Support\Facades\Route;
 
@@ -37,6 +38,27 @@ Route::prefix('/doctor')->group(function (){
     });
 });
 
+
+
+Route::prefix('/admin')->group(function (){
+
+    Route::controller(AuthenticationAdminController::class)->group(function (){
+
+        Route::post('/login' , 'AdminLogin')->middleware('throttle:login');
+
+        Route::post('/forgetPassword/sendOtp' , 'forgotPassword')->middleware('throttle:resendOtp');
+        Route::post('/forgetPassword/verifyOtp' , 'forgotPasswordOtp');
+        Route::post('/forgetPassword/resetPassword' , 'resetPassword');
+        Route::post('/forgetPassword/resendOtp' , 'resendPasswordResetOtp')->middleware('throttle:resendOtp');
+    });
+
+    Route::middleware(['auth:api' , 'role:admin'])->group(function (){
+
+        Route::get('/logout' , [AuthenticationAdminController::class , 'logout']);
+
+    });
+
+});
 
 //    Route::middleware(['throttle:mansour'])->group(function () {
 //        Route::get('/man' , function (){

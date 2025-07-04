@@ -14,7 +14,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use PHPOpenSourceSaver\JWTAuth\Facades\JWTAuth;
 
-class DoctorService
+class DoctorRegistrationService
 {
     public function __construct()
     {
@@ -189,7 +189,6 @@ class DoctorService
         {
             throw new RegistrationException('المستخدم غير موجود !' , 'لايوجد مستخدم مرتبط بالبريد المدخل لايمكننا ارسال الرمز');
         }
-
 
         $otp = OtpCode::createOtpFor($user->id , OtpCodePurpose::Reset->value);
 
