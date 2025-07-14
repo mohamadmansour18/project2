@@ -47,7 +47,7 @@ class AuthenticationStudentController extends Controller
         return $this->successResponse('اعادة ارسال الرمز !' , 'تم إرسال رمز تحقق جديد إلى بريدك .');
     }
 
-    ///////////////////////////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////////////////////////////
 
     public function studentLogin(LoginRequest $request): JsonResponse
     {
