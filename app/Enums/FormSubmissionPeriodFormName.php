@@ -9,4 +9,5 @@ enum FormSubmissionPeriodFormName: string
     use EnumToArray;
     case Form1 = 'form1';
     case Form2 = 'form2';
+    case Interviews = 'interviews';
 }

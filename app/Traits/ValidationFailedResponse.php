@@ -13,7 +13,7 @@ trait ValidationFailedResponse
         throw new HttpResponseException(response()->json([
             'title' => 'خطأ تحقق !',
             'body' => $error,
-            'status_code' => 422,
+            'statusCode' => 422,
         ] , 422 ) );
     }
 }

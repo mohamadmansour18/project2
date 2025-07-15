@@ -20,8 +20,9 @@ class FormSubmissionPeriodController extends Controller
 
     public function getFormDate(): JsonResponse
     {
-        $form1 = $this->homeMobileService->getFormPeriodData(FormSubmissionPeriodFormName::Form1->value);
 
-        return $this->dataResponse(['form1' => $form1] , 200);
+        $data = $this->homeMobileService->getAllFormPeriods();
+
+        return $this->dataResponse( $data , 200);
     }
 }

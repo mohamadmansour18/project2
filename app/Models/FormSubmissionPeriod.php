@@ -3,8 +3,12 @@
 namespace App\Models;
 
 use App\Enums\FormSubmissionPeriodFormName;
+use App\Observers\FormSubmissionPeriodObserver;
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+
+#[ObservedBy([FormSubmissionPeriodObserver::class])]
 
 class FormSubmissionPeriod extends Model
 {
@@ -25,5 +29,7 @@ class FormSubmissionPeriod extends Model
 
     protected $casts = [
         'form_name' => FormSubmissionPeriodFormName::class ,
+        'start_date' => 'datetime',
+        'end_date' => 'datetime',
     ];
 }
