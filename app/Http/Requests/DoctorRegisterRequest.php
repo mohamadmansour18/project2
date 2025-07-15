@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use App\Enums\ProfileGovernorate;
+use App\Rules\AllowedEmailDomain;
 use App\Traits\ValidationFailedResponse;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rules\Enum;
@@ -30,7 +31,7 @@ class DoctorRegisterRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'email' => 'required|email|exists:users,email' ,
+            'email' => ['required' , 'email' , 'exists:users,email' , new AllowedEmailDomain()] ,
             'governorate' => ['required' , new Enum(ProfileGovernorate::class)],
             'password' => ['required' , password_rule::min(6)->numbers()->letters()]
         ];

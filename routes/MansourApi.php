@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Auth\AuthenticationAdminController;
 use App\Http\Controllers\Auth\AuthenticationDoctorController;
+use App\Http\Controllers\Other\FormSubmissionPeriodController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -35,6 +36,7 @@ Route::prefix('/doctor')->group(function (){
 
         Route::get('/logout' , [AuthenticationDoctorController::class , 'logout']);
 
+        Route::get('/showFormDates' , [FormSubmissionPeriodController::class , 'getFormDate']);
     });
 });
 
@@ -60,11 +62,7 @@ Route::prefix('/admin')->group(function (){
 
 });
 
-//    Route::middleware(['throttle:mansour'])->group(function () {
-//        Route::get('/man' , function (){
-//            return response()->json('hello world');
-//        });
-//    });
+
 
 
 

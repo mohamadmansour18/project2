@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Rules\AllowedEmailDomain;
 use App\Traits\ValidationFailedResponse;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rules\Password as password_rule;
@@ -28,7 +29,7 @@ class NewPasswordRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'email' => 'required|email|exists:users,email' ,
+            'email' => ['required' , 'email' , 'exists:users,email' , new AllowedEmailDomain()] ,
             'password' => ['required' , 'confirmed' , password_rule::min(6)->numbers()->letters()]
         ];
     }

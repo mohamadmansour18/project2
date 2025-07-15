@@ -4,6 +4,7 @@
 namespace App\Http\Requests;
 
 use App\Enums\ProfileStudentSpeciality;
+use App\Rules\AllowedEmailDomain;
 use App\Traits\ValidationFailedResponse;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rules\Enum;
@@ -31,7 +32,7 @@ class RegisterStudentRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'email' => 'required|email|unique:users,email',
+            'email' => ['required' , 'email' , 'unique:users,email' , new AllowedEmailDomain() ],
             'university_id' => 'required|exists:users,university_number',
             'password' => ['required', password_rule::min(6)->numbers()->letters()],
             'student_speciality' => ['required', new Enum(ProfileStudentSpeciality::class)],

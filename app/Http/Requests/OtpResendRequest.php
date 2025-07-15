@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Rules\AllowedEmailDomain;
 use App\Traits\ValidationFailedResponse;
 use Illuminate\Foundation\Http\FormRequest;
 
@@ -27,7 +28,7 @@ class OtpResendRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'email' => 'required|email|exists:users,email'
+            'email' => ['required' , 'email' , 'exists:users,email' , new AllowedEmailDomain()]
         ];
     }
 

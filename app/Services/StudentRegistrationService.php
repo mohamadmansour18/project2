@@ -4,7 +4,6 @@ namespace App\Services;
 
 use App\Enums\OtpCodePurpose;
 use App\Enums\UserRole;
-use App\Events\StudentRegistered;
 use App\Exceptions\LoginException;
 use App\Exceptions\RegistrationException;
 use App\Exceptions\ResetPasswordException;
@@ -115,6 +114,11 @@ class StudentRegistrationService
     public function login(array $data): array
     {
         $user = User::query()->where('email' , $data['email'])->where('role' , UserRole::Student->value)->first();
+
+        if(!$user->password)
+        {
+            throw new LoginException('فشل تسجيل الدخول !' , 'هذا الحساب غير موجود في النظام بعد قم بانشائه اولا ثم حاول مرة اخرى' , true );
+        }
 
         if(!$user || !Hash::check($data['password'] , $user->password))
         {
