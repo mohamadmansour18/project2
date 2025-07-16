@@ -22,7 +22,7 @@ class HomeMobileService
         protected GroupRepository $groupRepository
     ) {}
 
-    public function getAllFormPeriods(FormSubmissionPeriodRepository $formRepository): array
+    public function getAllFormPeriods(): array
     {
         return Cache::rememberForever('home_form_periods', function () {
             $forms = $this->formRepository->getAllCurrentYearForms();
