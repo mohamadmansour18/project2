@@ -12,7 +12,7 @@ class FormSubmissionPeriodObserver
      */
     public function created(FormSubmissionPeriod $formSubmissionPeriod): void
     {
-        Cache::forget('form_submission_periods');
+        Cache::forget('home_form_periods');
     }
 
     /**
@@ -20,7 +20,7 @@ class FormSubmissionPeriodObserver
      */
     public function updated(FormSubmissionPeriod $formSubmissionPeriod): void
     {
-        Cache::forget('form_submission_periods');
+        Cache::forget('home_form_periods');
     }
 
     /**
@@ -28,7 +28,7 @@ class FormSubmissionPeriodObserver
      */
     public function deleted(FormSubmissionPeriod $formSubmissionPeriod): void
     {
-        Cache::forget('form_submission_periods');
+        Cache::forget('home_form_periods');
     }
 
     /**
@@ -44,6 +44,6 @@ class FormSubmissionPeriodObserver
      */
     public function forceDeleted(FormSubmissionPeriod $formSubmissionPeriod): void
     {
-        Cache::forget('form_submission_periods');
+        Cache::forget('home_form_periods');
     }
 }

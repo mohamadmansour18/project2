@@ -7,7 +7,7 @@ use App\Enums\AnnouncementType;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Announcements extends Model
+class Announcement extends Model
 {
     use HasFactory;
 
@@ -26,7 +26,7 @@ class Announcements extends Model
 
     protected $casts = [
         'type' => AnnouncementType::class ,
-        'audience' => AnnouncementAudience::class
+        'audience' => AnnouncementAudience::class ,
     ];
 
     public function users()

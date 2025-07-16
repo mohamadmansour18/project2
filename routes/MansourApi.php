@@ -2,7 +2,9 @@
 
 use App\Http\Controllers\Auth\AuthenticationAdminController;
 use App\Http\Controllers\Auth\AuthenticationDoctorController;
+use App\Http\Controllers\Favorite\AnnouncementsController;
 use App\Http\Controllers\Other\FormSubmissionPeriodController;
+use App\Http\Controllers\Other\StatisticsController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -36,7 +38,10 @@ Route::prefix('/doctor')->group(function (){
 
         Route::get('/logout' , [AuthenticationDoctorController::class , 'logout']);
 
-        Route::get('/showFormDates' , [FormSubmissionPeriodController::class , 'getFormDate']);
+        //home APIs
+        Route::get('/home/showFormDates' , [FormSubmissionPeriodController::class , 'getFormDate']);
+        Route::get('/home/announcementStatistics' , [AnnouncementsController::class , 'getAnnouncementStatistics']);
+        Route::get('/home/showNumbersStatistics' , [StatisticsController::class , 'getDoctorHomeStatistics']);
     });
 });
 

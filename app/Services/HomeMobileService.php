@@ -2,20 +2,27 @@
 
 namespace App\Services;
 
+use App\Enums\AnnouncementAudience;
+use App\Enums\AnnouncementType;
 use App\Models\FormSubmissionPeriod;
+use App\Repositories\AnnouncementRepository;
 use App\Repositories\FormSubmissionPeriodRepository;
+use App\Repositories\GroupRepository;
+use App\Repositories\UserRepository;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Cache;
 
 class HomeMobileService
 {
-    protected FormSubmissionPeriodRepository $formRepository ;
-    public function __construct(FormSubmissionPeriodRepository $formRepository)
-    {
-        $this->formRepository = $formRepository ;
-    }
 
-    public function getAllFormPeriods(): array
+    public function __construct(
+        protected FormSubmissionPeriodRepository $formRepository ,
+        protected AnnouncementRepository $announcementRepository ,
+        protected UserRepository $userRepository,
+        protected GroupRepository $groupRepository
+    ) {}
+
+    public function getAllFormPeriods(FormSubmissionPeriodRepository $formRepository): array
     {
         return Cache::rememberForever('home_form_periods', function () {
             $forms = $this->formRepository->getAllCurrentYearForms();
@@ -29,6 +36,36 @@ class HomeMobileService
 
     }
 
+    public function getAnnouncementStatistics(): array
+    {
+        $data = $this->announcementRepository->getCurrentYearAnnouncements();
+
+        $imageAnnouncements = $data->where('type' , AnnouncementType::Image);
+        $fileAnnouncements = $data->where('type' , AnnouncementType::File);
+
+        return [
+            'imageAnnouncements' => [
+                'count' => $imageAnnouncements->count(),
+                'administrativeCount' =>  "اعلان اداري " . $imageAnnouncements->where('audience' , AnnouncementAudience::Professors)->count()
+            ],
+            'fileAnnouncements' => [
+                'count' => $fileAnnouncements->count(),
+                'administrativeCount' => 'اعلان اداري ' . $fileAnnouncements->where('audience' , AnnouncementAudience::Professors)->count()
+            ]
+        ];
+    }
+
+    public function getHomeStatistics(): array
+    {
+
+        return [
+            'doctorsCount' => $this->userRepository->getDoctorCount(),
+            'groupsCount' => $this->groupRepository->getGroupsCountForCurrentYear(),
+            'studentsCount' => $this->userRepository->getStudentCountForCurrentYear(),
+        ];
+    }
+
+    //////////////////////////--------< Helpers >--------/////////////////////////////
     private function formatForm(?FormSubmissionPeriod $period): array
     {
 

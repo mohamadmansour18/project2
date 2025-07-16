@@ -14,6 +14,8 @@ class FormSubmissionPeriodSeeder extends Seeder
      */
     public function run(): void
     {
+        FormSubmissionPeriod::query()->delete();
+
         FormSubmissionPeriod::query()->create([
             'form_name' => 'form1',
             'start_date' => now(),
