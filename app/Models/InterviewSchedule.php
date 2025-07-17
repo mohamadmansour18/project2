@@ -2,12 +2,11 @@
 
 namespace App\Models;
 
-use App\Enums\InterviewSchedulesInterviewDay;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-class InterviewSchedules extends Model
+class InterviewSchedule extends Model
 {
     use HasFactory;
 

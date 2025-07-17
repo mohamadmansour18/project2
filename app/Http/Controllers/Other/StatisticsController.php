@@ -15,10 +15,17 @@ class StatisticsController extends Controller
         protected HomeMobileService $homeMobileService
     ) {}
 
-    public function getDoctorHomeStatistics(): JsonResponse
+    public function getHomeStatistics(): JsonResponse
     {
         $data = $this->homeMobileService->getHomeStatistics();
 
         return $this->dataResponse(['data' => $data] ,200);
+    }
+
+    public function getDoctorHomeGroupStatistics(): JsonResponse
+    {
+        $data = $this->homeMobileService->getGroupStatistics();
+
+        return $this->dataResponse($data , 200);
     }
 }

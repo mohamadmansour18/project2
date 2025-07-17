@@ -58,7 +58,7 @@ class Group extends Model
 
     public function interviewSchedules(): HasMany
     {
-        return $this->hasMany(InterviewSchedules::class, 'group_id', 'id');
+        return $this->hasMany(InterviewSchedule::class, 'group_id', 'id');
     }
 
     public function projectForm2(): HasOne

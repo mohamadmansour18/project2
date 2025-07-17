@@ -8,6 +8,9 @@ use App\Models\FormSubmissionPeriod;
 use App\Repositories\AnnouncementRepository;
 use App\Repositories\FormSubmissionPeriodRepository;
 use App\Repositories\GroupRepository;
+use App\Repositories\InterviewScheduleRepository;
+use App\Repositories\ProjectForm2Repository;
+use App\Repositories\ProjectFormRepository;
 use App\Repositories\UserRepository;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Cache;
@@ -16,16 +19,19 @@ class HomeMobileService
 {
 
     public function __construct(
-        protected FormSubmissionPeriodRepository $formRepository ,
+        protected FormSubmissionPeriodRepository $formSubmissionPeriodRepository ,
         protected AnnouncementRepository $announcementRepository ,
         protected UserRepository $userRepository,
-        protected GroupRepository $groupRepository
+        protected GroupRepository $groupRepository,
+        protected InterviewScheduleRepository $interviewScheduleRepository ,
+        protected ProjectFormRepository $projectFormRepository ,
+        protected ProjectForm2Repository $projectForm2Repository
     ) {}
 
     public function getAllFormPeriods(): array
     {
         return Cache::rememberForever('home_form_periods', function () {
-            $forms = $this->formRepository->getAllCurrentYearForms();
+            $forms = $this->formSubmissionPeriodRepository->getAllCurrentYearForms();
 
             return [
                 'form1' => $this->formatForm($forms->get('form1')),
@@ -62,6 +68,16 @@ class HomeMobileService
             'doctorsCount' => $this->userRepository->getDoctorCount(),
             'groupsCount' => $this->groupRepository->getGroupsCountForCurrentYear(),
             'studentsCount' => $this->userRepository->getStudentCountForCurrentYear(),
+        ];
+    }
+
+    public function getGroupStatistics(): array
+    {
+        return [
+            'studentsCount'=> $this->userRepository->getStudentCountForCurrentYear() . ' طالب' ,
+            'form1' => $this->projectFormRepository->countForm1GroupsForCurrentYear() . ' غروبات' ,
+            'form2' => $this->projectForm2Repository->countForm2GroupsForCurrentYear() . ' غروبات' ,
+            'interviews' => $this->interviewScheduleRepository->countInterviewGroupsForCurrentYear() . ' غروبات'
         ];
     }
 

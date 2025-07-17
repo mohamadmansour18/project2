@@ -39,9 +39,10 @@ Route::prefix('/doctor')->group(function (){
         Route::get('/logout' , [AuthenticationDoctorController::class , 'logout']);
 
         //home APIs
-        Route::get('/home/showFormDates' , [FormSubmissionPeriodController::class , 'getFormDate']);
+        Route::get('/home/showFormDates' , [FormSubmissionPeriodController::class , 'getFormDateForDoctor']);
         Route::get('/home/announcementStatistics' , [AnnouncementsController::class , 'getAnnouncementStatistics']);
-        Route::get('/home/showNumbersStatistics' , [StatisticsController::class , 'getDoctorHomeStatistics']);
+        Route::get('/home/showNumbersStatistics' , [StatisticsController::class , 'getHomeStatistics']);
+        Route::get('/home/showFlowChartStatistics' , [StatisticsController::class , 'getDoctorHomeGroupStatistics']);
     });
 });
 
@@ -65,6 +66,15 @@ Route::prefix('/admin')->group(function (){
 
     });
 
+});
+
+
+Route::prefix('/student')->group(function (){
+    Route::middleware(['auth:api' , 'role:student'])->group(function (){
+        //home
+        Route::get('/home/showFormDates' , [FormSubmissionPeriodController::class , 'getFormDataForStudent']);
+        Route::get('/home/showNumbersStatistics' , [StatisticsController::class , 'getHomeStatistics']);
+    });
 });
 
 

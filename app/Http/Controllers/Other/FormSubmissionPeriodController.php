@@ -18,11 +18,24 @@ class FormSubmissionPeriodController extends Controller
         $this->homeMobileService = $homeMobileService;
     }
 
-    public function getFormDate(): JsonResponse
+    public function getFormDateForDoctor(): JsonResponse
     {
 
         $data = $this->homeMobileService->getAllFormPeriods();
 
         return $this->dataResponse( $data , 200);
     }
+
+    public function getFormDataForStudent(): JsonResponse
+    {
+        $data = $this->homeMobileService->getAllFormPeriods();
+        $value = $data['form1'];
+        array_pop($data);
+        $data['joinRequests'] = $value ;
+
+        return $this->dataResponse($data , 200);
+
+    }
+
+
 }
