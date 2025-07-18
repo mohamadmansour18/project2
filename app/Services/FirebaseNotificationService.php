@@ -30,7 +30,6 @@ class FirebaseNotificationService
                         'title' => $title ,
                         'body' => $body ,
                     ],
-                    'data' => $data
                 ]
             ];
 
@@ -39,6 +38,11 @@ class FirebaseNotificationService
             if($response->failed())
             {
                 logger()->error('فشل إرسال إشعار عبر FCM', [
+                    'token' => $token,
+                    'response' => $response->json(),
+                ]);
+            } else {
+                logger()->info('✅ FCM success', [
                     'token' => $token,
                     'response' => $response->json(),
                 ]);

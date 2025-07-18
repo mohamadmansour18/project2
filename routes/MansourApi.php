@@ -81,9 +81,9 @@ Route::prefix('/student')->group(function (){
 
 Route::get('/test-fcm', function (FirebaseNotificationService $fcm) {
     $fcm->send(
-        'Hello manuoook ',
+        'مرحبا عبوووود',
         'Testtttttttttttttttttt',
-        ['efXjJVL-RNy7-yOhVgWgUC:APA91bG-NCZPUYh8yitA3HTBEXOD0QsNPOKObbFRHbEWq0jxF2jmMgs6TswdwR-wljEWsLxh7rb7ohiSGcdXI36PSMaL2vikm_cg8N7SeWqoVgUd6AWr7OQ']
+        ['e7ENWqPeTPCWmn_5q1MPDp:APA91bHyS6Y7kCbYnibcP1B68TvfWm1Zzf3SnSmd5oBYFSlfbYseyMOCpmbQir5pYaj2z16-ENDyJpn9nnIirmCtuyv1yHcQv2iBCDlmrG930q9GnsWzmfE']
     );
 
     return '✅ تم الإرسال (تحقق من الجهاز)';
