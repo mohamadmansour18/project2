@@ -84,7 +84,7 @@ class User extends Authenticatable implements JWTSubject
 
     public function Announcements(): BelongsToMany
     {
-        return $this->belongsToMany(Announcements::class , 'favorites' , 'user_id' , 'announcement_id');
+        return $this->belongsToMany(Announcement::class , 'favorites' , 'user_id' , 'announcement_id');
     }
 
     public function sendInvitations(): HasMany
