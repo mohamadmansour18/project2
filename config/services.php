@@ -31,4 +31,7 @@ return [
         'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
     ],
 
+    'fcm' => [
+        'credentials_file' => env('FIREBASE_CREDENTIALS_PATH'),
+    ]
 ];

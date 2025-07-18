@@ -5,6 +5,7 @@ use App\Http\Controllers\Auth\AuthenticationDoctorController;
 use App\Http\Controllers\Favorite\AnnouncementsController;
 use App\Http\Controllers\Other\FormSubmissionPeriodController;
 use App\Http\Controllers\Other\StatisticsController;
+use App\Services\FirebaseNotificationService;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -78,7 +79,15 @@ Route::prefix('/student')->group(function (){
 });
 
 
+Route::get('/test-fcm', function (FirebaseNotificationService $fcm) {
+    $fcm->send(
+        'Hello manuoook ',
+        'Testtttttttttttttttttt',
+        ['efXjJVL-RNy7-yOhVgWgUC:APA91bG-NCZPUYh8yitA3HTBEXOD0QsNPOKObbFRHbEWq0jxF2jmMgs6TswdwR-wljEWsLxh7rb7ohiSGcdXI36PSMaL2vikm_cg8N7SeWqoVgUd6AWr7OQ']
+    );
 
+    return '✅ تم الإرسال (تحقق من الجهاز)';
+});
 
 
 Route::fallback(function (){

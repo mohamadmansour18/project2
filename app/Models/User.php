@@ -151,4 +151,9 @@ class User extends Authenticatable implements JWTSubject
     {
         return $this->hasMany(Message::class , 'sender_id' , 'id');
     }
+
+    public function fcmTokens(): HasMany
+    {
+        return $this->hasMany(FcmToken::class , 'user_id' , 'id');
+    }
 }

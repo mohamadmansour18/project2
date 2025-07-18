@@ -29,7 +29,8 @@ class LoginRequest extends FormRequest
     {
         return [
             'email' => ['required' , 'email' , 'exists:users,email' , new AllowedEmailDomain()] ,
-            'password' => 'required'
+            'password' => 'required',
+            'fcm_token' => 'nullable|string' ,
         ];
     }
 
