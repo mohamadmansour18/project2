@@ -1,6 +1,8 @@
 <?php
 
 use App\Http\Controllers\Auth\AuthenticationStudentController;
+use App\Http\Controllers\Favorite\AnnouncementsController;
+use App\Http\Controllers\Group\GroupController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -33,6 +35,12 @@ Route::prefix('/student')->group(function (){
 
         Route::get('/logout' , [AuthenticationStudentController::class , 'logout']);
 
+        //home APIs
+        Route::get('/home/studentannouncementStatistics' , [AnnouncementsController::class , 'getStudentAnnouncementStatistics']);
+
+
+        //Group APIs
+        Route::post('/createGroup', [GroupController::class, 'store']);
     });
 });
 
