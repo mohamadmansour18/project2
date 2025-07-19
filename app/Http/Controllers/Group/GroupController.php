@@ -27,7 +27,7 @@ class GroupController extends Controller
 
         $this->groupService->createGroup($request, $user);
 
-        return $this->successResponse('انشاء مجموعة  ' , 'تم إنشاء المجموعة بنجاح' , 201);
+        return $this->successResponse('انشاء مجموعة' , 'تم إنشاء المجموعة بنجاح' , 201);
 
     }
 

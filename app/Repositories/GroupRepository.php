@@ -6,6 +6,7 @@ use App\Enums\GroupMemberRole;
 use App\Models\Group;
 use App\Models\GroupInvitation;
 use App\Models\GroupMember;
+use App\Enums\GroupInvitationStatus;
 
 class GroupRepository
 {
@@ -34,7 +35,7 @@ class GroupRepository
             'group_id' => $group->id,
             'invited_user_id' => $invitedUserId,
             'invited_by_user_id' => $invitedBy,
-            'status' => \App\Enums\GroupInvitationStatus::Pending
+            'status' => GroupInvitationStatus::Pending
         ]);
     }
 }
