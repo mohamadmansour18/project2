@@ -132,6 +132,15 @@ class StudentRegistrationService
 
         $token = JWTAuth::fromUser($user);
 
+        if(!empty($data['fcm_token']))
+        {
+            $user->fcmTokens()->updateOrCreate([
+                'token' => $data['fcm_token'],
+            ] , [
+                'user_id' => $user->id ,
+            ]);
+        }
+
         return [
             'token' => $token ,
             'name' => "! $user->name مرحبا "  ,

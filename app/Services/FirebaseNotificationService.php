@@ -16,7 +16,7 @@ class FirebaseNotificationService
         $this->messagingUrl = "https://fcm.googleapis.com/v1/projects/{$projectId}/messages:send";
     }
 
-    public function send(string $title , string $body , array $tokens , array $data = [])
+    public function send(string $title , string $body , array $tokens): void
     {
         $accessToken = $this->getAccessToken();
 
@@ -33,20 +33,8 @@ class FirebaseNotificationService
                 ]
             ];
 
-            $response = Http::withToken($accessToken)->post($this->messagingUrl , $payload);
+            Http::withToken($accessToken)->post($this->messagingUrl , $payload);
 
-            if($response->failed())
-            {
-                logger()->error('فشل إرسال إشعار عبر FCM', [
-                    'token' => $token,
-                    'response' => $response->json(),
-                ]);
-            } else {
-                logger()->info('✅ FCM success', [
-                    'token' => $token,
-                    'response' => $response->json(),
-                ]);
-            }
         }
 
 
