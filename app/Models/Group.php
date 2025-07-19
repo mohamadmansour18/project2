@@ -28,12 +28,13 @@ class Group extends Model
         'type' ,
         'qr_code' ,
         'number_of_members' ,
+        'image',
     ];
 
     protected $casts = [
-        'speciality_needed' => GroupSpecialityNeeded::class ,
-        'type' => GroupType::class ,
-        'framework_needed' => 'array' ,
+        'speciality_needed' => 'array',
+        'framework_needed' => 'array',
+        'type' => GroupType::class,
     ];
 
     public function members(): HasMany

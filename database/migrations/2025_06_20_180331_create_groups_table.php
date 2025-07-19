@@ -17,10 +17,11 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->text('description')->nullable();
-            $table->enum('speciality_needed' , GroupSpecialityNeeded::convertEnumToArray())->nullable();
+            $table->json('speciality_needed')->nullable();
             $table->json('framework_needed')->nullable();
             $table->enum('type' , GroupType::convertEnumToArray())->default(GroupType::Public->value);
             $table->string('qr_code');
+            $table->string('image')->nullable();
             $table->unsignedSmallInteger('number_of_members');
             $table->timestamps();
         });
