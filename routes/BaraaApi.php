@@ -3,6 +3,7 @@
 use App\Http\Controllers\Auth\AuthenticationStudentController;
 use App\Http\Controllers\Favorite\AnnouncementsController;
 use App\Http\Controllers\Group\GroupController;
+use App\Http\Controllers\Group\GroupInvitationController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -41,6 +42,15 @@ Route::prefix('/student')->group(function (){
 
         //Group APIs
         Route::post('/createGroup', [GroupController::class, 'store']);
+        Route::post('/updateGroup/{group}', [GroupController::class, 'update']);
+        Route::get('/showGroupInfo/{group}', [GroupController::class, 'show']);
+
+
+        //invitations APIs
+        Route::post('/groups/invitation/join', [GroupInvitationController::class, 'store']);
+        Route::get('/groups/invitations/user', [GroupInvitationController::class, 'index']);
+
+
     });
 });
 

@@ -20,22 +20,15 @@ class GroupRepository
         return Group::create($data);
     }
 
-    public function addMember(Group $group, int $userId,  GroupMemberRole $role = GroupMemberRole::Member): GroupMember
+    public function update(Group $group, array $data): Group
     {
-        return GroupMember::create([
-            'group_id' => $group->id,
-            'user_id' => $userId,
-            'role' => $role
-        ]);
+        $group->update($data);
+        return $group;
     }
 
-    public function invite(Group $group, int $invitedUserId, int $invitedBy): GroupInvitation
+    public function getById(int $id): ?Group
     {
-        return GroupInvitation::create([
-            'group_id' => $group->id,
-            'invited_user_id' => $invitedUserId,
-            'invited_by_user_id' => $invitedBy,
-            'status' => GroupInvitationStatus::Pending
-        ]);
+        return Group::find($id);
     }
+
 }
