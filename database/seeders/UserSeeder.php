@@ -21,7 +21,7 @@ class UserSeeder extends Seeder
             $users = [
                 [
                    'user' => [
-                       'name' => 'الدكتور روان قرعوني',
+                       'name' => 'روان قرعوني',
                        'email' => 'obadawork912@gmail.com' ,
                        'password' => Hash::make('admin'),
                        'role' => UserRole::Admin->value ,
@@ -66,5 +66,7 @@ class UserSeeder extends Seeder
                 $profile = Profile::query()->create($profileData);
             }
         });
+
+        User::factory()->count(30)->create();
     }
 }

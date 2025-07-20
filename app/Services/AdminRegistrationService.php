@@ -33,7 +33,7 @@ class AdminRegistrationService
 
         return [
             'token' => $token ,
-            'name' => $user->name ,
+            'name' =>  'الدكتور ' . $user->name  ,
             'profile_image' => $user->profile->profile_image
         ];
     }

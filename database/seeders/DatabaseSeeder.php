@@ -16,6 +16,8 @@ class DatabaseSeeder extends Seeder
             UserSeeder::class ,
             FormSubmissionPeriodSeeder::class ,
             AnnouncementSeeder::class,
+            FavoriteSeeder::class,
+            GroupSeeder::class,
         ]);
     }
 }
