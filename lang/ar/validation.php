@@ -126,6 +126,15 @@ return [
         'governorate' => 'مكان الإقامة',
         'token' => 'رمز المصادقة',
         'university_id' => 'الرقم الجامعي' ,
-        'student_speciality' => 'التخصص'
+        'student_speciality' => 'التخصص',
+        'description' => 'الوصف',
+        'speciality_needed' => 'التخصصات المطلوبة',
+        'speciality_needed.*' => 'تخصص مطلوب',
+        'framework_needed' => 'التقنيات المطلوبة',
+        'framework_needed.*' => 'اسم التقنية',
+        'type' => 'نوع المجموعة',
+        'image' => 'الصورة',
+        'invitations' => 'الدعوات',
+        'invitations.*' => 'المستخدم المدعو',
     ],
 ];
