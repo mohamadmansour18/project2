@@ -49,7 +49,9 @@ Route::prefix('/student')->group(function (){
         //invitations APIs
         Route::post('/groups/invitation/join', [GroupInvitationController::class, 'store']);
         Route::get('/groups/invitations/user', [GroupInvitationController::class, 'index']);
-
+        Route::post('/invitations/{invitation}/accept', [GroupInvitationController::class, 'accept']);
+        Route::post('/invitations/{invitation}/reject', [GroupInvitationController::class, 'reject']);
+        Route::delete('/invitations/{invitation}/cancel', [GroupInvitationController::class, 'cancel']);
 
     });
 });

@@ -55,7 +55,7 @@ class GroupService
         // send invitations
         if ($request->has('invitations')) {
             foreach ($request->invitations as $inviteeId) {
-                $this->groupInvitationRepo->createInvitation($group->id, $inviteeId, $creator->id);
+                $this->groupInvitationRepo->create($group->id, $inviteeId, $creator->id);
             }
         }
 

@@ -15,4 +15,19 @@ class GroupMemberRepository
             'role' => $role,
         ]);
     }
+
+    public function isMember(int $groupId, int $userId): bool
+    {
+        return GroupMember::where('group_id', $groupId)
+            ->where('user_id', $userId)
+            ->exists();
+    }
+
+    public function isLeader(int $groupId, int $userId): bool
+    {
+        return GroupMember::where('group_id', $groupId)
+            ->where('user_id', $userId)
+            ->where('role', GroupMemberRole::Leader)
+            ->exists();
+    }
 }

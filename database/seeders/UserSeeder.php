@@ -52,7 +52,33 @@ class UserSeeder extends Seeder
                     'profile' => [
 
                     ]
-                ]
+                ],
+                [
+                    'user' => [
+                        'name' => 'Student One',
+                        'email' => 'student1@gmail.com',
+                        'password' => Hash::make('password'),
+                        'role' => UserRole::Student->value,
+                        'university_number' => '1001',
+                        'email_verified_at' => now()
+                    ],
+                    'profile' => [
+
+                    ]
+                ],
+                [
+                    'user' => [
+                        'name' => 'Student Two',
+                        'email' => 'student2@gmail.com',
+                        'password' => Hash::make('password'),
+                        'role' => UserRole::Student->value,
+                        'university_number' => '1002',
+                        'email_verified_at' => now()
+                    ],
+                    'profile' => [
+
+                    ]
+                ],
             ];
 
             foreach ($users as $data)

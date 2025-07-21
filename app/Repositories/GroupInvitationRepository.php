@@ -2,13 +2,13 @@
 
 namespace App\Repositories;
 
-
 use App\Models\GroupInvitation;
 use App\Enums\GroupInvitationStatus;
+use Illuminate\Database\Eloquent\Collection;
 
 class GroupInvitationRepository
 {
-    public function createInvitation(int $groupId, int $invitedUserId, int $invitedByUserId): GroupInvitation
+    public function create(int $groupId, int $invitedUserId, int $invitedByUserId): GroupInvitation
     {
         return GroupInvitation::create([
             'group_id' => $groupId,
@@ -18,7 +18,7 @@ class GroupInvitationRepository
         ]);
     }
 
-    public function userAlreadyInvited(int $groupId, int $userId): bool
+    public function isAlreadyInvited(int $groupId, int $userId): bool
     {
         return GroupInvitation::where('group_id', $groupId)
             ->where('invited_user_id', $userId)
@@ -26,12 +26,34 @@ class GroupInvitationRepository
             ->exists();
     }
 
-    public function getInvitationsForUser(int $userId)
+    public function getUserPendingInvitations(int $userId): Collection
     {
         return GroupInvitation::with('group')
             ->where('invited_user_id', $userId)
             ->where('status', GroupInvitationStatus::Pending)
             ->get();
+    }
+
+    public function findPendingByIdForUser(int $invitationId, int $userId)
+    {
+        return GroupInvitation::with('group')
+            ->where('id', $invitationId)
+            ->where('invited_user_id', $userId)
+            ->where('status', GroupInvitationStatus::Pending)
+            ->first();
+    }
+
+    public function updateStatus(GroupInvitation $invitation, GroupInvitationStatus $status): void
+    {
+        $invitation->update(['status' => $status]);
+    }
+
+    public function findPendingById(int $invitationId)
+    {
+        return GroupInvitation::with('group')
+            ->where('id', $invitationId)
+            ->where('status', GroupInvitationStatus::Pending)
+            ->first();
     }
 
 }

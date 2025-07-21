@@ -31,4 +31,10 @@ class GroupRepository
         return Group::find($id);
     }
 
+
+    public function getMemberCount(int $groupId): int
+    {
+        $group = $this->getById($groupId);
+        return $group ? $group->number_of_members : 0;
+    }
 }
