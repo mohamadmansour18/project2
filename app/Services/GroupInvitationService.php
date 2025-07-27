@@ -3,15 +3,11 @@ namespace App\Services;
 
 use App\Enums\GroupInvitationStatus;
 use App\Enums\GroupMemberRole;
-use App\Exceptions\InvalidInvitationException;
 use App\Exceptions\PermissionDeniedException;
-use App\Models\Group;
-use App\Models\GroupMember;
 use App\Models\User;
 use App\Repositories\GroupInvitationRepository;
 use App\Repositories\GroupMemberRepository;
 use App\Repositories\GroupRepository;
-use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 
 class GroupInvitationService
 {
@@ -159,7 +155,5 @@ class GroupInvitationService
 
         $this->invitationRepo->updateStatus($invitation, GroupInvitationStatus::Cancelled);
     }
-
-
 }
 

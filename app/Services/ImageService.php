@@ -62,8 +62,8 @@ class ImageService
      * @param string $relativePath e.g. 'storage/group_images/example.png'
      * @return string full URL e.g. http://localhost/storage/group_images/example.png
      */
-    public function getFullUrl(string $relativePath): string
+    public function getFullUrl(?string $relativePath): ?string
     {
-        return asset($relativePath);
+        return $relativePath ? asset($relativePath) : null;
     }
 }

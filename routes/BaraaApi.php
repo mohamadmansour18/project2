@@ -4,6 +4,7 @@ use App\Http\Controllers\Auth\AuthenticationStudentController;
 use App\Http\Controllers\Favorite\AnnouncementsController;
 use App\Http\Controllers\Group\GroupController;
 use App\Http\Controllers\Group\GroupInvitationController;
+use App\Http\Controllers\Group\JoinRequestController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -45,13 +46,19 @@ Route::prefix('/student')->group(function (){
         Route::post('/updateGroup/{group}', [GroupController::class, 'update']);
         Route::get('/showGroupInfo/{group}', [GroupController::class, 'show']);
 
-
         //invitations APIs
         Route::post('/groups/invitation/join', [GroupInvitationController::class, 'store']);
         Route::get('/groups/invitations/user', [GroupInvitationController::class, 'index']);
         Route::post('/invitations/{invitation}/accept', [GroupInvitationController::class, 'accept']);
         Route::post('/invitations/{invitation}/reject', [GroupInvitationController::class, 'reject']);
         Route::delete('/invitations/{invitation}/cancel', [GroupInvitationController::class, 'cancel']);
+
+        //join request APIs
+        Route::post('{group}/join-request', [JoinRequestController::class, 'store']);
+        Route::get('{group}/join-requests', [JoinRequestController::class, 'index']);
+        Route::post('join-request/{id}/accept', [JoinRequestController::class, 'accept']);
+        Route::post('join-request/{id}/reject', [JoinRequestController::class, 'reject']);
+        Route::post('join-request/{id}/cancel', [JoinRequestController::class, 'cancel']);
 
     });
 });
