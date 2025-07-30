@@ -56,4 +56,12 @@ class GroupInvitationRepository
             ->first();
     }
 
+    public function getGroupInvitationsWithUser(int $group): Collection
+    {
+        return GroupInvitation::with(['invitedUser.profile'])
+            ->where('group_id', $group)
+            ->where('status', GroupInvitationStatus::Pending)
+            ->get();
+    }
+
 }

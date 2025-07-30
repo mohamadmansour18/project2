@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Exceptions\PermissionDeniedException;
 use App\Http\Requests\CreateGroupRequest;
 use App\Http\Requests\UpdateGroupRequest;
 use App\Models\Group;
@@ -86,14 +87,33 @@ class GroupService
 
     public function getGroupData(Group $group): array
     {
-        return [
-            'name' => $group->name,
-            'description' => $group->description,
-            'image' => $group->image ? $this->imageService->getFullUrl($group->image) : null,
-            'speciality_needed' => $group->speciality_needed,
-            'framework_needed' => $group->framework_needed,
-            'type' => $group->type,
-        ];
+        $data = $this->groupRepo->getGroupDetails($group);
+
+        $data['image'] = $this->imageService->getFullUrl($data['image']);
+
+        return $data;
+    }
+
+    public function changeLeadership(Group $group, int $currentLeaderId, int $newLeaderId): void
+    {
+        if (!$this->groupMemberRepo->isMember($group->id, $newLeaderId)) {
+            throw new PermissionDeniedException(
+                'عضو غير موجود',
+                'المستخدم المحدد ليس عضوًا في المجموعة',
+                400
+            );
+        }
+
+        if ($currentLeaderId === $newLeaderId) {
+            throw new PermissionDeniedException(
+                'خطأ في النقل',
+                'لا يمكنك نقل القيادة لنفسك',
+                400
+            );
+        }
+
+        $this->groupMemberRepo->updateRole($group->id, $newLeaderId, GroupMemberRole::Leader);
+        $this->groupMemberRepo->updateRole($group->id, $currentLeaderId, GroupMemberRole::Member);
     }
 
 }

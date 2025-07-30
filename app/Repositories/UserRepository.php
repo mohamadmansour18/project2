@@ -19,4 +19,9 @@ class UserRepository
         return User::query()->where('role' , UserRole::Doctor->value)->count();
     }
 
+    public function findById(int $id): ?User
+    {
+        return User::find($id);
+    }
+
 }

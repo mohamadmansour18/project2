@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers\Group;
 
-use App\Exceptions\PermissionDeniedException;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\SendJoinRequest;
 use App\Services\JoinRequestService;
@@ -29,6 +28,12 @@ class JoinRequestController extends Controller
         return $this->dataResponse(['requests' => $requests]);
     }
 
+    public function myRequests(): JsonResponse
+    {
+        $requests = $this->service->getUserPendingRequests(auth()->user());
+
+        return $this->dataResponse(['requests' => $requests]);
+    }
 
     public function accept(int $requestId): JsonResponse
     {

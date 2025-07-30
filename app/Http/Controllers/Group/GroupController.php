@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Group;
 
 use App\Enums\GroupMemberRole;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\ChangeLeadershipRequest;
 use App\Http\Requests\CreateGroupRequest;
 use App\Http\Requests\UpdateGroupRequest;
 use App\Models\Group;
@@ -38,16 +39,6 @@ class GroupController extends Controller
     {
         $user = auth()->user();
 
-        // Only allow the leader to edit
-        $isLeader = $group->members()
-            ->where('user_id', $user->id)
-            ->where('role', GroupMemberRole::Leader)
-            ->exists();
-
-        if (!$isLeader) {
-            return response()->json(['message' => 'ليس لديك صلاحية التعديل على هذه المجموعة'], 403);
-        }
-
         $this->groupService->updateGroup($request, $group);
 
         return $this->successResponse('تعديل مجموعة', 'تم تعديل بيانات المجموعة بنجاح', 200);
@@ -58,5 +49,12 @@ class GroupController extends Controller
         $data = $this->groupService->getGroupData($group);
         return $this->dataResponse($data ,200);
     }
+
+    public function ChangeLeadership(ChangeLeadershipRequest $request, Group $group)
+    {
+        $this->groupService->changeLeadership($group, auth()->id(), $request->new_leader_id);
+        return $this->successResponse('نقل القيادة', 'تم نقل القيادة بنجاح', 200);
+    }
+
 
 }

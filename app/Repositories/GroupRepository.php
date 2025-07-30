@@ -26,11 +26,22 @@ class GroupRepository
         return $group;
     }
 
+    public function getGroupDetails(Group $group): array
+    {
+        return [
+            'name' => $group->name,
+            'description' => $group->description,
+            'image' => $group->image,
+            'speciality_needed' => $group->speciality_needed,
+            'framework_needed' => $group->framework_needed,
+            'type' => $group->type,
+        ];
+    }
+
     public function getById(int $id): ?Group
     {
         return Group::find($id);
     }
-
 
     public function getMemberCount(int $groupId): int
     {

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Group;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\SendGroupInvitationsRequest;
+use App\Models\Group;
 use App\Services\GroupInvitationService;
 use App\Traits\ApiSuccessTrait;
 use Illuminate\Http\JsonResponse;
@@ -20,13 +21,9 @@ class GroupInvitationController extends Controller
         $this->invitationService = $invitationService;
     }
 
-    public function store(SendGroupInvitationsRequest $request): JsonResponse
+    public function store(SendGroupInvitationsRequest $request, Group $group): JsonResponse
     {
-        $this->invitationService->send(
-            $request->group_id,
-            $request->user_id,
-            auth()->user()
-        );
+        $this->invitationService->send($group->id, $request->user_id, auth()->user());
 
         return $this->successResponse('دعوة مرسلة', 'تم إرسال الدعوة بنجاح');
     }
@@ -38,6 +35,12 @@ class GroupInvitationController extends Controller
         return $this->dataResponse([
             'invitations' => $invitations,
         ]);
+    }
+
+    public function pendingInvitations(int $group): JsonResponse
+    {
+        $invitations = $this->invitationService->getGroupPendingInvitations($group, auth()->id());
+        return $this->dataResponse(['invitations' => $invitations]);
     }
 
     public function accept(int $invitationId): JsonResponse

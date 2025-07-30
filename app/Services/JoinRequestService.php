@@ -9,7 +9,6 @@ use App\Repositories\JoinRequestRepository;
 use App\Repositories\GroupMemberRepository;
 use App\Repositories\GroupRepository;
 use App\Exceptions\PermissionDeniedException;
-use Illuminate\Support\Facades\Auth;
 
 class JoinRequestService
 {
@@ -41,13 +40,6 @@ class JoinRequestService
 
     public function getPendingForGroup(int $groupId): array
     {
-        $user = Auth::user();
-
-        // isLeader?
-        if (!$this->memberRepo->isLeader($groupId, $user->id)) {
-            throw new PermissionDeniedException('مرفوض', 'فقط القائد يمكنه رؤية الطلبات', 403);
-        }
-
         $requests = $this->requestRepo->getPendingForGroupWithUserAndProfile($groupId);
 
         return $requests->map(function ($request) {
@@ -69,17 +61,29 @@ class JoinRequestService
         })->toArray();
     }
 
+    public function getUserPendingRequests(User $user): array
+    {
+        $requests = $this->requestRepo->getUserPendingRequestsWithGroup($user->id);
+
+        return $requests->map(function ($request) {
+            return [
+                'id' => $request->id,
+                'group_id' => $request->group_id,
+                'status' => $request->status->value,
+                'description' => $request->description,
+                'group' => [
+                    'id' => $request->group->id,
+                    'name' => $request->group->name,
+                    'speciality_needed' => $request->group->speciality_needed,
+                    'image' => $this->imageService->getFullUrl($request->group->image),
+                ],
+            ];
+        })->toArray();
+    }
+
     public function accept(int $requestId, User $leader): void
     {
         $request = $this->requestRepo->findPendingById($requestId);
-
-        if (!$request) {
-            throw new PermissionDeniedException('غير موجود', 'الطلب غير موجود أو تم التعامل معه', 404);
-        }
-
-        if (!$this->memberRepo->isLeader($request->group_id, $leader->id)) {
-            throw new PermissionDeniedException('مرفوض', 'فقط القائد يمكنه قبول الطلب', 403);
-        }
 
         if ($request->group->number_of_members >= 5) {
             throw new PermissionDeniedException('ممتلئة', 'لا يمكن قبول الطلب، المجموعة مكتملة', 403);
@@ -95,14 +99,6 @@ class JoinRequestService
     public function reject(int $requestId, User $leader): void
     {
         $request = $this->requestRepo->findPendingById($requestId);
-
-        if (!$request) {
-            throw new PermissionDeniedException('غير موجود', 'الطلب غير موجود أو تم التعامل معه', 404);
-        }
-
-        if (!$this->memberRepo->isLeader($request->group_id, $leader->id)) {
-            throw new PermissionDeniedException('مرفوض', 'فقط القائد يمكنه رفض الطلب', 403);
-        }
 
         $this->requestRepo->updateStatus($request, JoinRequestStatus::Rejected);
     }
