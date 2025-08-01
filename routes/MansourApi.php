@@ -5,6 +5,7 @@ use App\Http\Controllers\Auth\AuthenticationDoctorController;
 use App\Http\Controllers\Favorite\AnnouncementsController;
 use App\Http\Controllers\Other\FormSubmissionPeriodController;
 use App\Http\Controllers\Other\StatisticsController;
+use App\Http\Controllers\User\UserController;
 use App\Services\FirebaseNotificationService;
 use Illuminate\Support\Facades\Route;
 
@@ -40,10 +41,12 @@ Route::prefix('/doctor')->group(function (){
         Route::get('/logout' , [AuthenticationDoctorController::class , 'logout']);
 
         //home APIs
-        Route::get('/home/showFormDates' , [FormSubmissionPeriodController::class , 'getFormDateForDoctor']);
-        Route::get('/home/announcementStatistics' , [AnnouncementsController::class , 'getAnnouncementStatistics']);
-        Route::get('/home/showNumbersStatistics' , [StatisticsController::class , 'getHomeStatistics']);
-        Route::get('/home/showFlowChartStatistics' , [StatisticsController::class , 'getDoctorHomeGroupStatistics']);
+        Route::prefix('/home')->group(function () {
+            Route::get('/showFormDates', [FormSubmissionPeriodController::class, 'getFormDateForDoctor']);
+            Route::get('/announcementStatistics', [AnnouncementsController::class, 'getAnnouncementStatistics']);
+            Route::get('/showNumbersStatistics', [StatisticsController::class, 'getHomeStatistics']);
+            Route::get('/showFlowChartStatistics', [StatisticsController::class, 'getDoctorHomeGroupStatistics']);
+        });
     });
 });
 
@@ -65,6 +68,12 @@ Route::prefix('/admin')->group(function (){
 
         Route::get('/logout' , [AuthenticationAdminController::class , 'logout']);
 
+        //HOME
+        Route::prefix('/home')->group(function (){
+            Route::get('/CurdStats' , [StatisticsController::class , 'getCurdStatistics']);
+            Route::get('/showFormDates', [FormSubmissionPeriodController::class, 'getFormDateForDoctor']);
+            Route::get('/showDoctors' , [UserController::class , 'showAllDoctorsForAdminHomePage']);
+        });
     });
 
 });
