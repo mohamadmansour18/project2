@@ -2,9 +2,10 @@
 
 namespace App\Repositories;
 
+use Illuminate\Support\Carbon;
+use Illuminate\Database\Eloquent\Collection;
 use App\Enums\UserRole;
 use App\Models\User;
-use Illuminate\Database\Eloquent\Collection;
 
 class UserRepository
 {
@@ -20,25 +21,22 @@ class UserRepository
         return User::query()->where('role' , UserRole::Doctor->value)->count();
     }
 
-    public function getStudentCountForCurrentYearDynamic($year): int
+    public function findById(int $id): ?User
     {
-        return User::query()->where('role' , UserRole::Student->value)
-            ->whereYear('created_at', $year)
-            ->count();
+        return User::find($id);
     }
 
-    public function getDoctorCountForCurrentYearDynamic($year): int
+    public function getStudentsForCurrentYear(): Collection
     {
-        return User::query()->where('role' , UserRole::Doctor->value)
-            ->whereYear('created_at', $year)
-            ->count();
+        $currentYear = Carbon::now()->year;
+
+        return User::where('role', UserRole::Student->value)
+            ->whereDoesntHave('groupMember')
+            ->whereYear('created_at', $currentYear)
+            ->whereNotNull('email_verified_at')
+            ->with('profile')
+            ->get();
     }
 
-    public function getDoctorSpecificDataForAdminHomePage(): Collection|array
-    {
-        return User::with('profile')
-            ->where('role' , UserRole::Doctor->value)
-            ->get(['id , name']);
-    }
 
 }

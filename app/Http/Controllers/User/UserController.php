@@ -3,23 +3,20 @@
 namespace App\Http\Controllers\User;
 
 use App\Http\Controllers\Controller;
-use App\Services\DashBoard_Services\HomeDashBoardService;
+use App\Services\UserService;
 use App\Traits\ApiSuccessTrait;
 use Illuminate\Http\JsonResponse;
 
 class UserController extends Controller
 {
-    use ApiSuccessTrait ;
+    use ApiSuccessTrait;
 
-    public function __construct(
-        protected HomeDashBoardService $homeDashBoardService ,
-    ){}
+    public function __construct(private UserService $userService) {}
 
-
-    public function showAllDoctorsForAdminHomePage(): JsonResponse
+    public function getUsersWithoutGroup(): JsonResponse
     {
-        $response = $this->homeDashBoardService->getAllDoctorsForAdminHomePage();
+        $students = $this->userService->getStudentsForCurrentYear();
 
-        return $this->dataResponse($response , 200);
+        return $this->dataResponse(['students' => $students]);
     }
 }

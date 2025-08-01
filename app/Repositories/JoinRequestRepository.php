@@ -19,7 +19,6 @@ class JoinRequestRepository
         return JoinRequest::create([
             'group_id' => $groupId,
             'user_id' => $userId,
-            'description' => $description,
             'status' => JoinRequestStatus::Pending,
         ]);
     }
@@ -38,6 +37,15 @@ class JoinRequestRepository
             ->where('status', JoinRequestStatus::Pending)
             ->first();
     }
+
+    public function getUserPendingRequestsWithGroup(int $userId)
+    {
+        return JoinRequest::with('group')
+            ->where('user_id', $userId)
+            ->where('status', JoinRequestStatus::Pending)
+            ->get();
+    }
+
 
     public function updateStatus(JoinRequest $request, JoinRequestStatus $status): void
     {

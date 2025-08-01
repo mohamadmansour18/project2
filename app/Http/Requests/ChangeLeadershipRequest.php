@@ -5,7 +5,7 @@ namespace App\Http\Requests;
 use App\Traits\ValidationFailedResponse;
 use Illuminate\Foundation\Http\FormRequest;
 
-class SendGroupInvitationsRequest extends FormRequest
+class ChangeLeadershipRequest extends FormRequest
 {
     use ValidationFailedResponse ;
 
@@ -27,7 +27,7 @@ class SendGroupInvitationsRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'user_id' => 'required|exists:users,id',
+            'new_leader_id' => 'required|exists:users,id',
         ];
     }
 

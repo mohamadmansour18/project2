@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Exceptions\PermissionDeniedException;
 use App\Http\Requests\CreateGroupRequest;
 use App\Http\Requests\UpdateGroupRequest;
 use App\Models\Group;
@@ -13,16 +14,13 @@ use App\Enums\GroupMemberRole;
 
 class GroupService
 {
-    protected GroupRepository $groupRepo;
-    protected ImageService $imageService;
-    protected GroupMemberRepository $groupMemberRepo;
-    protected GroupInvitationRepository $groupInvitationRepo;
 
-    public function __construct(GroupRepository $groupRepo, ImageService $imageService, GroupMemberRepository $groupMemberRepo, GroupInvitationRepository $groupInvitationRepo) {
-        $this->groupRepo = $groupRepo;
-        $this->imageService = $imageService;
-        $this->groupMemberRepo = $groupMemberRepo;
-        $this->groupInvitationRepo = $groupInvitationRepo;
+
+    public function __construct(
+      protected GroupRepository $groupRepo,
+      protected ImageService $imageService,
+      protected GroupMemberRepository $groupMemberRepo,
+      protected GroupInvitationRepository $groupInvitationRepo) {
     }
 
     public function createGroup(CreateGroupRequest $request, User $creator): Group
@@ -86,14 +84,49 @@ class GroupService
 
     public function getGroupData(Group $group): array
     {
-        return [
-            'name' => $group->name,
-            'description' => $group->description,
-            'image' => $group->image ? $this->imageService->getFullUrl($group->image) : null,
-            'speciality_needed' => $group->speciality_needed,
-            'framework_needed' => $group->framework_needed,
-            'type' => $group->type,
-        ];
+        $data = $this->groupRepo->getGroupDetails($group);
+
+        $data['image'] = $this->imageService->getFullUrl($data['image']);
+
+        return $data;
     }
+
+    public function changeLeadership(Group $group, int $currentLeaderId, int $newLeaderId): void
+    {
+        if (!$this->groupMemberRepo->isMember($group->id, $newLeaderId)) {
+            throw new PermissionDeniedException(
+                'عضو غير موجود',
+                'المستخدم المحدد ليس عضوًا في المجموعة',
+                400
+            );
+        }
+
+        if ($currentLeaderId === $newLeaderId) {
+            throw new PermissionDeniedException(
+                'خطأ في النقل',
+                'لا يمكنك نقل القيادة لنفسك',
+                400
+            );
+        }
+
+        $this->groupMemberRepo->updateRole($group->id, $newLeaderId, GroupMemberRole::Leader);
+        $this->groupMemberRepo->updateRole($group->id, $currentLeaderId, GroupMemberRole::Member);
+    }
+
+    public function getIncompletePublicGroups(): array
+    {
+        $groups = $this->groupRepo->getIncompletePublicGroupsForCurrentYear();
+
+        return $groups->map(function ($group) {
+            return [
+                'id' => $group->id,
+                'name' => $group->name,
+                'image' => $this->imageService->getFullUrl($group->image),
+                'specialities_needed' => $group->speciality_needed,
+                'members_count' => $group->number_of_members,
+            ];
+        })->toArray();
+    }
+
 
 }

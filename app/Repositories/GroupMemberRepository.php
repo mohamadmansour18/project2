@@ -36,4 +36,23 @@ class GroupMemberRepository
         return GroupMember::where('user_id', $userId)->exists();
     }
 
+    public function updateRole(int $groupId, int $userId, GroupMemberRole $role): void
+    {
+        GroupMember::where('group_id', $groupId)
+            ->where('user_id', $userId)
+            ->update(['role' => $role]);
+    }
+
+    public function getMembersForUserGroup(int $userId)
+    {
+        $groupMember = GroupMember::where('user_id', $userId)->first();
+
+        if (!$groupMember) return collect();
+
+        return GroupMember::with(['user.profile'])
+            ->where('group_id', $groupMember->group_id)
+            ->get();
+    }
+
+
 }

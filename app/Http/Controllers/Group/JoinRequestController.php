@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers\Group;
 
-use App\Exceptions\PermissionDeniedException;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\SendJoinRequest;
 use App\Services\JoinRequestService;
@@ -15,9 +14,9 @@ class JoinRequestController extends Controller
 
     public function __construct(protected JoinRequestService $service) {}
 
-    public function store(SendJoinRequest $request, int $groupId): JsonResponse
+    public function store(int $groupId): JsonResponse
     {
-        $this->service->send($groupId, auth()->user(), $request->description);
+        $this->service->send($groupId, auth()->user());
 
         return $this->successResponse('تم إرسال الطلب', 'تم إرسال طلب الانضمام للمجموعة بنجاح.');
     }
@@ -29,6 +28,12 @@ class JoinRequestController extends Controller
         return $this->dataResponse(['requests' => $requests]);
     }
 
+    public function myRequests(): JsonResponse
+    {
+        $requests = $this->service->getUserPendingRequests(auth()->user());
+
+        return $this->dataResponse(['requests' => $requests]);
+    }
 
     public function accept(int $requestId): JsonResponse
     {
