@@ -19,7 +19,7 @@ class JoinRequestService
         protected ImageService $imageService
     ) {}
 
-    public function send(int $groupId, User $user, ?string $description = null): void
+    public function send(int $groupId, User $user): void
     {
         if ($this->memberRepo->isInAnyGroup($user->id)) {
             throw new PermissionDeniedException('طلب مرفوض', 'أنت بالفعل عضو في مجموعة.', 403);
@@ -35,7 +35,7 @@ class JoinRequestService
             throw new PermissionDeniedException('المجموعة ممتلئة', 'لا يمكن الانضمام، عدد الأعضاء مكتمل.', 403);
         }
 
-        $this->requestRepo->create($groupId, $user->id, $description);
+        $this->requestRepo->create($groupId, $user->id);
     }
 
     public function getPendingForGroup(int $groupId): array
@@ -50,7 +50,6 @@ class JoinRequestService
                 'group_id' => $request->group_id,
                 'user_id' => $request->user_id,
                 'status' => $request->status->value,
-                'description' => $request->description,
                 'user' => [
                     'name' => $request->user->name,
                     'student_speciality' => $profile->student_speciality?->value,
@@ -70,7 +69,6 @@ class JoinRequestService
                 'id' => $request->id,
                 'group_id' => $request->group_id,
                 'status' => $request->status->value,
-                'description' => $request->description,
                 'group' => [
                     'id' => $request->group->id,
                     'name' => $request->group->name,

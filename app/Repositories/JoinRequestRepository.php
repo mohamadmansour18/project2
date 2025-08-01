@@ -19,7 +19,6 @@ class JoinRequestRepository
         return JoinRequest::create([
             'group_id' => $groupId,
             'user_id' => $userId,
-            'description' => $description,
             'status' => JoinRequestStatus::Pending,
         ]);
     }
