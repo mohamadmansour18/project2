@@ -8,8 +8,8 @@ class UserService
 {
 
     public function __construct(
-        private UserRepository $userRepository,
-        private ImageService $imageService
+        protected UserRepository $userRepository,
+        protected ImageService $imageService
     ) {}
 
     public function getStudentsForCurrentYear(): array
