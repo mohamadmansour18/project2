@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers\Group;
 
-use App\Enums\GroupMemberRole;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ChangeLeadershipRequest;
 use App\Http\Requests\CreateGroupRequest;
@@ -15,12 +14,8 @@ class GroupController extends Controller
 {
     use ApiSuccessTrait ;
 
-    protected GroupService $groupService;
-
-    public function __construct(GroupService $groupService)
-    {
-        $this->groupService = $groupService;
-    }
+    public function __construct(protected GroupService $groupService)
+    {}
 
     public function store(CreateGroupRequest $request)
     {
@@ -55,6 +50,13 @@ class GroupController extends Controller
         $this->groupService->changeLeadership($group, auth()->id(), $request->new_leader_id);
         return $this->successResponse('نقل القيادة', 'تم نقل القيادة بنجاح', 200);
     }
+
+    public function getIncompletePublicGroups()
+    {
+        $groups = $this->groupService->getIncompletePublicGroups();
+        return $this->dataResponse(['groups' => $groups]);
+    }
+
 
 
 }

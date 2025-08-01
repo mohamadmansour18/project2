@@ -43,5 +43,16 @@ class GroupMemberRepository
             ->update(['role' => $role]);
     }
 
+    public function getMembersForUserGroup(int $userId)
+    {
+        $groupMember = GroupMember::where('user_id', $userId)->first();
+
+        if (!$groupMember) return collect();
+
+        return GroupMember::with(['user.profile'])
+            ->where('group_id', $groupMember->group_id)
+            ->get();
+    }
+
 
 }

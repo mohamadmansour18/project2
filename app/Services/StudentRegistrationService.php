@@ -16,7 +16,7 @@ use PHPOpenSourceSaver\JWTAuth\Facades\JWTAuth;
 
 class StudentRegistrationService
 {
-    public function __construct()
+    public function __construct(protected ImageService $imageService,)
     {
         //
     }
@@ -141,10 +141,12 @@ class StudentRegistrationService
             ]);
         }
 
+        $profileImage = $user->profile->profile_image;
         return [
             'token' => $token ,
             'name' => "! $user->name مرحبا "  ,
-            'profile_image' => $user->profile->profile_image ,
+            'profile_image' => $this->imageService->getFullUrl($profileImage),
+            'is_in_group' => $user->groupMember()->exists(),
         ];
     }
 

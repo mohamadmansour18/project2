@@ -3,10 +3,12 @@
 namespace App\Repositories;
 
 use App\Enums\GroupMemberRole;
+use App\Enums\GroupType;
 use App\Models\Group;
 use App\Models\GroupInvitation;
 use App\Models\GroupMember;
 use App\Enums\GroupInvitationStatus;
+use Illuminate\Support\Collection;
 
 class GroupRepository
 {
@@ -48,4 +50,16 @@ class GroupRepository
         $group = $this->getById($groupId);
         return $group ? $group->number_of_members : 0;
     }
+
+    public function getIncompletePublicGroupsForCurrentYear(): Collection
+    {
+        return Group::query()
+            ->where('type', GroupType::Public->value)
+            ->whereYear('created_at', now()->year)
+            ->where('number_of_members', '<', 5)
+            ->get(['id', 'name', 'image', 'speciality_needed', 'number_of_members']);
+    }
+
+
+
 }

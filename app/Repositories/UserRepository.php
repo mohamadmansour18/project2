@@ -2,6 +2,8 @@
 
 namespace App\Repositories;
 
+use Illuminate\Support\Carbon;
+use Illuminate\Database\Eloquent\Collection;
 use App\Enums\UserRole;
 use App\Models\User;
 
@@ -23,5 +25,18 @@ class UserRepository
     {
         return User::find($id);
     }
+
+    public function getStudentsForCurrentYear(): Collection
+    {
+        $currentYear = Carbon::now()->year;
+
+        return User::where('role', UserRole::Student->value)
+            ->whereDoesntHave('groupMember')
+            ->whereYear('created_at', $currentYear)
+            ->whereNotNull('email_verified_at')
+            ->with('profile')
+            ->get();
+    }
+
 
 }

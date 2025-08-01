@@ -14,12 +14,8 @@ class GroupInvitationController extends Controller
 {
     use ApiSuccessTrait;
 
-    protected GroupInvitationService $invitationService;
-
-    public function __construct(GroupInvitationService $invitationService)
-    {
-        $this->invitationService = $invitationService;
-    }
+    public function __construct(protected GroupInvitationService $invitationService)
+    {}
 
     public function store(SendGroupInvitationsRequest $request, Group $group): JsonResponse
     {

@@ -4,7 +4,9 @@ use App\Http\Controllers\Auth\AuthenticationStudentController;
 use App\Http\Controllers\Favorite\AnnouncementsController;
 use App\Http\Controllers\Group\GroupController;
 use App\Http\Controllers\Group\GroupInvitationController;
+use App\Http\Controllers\Group\GroupMemberController;
 use App\Http\Controllers\Group\JoinRequestController;
+use App\Http\Controllers\User\UserController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -58,6 +60,10 @@ Route::prefix('/student')->group(function (){
         //Group APIs
         Route::post('/createGroup', [GroupController::class, 'store']);
         Route::get('/showGroupInfo/{group}', [GroupController::class, 'show']);
+        Route::get('/groups/incomplete/public', [GroupController::class, 'getIncompletePublicGroups']);
+
+        //group member APIs
+        Route::get('/my-group-members', [GroupMemberController::class, 'myGroupMembers']);
 
         //invitations APIs
         Route::get('/groups/invitations/user', [GroupInvitationController::class, 'index']);
@@ -69,6 +75,9 @@ Route::prefix('/student')->group(function (){
         Route::post('{group}/join-request', [JoinRequestController::class, 'store']);
         Route::get('/join-requests/my', [JoinRequestController::class, 'myRequests']);
         Route::post('join-request/{id}/cancel', [JoinRequestController::class, 'cancel']);
+
+        //users APIs
+        Route::get('/students-without-group', [UserController::class, 'getUsersWithoutGroup']);
 
     });
 });
