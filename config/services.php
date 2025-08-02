@@ -33,5 +33,6 @@ return [
 
     'fcm' => [
         'credentials_file' => env('FIREBASE_CREDENTIALS_PATH'),
-    ]
+    ],
+
 ];

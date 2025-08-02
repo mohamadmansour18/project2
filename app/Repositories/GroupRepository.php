@@ -17,6 +17,13 @@ class GroupRepository
         return Group::query()->whereYear('created_at', now()->year)->count();
     }
 
+    public function getGroupsCountForCurrentYearDynamic($year): int
+    {
+        return Group::query()->whereYear('created_at', $year)
+            ->where('number_of_members' , '>=' , 4)
+            ->count();
+    }
+
     public function create(array $data): Group
     {
         return Group::create($data);
