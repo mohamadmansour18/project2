@@ -54,5 +54,13 @@ class GroupMemberRepository
             ->get();
     }
 
+    public function getGroupMemberIds(int $groupId): array
+    {
+        return GroupMember::where('group_id', $groupId)
+            ->pluck('user_id')
+            ->toArray();
+    }
+
+
 
 }
