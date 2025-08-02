@@ -13,71 +13,90 @@ use Symfony\Component\HttpFoundation\Response;
 
 class EnsureUserIsGroupLeader
 {
-    /**
-     * Handle an incoming request.
-     *
-     * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
-     */
-    public function __construct(protected GroupMemberRepository $groupMemberRepo)
-    {
-    }
+    public function __construct(protected GroupMemberRepository $groupMemberRepo) {}
 
     public function handle(Request $request, Closure $next): Response
     {
         $user = $request->user();
-        $groupId = null;
-
-        if ($request->route('group')) {
-            $group = $request->route('group');
-            $groupId = is_object($group) ? $group->id : $group;
-        }
-
-        elseif ($request->routeIs('join-request.*') || str_contains($request->path(), 'join-request')) {
-            $joinRequest = JoinRequest::find($request->route('id'));
-            if (!$joinRequest ) {
-                return response()->json([
-                    'title' => 'غير موجود!',
-                    'body' => 'الطلب غير موجود.',
-                    'statusCode' => 404
-                ], 404);
-            }
-            if($joinRequest->status !== JoinRequestStatus::Pending){
-                return response()->json([
-                    'title' => 'غير موجود',
-                    'body' => 'تم التعامل مع الطلب.',
-                    'statusCode' => 404
-                ], 404);
-            }
-            $groupId = $joinRequest->group_id;
-        }
-
-        elseif ($request->routeIs('invitations.*') || str_contains($request->path(), 'invitations')) {
-            $invitation = GroupInvitation::find($request->route('invitation'));
-            if (!$invitation) {
-                return response()->json([
-                    'title' => 'غير موجود!',
-                    'body' => 'الدعوة غير موجودة.',
-                    'statusCode' => 404
-                ], 404);
-            }
-            if($invitation->status !== GroupInvitationStatus::Pending){
-                return response()->json([
-                    'title' => 'غير موجودة',
-                    'body' => 'تم التعامل مع الدعوة.',
-                    'statusCode' => 404
-                ], 404);
-            }
-            $groupId = $invitation->group_id;
-        }
+        $groupId = $this->extractGroupIdFromRequest($request);
 
         if (!$groupId || !$this->groupMemberRepo->isLeader($groupId, $user->id)) {
-            return response()->json([
-                'title' => 'غير مصرح لك بالدخول !',
-                'body' => 'ليس لديك صلاحية للوصول إلى هذا المورد',
-                'statusCode' => 403
-            ], 403);
+            return $this->forbiddenResponse();
         }
 
         return $next($request);
+    }
+
+    /**
+     * Extract group ID from request based on route or input
+     */
+    private function extractGroupIdFromRequest(Request $request): ?int
+    {
+        // Case 1: Explicit group in route
+        if ($request->route('group')) {
+            $group = $request->route('group');
+            return is_object($group) ? $group->id : (int) $group;
+        }
+
+        // Case 2: Join request
+        if ($request->routeIs('join-request.*') || str_contains($request->path(), 'join-request')) {
+            return $this->handleJoinRequest($request);
+        }
+
+        // Case 3: Invitation
+        if ($request->routeIs('invitations.*') || str_contains($request->path(), 'invitations')) {
+            return $this->handleInvitation($request);
+        }
+
+        // Case 4: Project form (e.g. /project-form-one/{form}/submit)
+        if ($request->route('form') && is_object($request->route('form'))) {
+            return $request->route('form')->group_id;
+        }
+
+        // Case 5: New form creation (group_id from input)
+        if ($request->has('group_id')) {
+            return (int) $request->input('group_id');
+        }
+
+        return null;
+    }
+
+    private function handleJoinRequest(Request $request): ?int
+    {
+        $joinRequest = JoinRequest::find($request->route('id'));
+
+        if (!$joinRequest) {
+            abort(404, 'الطلب غير موجود.');
+        }
+
+        if ($joinRequest->status !== JoinRequestStatus::Pending) {
+            abort(404, 'تم التعامل مع الطلب.');
+        }
+
+        return $joinRequest->group_id;
+    }
+
+    private function handleInvitation(Request $request): ?int
+    {
+        $invitation = GroupInvitation::find($request->route('invitation'));
+
+        if (!$invitation) {
+            abort(404, 'الدعوة غير موجودة.');
+        }
+
+        if ($invitation->status !== GroupInvitationStatus::Pending) {
+            abort(404, 'تم التعامل مع الدعوة.');
+        }
+
+        return $invitation->group_id;
+    }
+
+    private function forbiddenResponse(): Response
+    {
+        return response()->json([
+            'title' => 'غير مصرح لك بالدخول !',
+            'body' => 'ليس لديك صلاحية للوصول إلى هذا المورد',
+            'statusCode' => 403,
+        ], 403);
     }
 }

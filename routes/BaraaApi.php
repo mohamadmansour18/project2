@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Auth\AuthenticationStudentController;
 use App\Http\Controllers\Favorite\AnnouncementsController;
+use App\Http\Controllers\FormOne\ProjectFormController;
 use App\Http\Controllers\Group\GroupController;
 use App\Http\Controllers\Group\GroupInvitationController;
 use App\Http\Controllers\Group\GroupMemberController;
@@ -55,6 +56,11 @@ Route::prefix('/student')->group(function (){
             Route::get('{group}/join-requests', [JoinRequestController::class, 'index']);
             Route::post('join-request/{id}/accept', [JoinRequestController::class, 'accept']);
             Route::post('join-request/{id}/reject', [JoinRequestController::class, 'reject']);
+
+            //form 1 APIs
+            Route::post('/project-form-one', [ProjectFormController::class, 'store']);
+            Route::post('/project-form-one/{form}', [ProjectFormController::class, 'update']);
+            Route::post('/project-form-one/{form}/submit', [ProjectFormController::class, 'submit']);
         });
 
         //Group APIs
@@ -78,6 +84,9 @@ Route::prefix('/student')->group(function (){
 
         //users APIs
         Route::get('/students-without-group', [UserController::class, 'getUsersWithoutGroup']);
+
+        //form 1 APIs
+        Route::post('/project-form-one/{form}/sign', [ProjectFormController::class, 'sign']);
 
     });
 });

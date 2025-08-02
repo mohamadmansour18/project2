@@ -3,6 +3,7 @@
 namespace App\Repositories;
 
 use App\Enums\ProjectFormStatus;
+use App\Models\FormSignature;
 use App\Models\ProjectForm;
 
 class ProjectFormRepository
@@ -19,5 +20,59 @@ class ProjectFormRepository
         return ProjectForm::query()->whereYear('submission_date', $year)
             ->where('status' , ProjectFormStatus::Approved->value)
             ->count();
+    }
+
+    public function create(array $data): ProjectForm
+    {
+        return ProjectForm::create($data);
+    }
+
+    public function hasUserSigned(int $formId, int $userId): bool
+    {
+        return FormSignature::where('project_form_id', $formId)
+            ->where('user_id', $userId)
+            ->exists();
+    }
+
+    public function signForm(int $formId, int $userId): FormSignature
+    {
+        return FormSignature::create([
+            'project_form_id' => $formId,
+            'user_id' => $userId,
+        ]);
+    }
+
+    public function update(ProjectForm $form, array $data): void
+    {
+        $form->update($data);
+    }
+
+    public function hasFormChanged(ProjectForm $form, array $data): bool
+    {
+        $isSupervisorChanged = $form->user_id !== (int) $data['user_id'];
+
+        $contentFields = [
+            'arabic_title',
+            'english_title',
+            'description',
+            'project_scope',
+            'targeted_sector',
+            'sector_classification',
+            'stakeholders',
+        ];
+
+        $hasContentChanged = collect($contentFields)->contains(
+            fn($key) => $form->$key !== $data[$key]
+        );
+
+        return $isSupervisorChanged || $hasContentChanged;
+    }
+
+    public function markAsSubmitted(ProjectForm $form): void
+    {
+        $form->update([
+            'status' => ProjectFormStatus::Pending,
+            'submission_date' => now(),
+        ]);
     }
 }
