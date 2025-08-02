@@ -15,6 +15,13 @@ class ProjectFormRepository
             ->count('group_id');
     }
 
+    public function getApprovedIdeasCountForCurrentYearDynamic($year): int
+    {
+        return ProjectForm::query()->whereYear('submission_date', $year)
+            ->where('status' , ProjectFormStatus::Approved->value)
+            ->count();
+    }
+
     public function create(array $data): ProjectForm
     {
         return ProjectForm::create($data);
