@@ -38,10 +38,13 @@ class HomeDashBoardService
         $doctors = $this->userRepository->getDoctorSpecificDataForAdminHomePage();
 
         return $doctors->map(function($doctor){
+
+            $profile = optional($doctor->profile);
+
             return [
                 'id' => $doctor->id ,
                 'name' => $doctor->name ,
-                'profile_image' => $doctor->profile->profile_image
+                'profile_image' => $profile->profile_image
             ];
         });
     }

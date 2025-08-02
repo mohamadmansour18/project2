@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Helpers\UrlHelper;
 use App\Repositories\UserRepository;
 
 class UserService

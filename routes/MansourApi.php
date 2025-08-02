@@ -74,6 +74,13 @@ Route::prefix('/admin')->group(function (){
             Route::get('/showFormDates', [FormSubmissionPeriodController::class, 'getFormDateForDoctor']);
             Route::get('/showDoctors' , [UserController::class , 'showAllDoctorsForAdminHomePage']);
         });
+
+        //USER_MANAGEMENT
+        Route::prefix('/userManagement')->group(function (){
+            Route::get('/showDoctorsWithProfile' , [UserController::class , 'showAllDoctorsWithProfile']);
+            Route::post('/searchDoctorByName' , [UserController::class , 'searchDoctorsByName']);
+        });
+
     });
 
 });

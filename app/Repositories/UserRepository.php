@@ -56,7 +56,22 @@ class UserRepository
     {
         return User::with('profile')
             ->where('role' , UserRole::Doctor->value)
-            ->get(['id , name']);
+            ->get(['id' , 'name']);
+    }
+
+    public function getAllDoctorsWithProfile(): Collection|array
+    {
+        return User::with('profile')
+            ->where('role' , UserRole::Doctor->value)
+            ->get(['id' , 'name' , 'email' , 'created_at']);
+    }
+
+    public function searchDoctorByName(string $name): Collection|array
+    {
+        return User::with('profile')
+            ->where('role' , UserRole::Doctor->value)
+            ->where('name' , 'LIKE' , $name . '%')
+            ->get(['id' , 'name' , 'email' , 'created_at']);
     }
 
 
