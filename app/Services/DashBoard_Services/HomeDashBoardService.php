@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Services\DashBoard_Services;
+use App\Helpers\UrlHelper;
 use App\Repositories\GroupRepository;
 use App\Repositories\ProjectFormRepository;
 use App\Repositories\UserRepository;
@@ -37,15 +38,16 @@ class HomeDashBoardService
     {
         $doctors = $this->userRepository->getDoctorSpecificDataForAdminHomePage();
 
-        return $doctors->map(function($doctor){
+        $results = $doctors->map(function($doctor){
 
             $profile = optional($doctor->profile);
-
             return [
                 'id' => $doctor->id ,
                 'name' => $doctor->name ,
-                'profile_image' => $profile->profile_image
+                'profile_image' => UrlHelper::imageUrl($profile->profile_image)
             ];
         });
+
+        return ['data' => $results];
     }
 }

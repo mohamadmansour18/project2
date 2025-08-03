@@ -2,10 +2,12 @@
 
 namespace App\Repositories;
 
+use App\Models\Profile;
 use Illuminate\Support\Carbon;
 use Illuminate\Database\Eloquent\Collection;
 use App\Enums\UserRole;
 use App\Models\User;
+use Illuminate\Support\Facades\DB;
 
 class UserRepository
 {
@@ -74,5 +76,33 @@ class UserRepository
             ->get(['id' , 'name' , 'email' , 'created_at']);
     }
 
+    public function getSortDoctors(?string $sortValue): Collection|array
+    {
+        $allowedSort = ['name' , 'email' , 'created_at'];
 
+        if(!in_array($sortValue , $allowedSort))
+        {
+            $sortValue = 'name' ;
+        }
+
+        $query = User::with('profile')->where('role' , UserRole::Doctor->value);
+
+        switch ($sortValue)
+        {
+            case 'created_at' :
+                $query->orderBy('created_at' , 'desc');
+                break;
+
+            default :
+                $query->orderBy($sortValue , 'asc');
+                break;
+        }
+
+        return $query->get(['id' , 'name' , 'email' , 'created_at']);
+    }
+
+    public function createUser(array $data): User
+    {
+        return User::create($data);
+    }
 }

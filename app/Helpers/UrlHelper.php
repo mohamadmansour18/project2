@@ -11,6 +11,6 @@ class UrlHelper
             return null;
         }
 
-        return config('app.url') . '/' . ltrim($path , '/');
+        return config('app.url') . ltrim($path , '/');
     }
 }

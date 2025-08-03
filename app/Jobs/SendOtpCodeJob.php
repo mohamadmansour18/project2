@@ -17,6 +17,7 @@ class SendOtpCodeJob implements ShouldQueue
 
     public $tries = 2 ;
     public $backoff = 5 ;
+
     public string $email ;
     public string $name ;
     public string $otp ;

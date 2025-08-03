@@ -79,6 +79,8 @@ Route::prefix('/admin')->group(function (){
         Route::prefix('/userManagement')->group(function (){
             Route::get('/showDoctorsWithProfile' , [UserController::class , 'showAllDoctorsWithProfile']);
             Route::post('/searchDoctorByName' , [UserController::class , 'searchDoctorsByName']);
+            Route::get('/sortDoctors' , [UserController::class , 'sortDoctors']);
+            Route::post('/insertDoctor' , [UserController::class , 'insertDoctor']);
         });
 
     });

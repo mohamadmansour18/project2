@@ -136,6 +136,7 @@ return [
         'image' => 'الصورة',
         'invitations' => 'الدعوات',
         'invitations.*' => 'المستخدم المدعو',
-        'search' => 'البحث'
+        'search' => 'البحث',
+        'profile_image' => 'الصورة الشخصية'
     ],
 ];
