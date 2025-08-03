@@ -7,7 +7,6 @@ use App\Helpers\UrlHelper;
 use App\Repositories\ProfileRepository;
 use App\Repositories\UserRepository;
 use Illuminate\Support\Facades\DB;
-use mysql_xdevapi\Collection;
 
 class UserManagementService
 {
