@@ -2,6 +2,7 @@
 
 namespace App\Repositories;
 
+use App\Enums\GroupMemberRole;
 use App\Enums\ProjectFormStatus;
 use App\Models\FormSignature;
 use App\Models\ProjectForm;
@@ -75,4 +76,20 @@ class ProjectFormRepository
             'submission_date' => now(),
         ]);
     }
+
+    public function findById(int $id): ?ProjectForm
+    {
+        return ProjectForm::find($id);
+    }
+
+    public function existsForGroupByLeader(int $groupId, int $leaderId): bool
+    {
+        return ProjectForm::where('group_id', $groupId)
+            ->whereHas('group.members', function ($query) use ($leaderId) {
+                $query->where('user_id', $leaderId)
+                    ->where('role', GroupMemberRole::Leader);
+            })
+            ->exists();
+    }
+
 }

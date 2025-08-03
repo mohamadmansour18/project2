@@ -4,10 +4,12 @@ namespace App\Services;
 use App\Enums\ProjectFormStatus;
 use App\Exceptions\PermissionDeniedException;
 use App\Models\ProjectForm;
-use App\Models\User;
 use App\Repositories\GroupMemberRepository;
 use App\Repositories\ProjectFormRepository;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
+use Mpdf\Mpdf;
+use Illuminate\Support\Facades\Response;
 
 class ProjectFormService
 {
@@ -20,7 +22,11 @@ class ProjectFormService
     {
         $user = Auth::user();
 
-        $this->repository->create([
+        if ($this->repository->existsForGroupByLeader($data['group_id'], $user->id)) {
+            throw new PermissionDeniedException('عملية مكررة', 'لا يمكنك تعبئة الاستمارة أكثر من مرة لنفس المجموعة.');
+        }
+
+        $form = $this->repository->create([
             'group_id' => $data['group_id'],
             'user_id' => $data['user_id'],
             'arabic_title' => $data['arabic_title'],
@@ -32,6 +38,17 @@ class ProjectFormService
             'stakeholders' => $data['stakeholders'],
             'status' => ProjectFormStatus::Draft,
         ]);
+
+        $html = view('pdfs.project_form', ['form' => $form])->render();
+
+        $mpdf = new Mpdf([
+            'mode' => 'utf-8',
+            'format' => 'A4',
+            'default_font' => 'cairo',
+            'direction' => 'rtl',
+        ]);
+
+        $this->regeneratePdf($form);
     }
 
     public function sign(ProjectForm $form): void
@@ -80,17 +97,16 @@ class ProjectFormService
         }
 
         $this->repository->update($form, $data);
+        $this->regeneratePdf($form);
     }
 
     public function submitToSupervisor(ProjectForm $form): void
     {
-        $user = Auth::user();
 
         if (!in_array($form->status, [ProjectFormStatus::Draft, ProjectFormStatus::Rejected])) {
             throw new PermissionDeniedException('لا يمكن الإرسال', 'لا يمكن إرسال الاستمارة في هذه الحالة.');
         }
 
-        // تحقق من التعديل إذا كانت مرفوضة
         if ($form->status === ProjectFormStatus::Rejected && $form->updated_at <= $form->submission_date) {
             throw new PermissionDeniedException('لم يتم التعديل', 'قم بتعديل النموذج قبل إعادة الإرسال.');
         }
@@ -108,5 +124,66 @@ class ProjectFormService
 
         $this->repository->markAsSubmitted($form);
 
+    }
+
+    public function downloadFilledForm(ProjectForm $form)
+    {
+        $user = Auth::user();
+
+        // تحقق من الصلاحيات
+        $isOwner = $form->user_id === $user->id;
+        $isMember = $this->groupRepo->isMember($form->group_id, $user->id);
+
+        if (!$isOwner && !$isMember && !$user->isSupervisor()) {
+            throw new PermissionDeniedException(
+                'غير مسموح',
+                'لا تملك صلاحية لتحميل هذه الاستمارة.'
+            );
+        }
+
+        // تحقق من وجود ملف PDF
+        if (!$form->filled_form_file_path || !Storage::disk('public')->exists($form->filled_form_file_path)) {
+            throw new \Exception('الملف غير متوفر أو لم يتم إنشاؤه بعد.');
+        }
+
+        // أرجع الملف كاستجابة قابلة للتحميل
+        return Response::download(
+            storage_path('app/public/' . $form->filled_form_file_path),
+            'project_form_' . $form->id . '.pdf',
+            ['Content-Type' => 'application/pdf']
+        );
+    }
+
+    private function regeneratePdf(ProjectForm $form): void
+    {
+        if ($form->filled_form_file_path) {
+            Storage::disk('public')->delete($form->filled_form_file_path);
+        }
+
+        // 1) جهّز الـ HTML
+        $html = view('pdfs.project_form', compact('form'))->render();
+
+        // 2) أنشئ كائن mPDF مضبوطاً للعربية
+        $mpdf = new Mpdf([
+            'mode'         => 'utf-8',
+            'format'       => 'A4',
+            'default_font' => 'cairo',
+            'direction'    => 'rtl',
+        ]);
+
+        $mpdf->AddFontDirectory(storage_path('fonts'));
+        $mpdf->fontdata['cairo'] = ['R' => 'Cairo-Regular.ttf'];
+        $mpdf->SetFont('cairo');
+
+        // 3) اكتب الـ HTML وحضّر المحتوى
+        $mpdf->WriteHTML($html);
+        $pdf = $mpdf->Output('', 'S'); // S = string
+
+        // 4) خزّن الملف في storage/public/forms
+        $filePath = sprintf('forms/project_form_%d_%d.pdf', $form->id, time());
+        Storage::disk('public')->put($filePath, $pdf);
+
+        // 5) حدِّث العمود في قاعدة البيانات
+        $form->updateQuietly(['filled_form_file_path' => $filePath]);
     }
 }
