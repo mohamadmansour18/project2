@@ -45,4 +45,9 @@ class ProjectFormController extends Controller
 
         return $this->successResponse('تم الإرسال', 'تم إرسال الاستمارة للمشرف بنجاح.');
     }
+
+    public function download(ProjectForm $form)
+    {
+        return $this->service->downloadFilledForm($form);
+    }
 }
