@@ -81,6 +81,7 @@ Route::prefix('/admin')->group(function (){
             Route::post('/searchDoctorByName' , [UserController::class , 'searchDoctorsByName']);
             Route::get('/sortDoctors' , [UserController::class , 'sortDoctors']);
             Route::post('/insertDoctor' , [UserController::class , 'insertDoctor']);
+            Route::post('/insertDoctors' , [UserController::class , 'insertDoctors']);
         });
 
     });

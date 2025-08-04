@@ -4,13 +4,17 @@ namespace App\Http\Controllers\User;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\DoctorSearchRequest;
+use App\Http\Requests\ExcelImportRequest;
 use App\Http\Requests\StoreDoctorRequest;
+use App\Jobs\ProcessDoctorExcelImportJob;
 use App\Services\DashBoard_Services\HomeDashBoardService;
 use App\Services\DashBoard_Services\UserManagementService;
 use App\Services\UserService;
 use App\Traits\ApiSuccessTrait;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Str;
 
 class UserController extends Controller
 {
@@ -66,5 +70,20 @@ class UserController extends Controller
         $this->userManagementService->insertDoctor($request->validated());
 
         return $this->successResponse('تمت عملية الاضافة بنجاح !' , 'تم اضافة الدكتور المحدد الى نظام الكلية ليتولى المهام المكلف بها' , 201);
+    }
+
+    public function insertDoctors(ExcelImportRequest $request): JsonResponse
+    {
+        $fileName = 'doctor_import_' . Str::random(10) . '.' . $request->file('file')->getClientOriginalExtension();
+
+        //store path = storage/app/public/temp_excel/filename.Extension
+        //variable $path = temp_excel/filename.Extension
+        $path = $request->file('file')->storeAs('temp_excel' , $fileName , 'public');
+
+        $adminEmail = Auth::user()->email;
+
+        ProcessDoctorExcelImportJob::dispatch($path , '360mohamad360@gmail.com');
+
+        return $this->successResponse('تمت عملية الاضافة بنجاح !' , 'يتم معالجة عملية ترحيل بيانات المستخدمين الى قاعدة البيانات في الخلفية' , 201);
     }
 }

@@ -5,7 +5,7 @@ namespace App\Services;
 use App\Jobs\SendMultiFcmNotification;
 use Illuminate\Support\Collection;
 
-class FcmNotificationDispatcher
+class FcmNotificationDispatcherService
 {
     public function sendToUsers(Collection $users ,  string $title, string $body): void
     {

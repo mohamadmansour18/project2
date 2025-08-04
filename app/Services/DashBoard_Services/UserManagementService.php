@@ -4,6 +4,7 @@ namespace App\Services\DashBoard_Services;
 
 use App\Enums\UserRole;
 use App\Helpers\UrlHelper;
+use App\Models\User;
 use App\Repositories\ProfileRepository;
 use App\Repositories\UserRepository;
 use Illuminate\Support\Facades\DB;
@@ -108,6 +109,45 @@ class UserManagementService
 
             $this->profileRepository->createProfileWithImage($user->id , $imagePath);
         });
+    }
+
+    public function importDoctorsFromExcel(array $rows): array
+    {
+        $inserted = [];
+        $failed = [];
+
+        foreach ($rows as $row)
+        {
+            try {
+
+                if(User::where('email' , $row['email'])->exists())
+                {
+                    $failed[] = "فشل ترحيل: {$row['name']} - {$row['email']} (السبب : البريد موجود مسبقًا)";
+                    continue ;
+                }
+
+                DB::beginTransaction();
+
+                $user = $this->userRepository->createUser([
+                    'name' => $row['name'],
+                    'email' => $row['email'],
+                    'role' => UserRole::Doctor
+                ]);
+
+                $profile = $this->profileRepository->createProfileWithImage($user->id , $row['profile_image']);
+
+                DB::commit();
+
+                $inserted[] = $row['email'];
+            }catch (\Throwable $exception)
+            {
+                DB::rollBack();
+
+                $failed[] = "فشل ترحيل: {$row['name']} - {$row['email']} (خطأ داخلي) ";
+            }
+        }
+
+        return ['inserted' => $inserted, 'failed' => $failed];
     }
 
 }
