@@ -2,6 +2,7 @@
 
 namespace App\Exceptions;
 
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Symfony\Component\HttpKernel\Exception\TooManyRequestsHttpException;
 use Throwable;
@@ -35,8 +36,16 @@ class Handler extends ExceptionHandler
             return response()->json([
                 'title' => 'محاولات كثيرة !' ,
                 'body' => 'لقد قمت بفعل محاولات كثيرة يرجى التجربة لاحقا',
-                'code' => 429
+                'statusCode' => 429
             ], 429);
+        }
+
+        if ($e instanceof ModelNotFoundException) {
+            return response()->json([
+                'title' => 'عنصر غير موجود !' ,
+                'body' => 'العنصر الذي تحاول الوصول اليه غير موجود في النظام',
+                'statusCode' => 404
+            ], 404);
         }
 
         return parent::render($request, $e);

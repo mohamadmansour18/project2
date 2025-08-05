@@ -6,7 +6,9 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\DoctorSearchRequest;
 use App\Http\Requests\ExcelImportRequest;
 use App\Http\Requests\StoreDoctorRequest;
+use App\Http\Requests\UpdateDoctorFromDashboardRequest;
 use App\Jobs\ProcessDoctorExcelImportJob;
+use App\Models\User;
 use App\Services\DashBoard_Services\HomeDashBoardService;
 use App\Services\DashBoard_Services\UserManagementService;
 use App\Services\UserService;
@@ -85,5 +87,19 @@ class UserController extends Controller
         ProcessDoctorExcelImportJob::dispatch($path , '360mohamad360@gmail.com');
 
         return $this->successResponse('تمت عملية الاضافة بنجاح !' , 'يتم معالجة عملية ترحيل بيانات المستخدمين الى قاعدة البيانات في الخلفية' , 201);
+    }
+
+    public function editDoctorInfoByAdmin(int $doctorId , UpdateDoctorFromDashboardRequest $request): JsonResponse
+    {
+        $this->userManagementService->updateDoctorInfo($doctorId , $request->validated());
+
+        return $this->successResponse('تمت العملية بنجاح !' , 'تم تعديل بيانات الدكتور المحددة بنجاح');
+    }
+
+    public function deleteDoctorByAdmin(int $doctorId): JsonResponse
+    {
+        $this->userManagementService->deleteDoctorById($doctorId);
+
+        return $this->successResponse('تمت العملية بنجاح !' , 'تم حذف الدكتور المحدد من النظام الخاص بكلية الهندسة المعلوماتية');
     }
 }

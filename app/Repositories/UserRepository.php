@@ -2,7 +2,10 @@
 
 namespace App\Repositories;
 
+use App\Models\InterviewCommittee;
 use App\Models\Profile;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Carbon;
 use Illuminate\Database\Eloquent\Collection;
 use App\Enums\UserRole;
@@ -105,4 +108,28 @@ class UserRepository
     {
         return User::create($data);
     }
+
+    public function updateUser(User $user, array $data): User
+    {
+        $user->update($data);
+        return $user;
+    }
+
+    /**
+     * @return User
+     */
+    public function getDoctorWithProfileById(int $id): Model|Collection|Builder|array|null
+    {
+        return User::with('profile')->findOrFail($id);
+    }
+
+    public function softDeleteUserWithProfile(User $user): void
+    {
+        DB::transaction(function() use ($user){
+            $user->profile?->delete();
+            $user->delete();
+        });
+    }
+
+
 }

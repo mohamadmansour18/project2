@@ -2,10 +2,11 @@
 
 namespace App\Http\Requests;
 
+use App\Rules\AllowedEmailDomain;
 use App\Traits\ValidationFailedResponse;
 use Illuminate\Foundation\Http\FormRequest;
 
-class updateDoctorFromDashboardRequest extends FormRequest
+class UpdateDoctorFromDashboardRequest extends FormRequest
 {
     use ValidationFailedResponse ;
 
@@ -26,8 +27,10 @@ class updateDoctorFromDashboardRequest extends FormRequest
      */
     public function rules(): array
     {
+
         return [
-            //
+            'name' => ['sometimes', 'filled', 'string', 'max:80'],
+            'email' => ['sometimes', 'filled', 'email', 'unique:users,email' , new AllowedEmailDomain()],
         ];
     }
 

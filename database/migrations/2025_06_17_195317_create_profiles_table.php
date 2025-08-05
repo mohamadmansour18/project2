@@ -24,6 +24,7 @@ return new class extends Migration
             $table->enum('student_speciality', ProfileStudentSpeciality::convertEnumToArray())->nullable();
             $table->enum('student_status' , ProfileStudentStatus::convertEnumToArray())->nullable();
             $table->string('signature')->nullable();
+            $table->softDeletes();
             $table->timestamps();
         });
     }

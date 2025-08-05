@@ -16,4 +16,20 @@ class FormSubmissionPeriodRepository
             ->get()
             ->keyBy(fn($item) => $item->form_name->value);
     }
+
+    public function getCurrentInterviewPeriod(): ? FormSubmissionPeriod
+    {
+        return FormSubmissionPeriod::where('form_name' , FormSubmissionPeriodFormName::Interviews->value)
+            ->whereYear('start_date' , now()->year)
+            ->first();
+
+    }
+
+    public function isInForm1PeriodNow(): bool
+    {
+        return FormSubmissionPeriod::where('form_name', FormSubmissionPeriodFormName::Form1->value)
+            ->whereDate('start_date', '<=', now())
+            ->whereDate('end_date', '>=', now())
+            ->exists();
+    }
 }

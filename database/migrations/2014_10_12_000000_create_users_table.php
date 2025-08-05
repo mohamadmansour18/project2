@@ -21,6 +21,7 @@ return new class extends Migration
             $table->string('password')->nullable();
             $table->enum('role' , UserRole::convertEnumToArray())->nullable();
             $table->rememberToken();
+            $table->softDeletes();
             $table->timestamps();
         });
     }

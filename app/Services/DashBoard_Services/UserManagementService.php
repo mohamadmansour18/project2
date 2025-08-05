@@ -3,10 +3,15 @@
 namespace App\Services\DashBoard_Services;
 
 use App\Enums\UserRole;
+use App\Exceptions\DeleteDoctorException;
+use App\Exceptions\PermissionDeniedException;
 use App\Helpers\UrlHelper;
 use App\Models\User;
+use App\Repositories\FormSubmissionPeriodRepository;
+use App\Repositories\InterviewCommitteeRepository;
 use App\Repositories\ProfileRepository;
 use App\Repositories\UserRepository;
+use App\Services\FcmNotificationDispatcherService;
 use Illuminate\Support\Facades\DB;
 
 class UserManagementService
@@ -15,6 +20,9 @@ class UserManagementService
     public function __construct(
         protected UserRepository $userRepository,
         protected ProfileRepository $profileRepository,
+        protected FcmNotificationDispatcherService $dispatcherService,
+        protected FormSubmissionPeriodRepository $formSubmissionPeriodRepository,
+        protected InterviewCommitteeRepository $interviewCommitteeRepository,
     )
     {}
 
@@ -150,4 +158,70 @@ class UserManagementService
         return ['inserted' => $inserted, 'failed' => $failed];
     }
 
+    public function updateDoctorInfo(int $doctorId , array $data): void
+    {
+        $doctor = User::findOrFail($doctorId);
+
+        if($doctor->role !== UserRole::Doctor)
+        {
+            throw new PermissionDeniedException('لايمكنك اجراء هذا التعديل' , 'المستخدم الذي تحاول تعديل بياناته ليس دكتورا !' , 403);
+        }
+
+        $user = $this->userRepository->updateUser($doctor , $data);
+
+        $messages = [];
+
+        if(isset($data['name']))
+        {
+            $messages[] = "تم تعديل الاسم إلى: {$data['name']}";
+        }
+
+        if (isset($data['email'])) {
+            $messages[] = "تم تعديل البريد الإلكتروني إلى: {$data['email']}";
+        }
+
+        if(!empty($messages))
+        {
+            $finalMessage = implode('، ', $messages);
+
+            $this->dispatcherService->sendToUser($doctor , 'تم تعديل بياناتك' ,"قام رئيس القسم {$finalMessage}");
+        }
+    }
+
+    public function deleteDoctorById(int $doctorId): void
+    {
+        $doctor = $this->userRepository->getDoctorWithProfileById($doctorId);
+
+        if($doctor->role !== UserRole::Doctor)
+        {
+            throw new DeleteDoctorException('لايمكنك حذف المستخدم !' , 'هذا المستخدم المحدد ليس دكتورا في النظام' , 422);
+        }
+
+        if($this->formSubmissionPeriodRepository->isInForm1PeriodNow())
+        {
+            throw new DeleteDoctorException('لايمكنك حذف المستخدم !' , 'لايمكنك حذف الدكتور اثناء فترة التقديم على الاستمارة واحد' , 422);
+        }
+
+        if($this->interviewCommitteeRepository->isDoctorInInterviewCommitteeThisYear($doctorId))
+        {
+            $interviewPeriod = $this->formSubmissionPeriodRepository->getCurrentInterviewPeriod();
+
+            if(!$interviewPeriod)
+            {
+                throw  new DeleteDoctorException('لايمكنك حذف المستخدم !' , 'لايمكنك حذف الدكتور لانه ضمن لجان المقابلة ولم يتم تحديد موعد المقابلات بعد , قم بحذفه من اللجنة اولا' , 422);
+            }
+
+            if(now()->between($interviewPeriod->start_date , $interviewPeriod->end_date))
+            {
+                throw new DeleteDoctorException('لايمكنك حذف المستخدم !' , 'لايمكنك حذف الدكتور اثناء فترة المقابلات' , 422);
+            }
+
+            if(now() <= $interviewPeriod->start_date)
+            {
+                throw new DeleteDoctorException('لايمكنك حذف المستخدم !' , 'لايمكنك حذف الدكتور في الفترة قبل بدء موعد المقابلات' , 422);
+            }
+        }
+
+        $this->userRepository->softDeleteUserWithProfile($doctor);
+    }
 }

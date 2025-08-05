@@ -8,10 +8,11 @@ use App\Enums\ProfileStudentStatus;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Profile extends Model
 {
-    use HasFactory;
+    use HasFactory , SoftDeletes;
     protected $table = 'profiles';
     /**
      * The attributes that are mass assignable.
@@ -33,6 +34,7 @@ class Profile extends Model
         'governorate' => ProfileGovernorate::class ,
         'student_speciality' => ProfileStudentSpeciality::class ,
         'student_status' => ProfileStudentStatus::class ,
+        'deleted_at' => 'datetime'
     ];
 
     public function user(): BelongsTo

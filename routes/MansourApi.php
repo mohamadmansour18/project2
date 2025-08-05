@@ -6,6 +6,7 @@ use App\Http\Controllers\Favorite\AnnouncementsController;
 use App\Http\Controllers\Other\FormSubmissionPeriodController;
 use App\Http\Controllers\Other\StatisticsController;
 use App\Http\Controllers\User\UserController;
+use App\Models\User;
 use App\Services\FirebaseNotificationService;
 use Illuminate\Support\Facades\Route;
 
@@ -82,6 +83,8 @@ Route::prefix('/admin')->group(function (){
             Route::get('/sortDoctors' , [UserController::class , 'sortDoctors']);
             Route::post('/insertDoctor' , [UserController::class , 'insertDoctor']);
             Route::post('/insertDoctors' , [UserController::class , 'insertDoctors']);
+            Route::post('/editDoctorInfo/{doctor_id}' , [UserController::class , 'editDoctorInfoByAdmin'])->middleware('throttle:dashBoard');;
+            Route::delete('/deleteDoctor/{doctor_id}', [UserController::class , 'deleteDoctorByAdmin']);
         });
 
     });
@@ -107,6 +110,7 @@ Route::get('/test-fcm', function (FirebaseNotificationService $fcm) {
 
     return '✅ تم الإرسال (تحقق من الجهاز)';
 });
+
 
 
 Route::fallback(function (){
