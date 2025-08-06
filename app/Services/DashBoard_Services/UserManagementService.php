@@ -39,7 +39,7 @@ class UserManagementService
                 'name' => $doctor->name,
                 'email' => $doctor->email,
                 'governorate' => $profile->governorate,
-                'phone_number' => $profile->phone_number,
+                'phone_number' => $profile->phone_number ?? 'لا يوجد',
                 'Registration_date' => $profile->created_at->toDateString(),
                 'profile_image' => UrlHelper::imageUrl($profile->profile_image),
             ];
@@ -82,8 +82,36 @@ class UserManagementService
         return ['data' => $results];
     }
 
+    public function searchStudentByName(string $name)
+    {
+        $students = $this->userRepository->searchStudentByName($name);
+
+        $results = $students->map(function($student){
+
+            $profile = optional($student->profile);
+            return [
+                'id' => $student->id ,
+                'university_number' => $student->university_number,
+                'name' => $student->name,
+                'email' => $student->email,
+                'student_status' => $profile->student_status,
+                'phone_number' => $profile->phone_number ?? 'لا يوجد',
+                'student_speciality' => '# ' . $profile->student_speciality,
+            ];
+        });
+
+        return ['data' => $results];
+    }
+
     public function sortDoctors(?string $sortValue): array
     {
+        $allowedSort = ['name' , 'email' , 'created_at'];
+
+        if(!in_array($sortValue , $allowedSort))
+        {
+            $sortValue = 'name' ;
+        }
+
         $doctors = $this->userRepository->getSortDoctors($sortValue);
 
         $result = $doctors->map(function($doctor){
@@ -102,6 +130,26 @@ class UserManagementService
 
         return ['data' => $result];
 
+    }
+
+    public function sortStudents(?string $sortValue): array
+    {
+        $allowedSort = ['name' , 'university_number' , 'student_status' , 'student_speciality'];
+
+        if(!in_array($sortValue , $allowedSort))
+        {
+            $sortValue = 'university_number';
+        }
+
+        $result = $this->userRepository->getSortStudents($sortValue);
+
+        return [
+            'data' => $result->items(),
+            'current_page' => $result->currentPage(),
+            'next_page_url' => $result->nextPageUrl(),
+            'last_page' => $result->lastPage(),
+            'total' => $result->total(),
+        ];
     }
 
     public function insertDoctor(array $data): void

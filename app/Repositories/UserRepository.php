@@ -2,6 +2,8 @@
 
 namespace App\Repositories;
 
+use App\Enums\ProfileStudentSpeciality;
+use App\Enums\ProfileStudentStatus;
 use App\Models\InterviewCommittee;
 use App\Models\Profile;
 use Illuminate\Database\Eloquent\Builder;
@@ -91,8 +93,8 @@ class UserRepository
                     'name' => $user->name ,
                     'email' => $user->email ,
                     'student_status' => $profile->student_status,
-                    'phone_number' => $profile->phone_number,
-                    'student_speciality' => $profile->student_speciality,
+                    'phone_number' => $profile->phone_number ?? 'لا يوجد',
+                    'student_speciality' => '# ' . $profile->student_speciality,
                 ];
             });
     }
@@ -105,14 +107,16 @@ class UserRepository
             ->get(['id' , 'name' , 'email' , 'created_at']);
     }
 
+    public function searchStudentByName(string $name): Collection|array
+    {
+        return User::with(['profile:id,user_id,phone_number,student_speciality,student_status'])
+            ->where('role' , UserRole::Student->value)
+            ->where('name' , 'LIKE' , $name . '%')
+            ->get(['id' , 'university_number' , 'name' , 'email']);
+    }
+
     public function getSortDoctors(?string $sortValue): Collection|array
     {
-        $allowedSort = ['name' , 'email' , 'created_at'];
-
-        if(!in_array($sortValue , $allowedSort))
-        {
-            $sortValue = 'name' ;
-        }
 
         $query = User::with('profile')->where('role' , UserRole::Doctor->value);
 
@@ -128,6 +132,63 @@ class UserRepository
         }
 
         return $query->get(['id' , 'name' , 'email' , 'created_at']);
+    }
+
+    public function getSortStudents(?string $sortValue): LengthAwarePaginator
+    {
+        $currentYear = now()->year;
+
+        $query = DB::table('users')
+            ->join('profiles', 'users.id', '=', 'profiles.user_id')
+            ->where('users.role' , UserRole::Student->value)
+            ->whereYear('users.created_at' , $currentYear)
+            ->select([
+                'users.id',
+                'users.name',
+                'users.email',
+                'users.university_number',
+                'profiles.phone_number',
+                'profiles.student_speciality',
+                'profiles.student_status',
+            ]);
+
+        switch ($sortValue)
+        {
+            case 'name' :
+                $query->orderBy('users.name' , 'asc');
+                break;
+
+            case 'university_number' :
+                $query->orderBy('users.university_number' , 'desc');
+                break;
+
+            case 'student_status' :
+                $query->orderByRaw("FIELD(profiles.student_status, ? , ?)" , [ProfileStudentStatus::Fourth_Year->value , ProfileStudentStatus::Re_Project->value]);
+                break;
+
+            case 'student_speciality' :
+                $query->orderByRaw("FIELD(profiles.student_speciality, ? , ? , ? ) DESC , ISNULL(profiles.student_speciality) ASC" , [ProfileStudentSpeciality::Backend->value , ProfileStudentSpeciality::Front_Web->value , ProfileStudentSpeciality::Front_Mobile->value]);
+                break;
+
+            default :
+                break ;
+        }
+
+        $students = $query->paginate(100);
+
+        $students->getCollection()->transform(function($user){
+            return [
+                'id' => $user->id,
+                'university_number'=> $user->university_number,
+                'name' => $user->name,
+                'email' => $user->email,
+                'student_status' => $user->student_status === ProfileStudentStatus::Fourth_Year->value ? 'سنة رابعة' : 'اعادة مشروع',
+                'phone_number' => $user->phone_number,
+                'student_speciality' => '# ' . $user->student_speciality,
+            ];
+        });
+
+        return $students;
     }
 
     public function createUser(array $data): User

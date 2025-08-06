@@ -64,11 +64,27 @@ class UserController extends Controller
         return $this->dataResponse($response , 200);
     }
 
+    public function searchStudentsByName(DoctorSearchRequest $request): JsonResponse
+    {
+        $response = $this->userManagementService->searchStudentByName($request->search);
+
+        return $this->dataResponse($response , 200);
+    }
+
     public function sortDoctors(Request $request): JsonResponse
     {
         $sortValue = $request->query('sort');
 
         $response = $this->userManagementService->sortDoctors($sortValue);
+
+        return $this->dataResponse($response , 200);
+    }
+
+    public function sortStudents(Request $request): JsonResponse
+    {
+        $sortValue = $request->query('sort' , 'university_number');
+
+        $response = $this->userManagementService->sortStudents($sortValue);
 
         return $this->dataResponse($response , 200);
     }

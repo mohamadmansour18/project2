@@ -88,6 +88,8 @@ Route::prefix('/admin')->group(function (){
             Route::delete('/deleteDoctor/{doctor_id}', [UserController::class , 'deleteDoctorByAdmin']);
 
             Route::get('/showStudentsWithProfile' , [UserController::class , 'showAllStudentsWithProfile']);
+            Route::post('/searchStudentByName' , [UserController::class , 'searchStudentsByName']);
+            Route::get('/sortStudents' , [UserController::class , 'sortStudents']);
         });
 
     });
