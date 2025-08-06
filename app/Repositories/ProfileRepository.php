@@ -3,6 +3,7 @@
 namespace App\Repositories;
 
 use App\Models\Profile;
+use App\Models\User;
 
 class ProfileRepository
 {
@@ -11,4 +12,8 @@ class ProfileRepository
         return Profile::create($data);
     }
 
+    public function updateProfileForSpecificUser(User $user, array $data): void
+    {
+        optional($user->profile)->update($data);
+    }
 }

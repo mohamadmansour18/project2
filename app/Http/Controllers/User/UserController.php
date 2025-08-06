@@ -8,6 +8,7 @@ use App\Http\Requests\ExcelImportRequest;
 use App\Http\Requests\StoreDoctorRequest;
 use App\Http\Requests\StoreStudentRequest;
 use App\Http\Requests\UpdateDoctorFromDashboardRequest;
+use App\Http\Requests\UpdateStudentFromDashboardRequest;
 use App\Jobs\ProcessDoctorExcelImportJob;
 use App\Jobs\ProcessStudentExcelImportJob;
 use App\Services\DashBoard_Services\HomeDashBoardService;
@@ -142,10 +143,24 @@ class UserController extends Controller
         return $this->successResponse('تمت العملية بنجاح !' , 'تم تعديل بيانات الدكتور المحددة بنجاح');
     }
 
+    public function editStudentByAdmin(int $studentId , UpdateStudentFromDashboardRequest $request): JsonResponse
+    {
+        $this->userManagementService->updateStudentInfo($studentId , $request->validated());
+
+        return $this->successResponse('تمت العملية بنجاح !' , 'تم تعديل بيانات الطالب المحددة بنجاح');
+    }
+
     public function deleteDoctorByAdmin(int $doctorId): JsonResponse
     {
         $this->userManagementService->deleteDoctorById($doctorId);
 
         return $this->successResponse('تمت العملية بنجاح !' , 'تم حذف الدكتور المحدد من النظام الخاص بكلية الهندسة المعلوماتية');
+    }
+
+    public function deleteStudentByAdmin(int $studentId): JsonResponse
+    {
+        $this->userManagementService->deleteStudentById($studentId);
+
+        return $this->successResponse('تمت العملية بنجاح !' , 'تم حذف الطالب المحدد من النظام الخاص بكلية الهندسة المعلوماتية');
     }
 }

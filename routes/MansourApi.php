@@ -92,6 +92,8 @@ Route::prefix('/admin')->group(function (){
             Route::get('/sortStudents' , [UserController::class , 'sortStudents']);
             Route::post('/insertStudent' , [UserController::class , 'insertStudent']);
             Route::post('/insertStudents' , [UserController::class , 'insertStudents'])->middleware('throttle:dashBoard');
+            Route::post('/editStudentInfo/{student_id}' , [UserController::class , 'editStudentByAdmin'])->middleware('throttle:dashBoard');
+            Route::delete('/deleteStudent/{student_id}', [UserController::class , 'deleteStudentByAdmin']);
         });
 
     });

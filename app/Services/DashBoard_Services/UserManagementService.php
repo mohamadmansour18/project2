@@ -313,13 +313,50 @@ class UserManagementService
         }
     }
 
+    public function updateStudentInfo(int $studentId , array $data): void
+    {
+        $student = User::findOrFail($studentId);
+
+        if($student->role !== UserRole::Student)
+        {
+            throw new PermissionDeniedException('لايمكنك اجراء هذا التعديل' , 'المستخدم الذي تحاول تعديل بياناته ليس طالبا !' , 403);
+        }
+
+        DB::transaction(function () use ($student, $data){
+            $user = $this->userRepository->updateUser($student , $data);
+
+            if(array_key_exists('student_status', $data))
+            {
+                $this->profileRepository->updateProfileForSpecificUser($student , ['student_status' => $data['student_status']]);
+            }
+        });
+
+        $messages = [];
+        if(isset($data['name']))
+        {
+            $messages[] = "تم تعديل الاسم إلى: {$data['name']}";
+        }
+
+        if (isset($data['university_number'])) {
+            $messages[] = "تم تعديل الرقم الجامعي إلى: {$data['university_number']}";
+        }
+
+        if(!empty($messages))
+        {
+            $finalMessage = implode('، ', $messages);
+
+            $this->dispatcherService->sendToUser($student , 'تم تعديل بياناتك' ,"قام رئيس القسم {$finalMessage}");
+        }
+
+    }
+
     public function deleteDoctorById(int $doctorId): void
     {
-        $doctor = $this->userRepository->getDoctorWithProfileById($doctorId);
+        $doctor = $this->userRepository->getUserWithProfileById($doctorId);
 
         if($doctor->role !== UserRole::Doctor)
         {
-            throw new DeleteDoctorException('لايمكنك حذف المستخدم !' , 'هذا المستخدم المحدد ليس دكتورا في النظام' , 422);
+            throw new DeleteDoctorException('لايمكنك حذف المستخدم !' , 'هذا المستخدم المحدد ليس دكتورا في النظام' , 403);
         }
 
         if($this->formSubmissionPeriodRepository->isInForm1PeriodNow())
@@ -348,5 +385,17 @@ class UserManagementService
         }
 
         $this->userRepository->softDeleteUserWithProfile($doctor);
+    }
+
+    public function deleteStudentById(int $doctorId): void
+    {
+        $student = $this->userRepository->getUserWithProfileById($doctorId);
+
+        if($student->role !== UserRole::Student)
+        {
+            throw new PermissionDeniedException('لايمكنك حذف المستخدم !' , 'هذا المستخدم المحدد ليس طالبا في النظام' , 403);
+        }
+
+        $this->userRepository->softDeleteUserWithProfile($student);
     }
 }

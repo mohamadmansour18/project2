@@ -139,6 +139,7 @@ return [
         'search' => 'البحث',
         'profile_image' => 'الصورة الشخصية',
         'file' => 'الملف',
-        'university_number' => 'الرقم الجامعي'
+        'university_number' => 'الرقم الجامعي',
+        'student_status' => 'حالة الطالب'
     ],
 ];

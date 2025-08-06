@@ -3,6 +3,7 @@
 namespace Database\Factories;
 
 use App\Enums\ProfileGovernorate;
+use App\Enums\ProfileStudentStatus;
 use App\Enums\UserRole;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
@@ -36,6 +37,7 @@ class UserFactory extends Factory
             {
                 $user->profile()->create([
                     'governorate' => null,
+                    'student_status' => ProfileStudentStatus::Fourth_Year->value
                 ]);
             }
             elseif ($user->role === UserRole::Doctor)

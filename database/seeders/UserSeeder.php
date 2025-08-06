@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Enums\ProfileStudentStatus;
 use App\Enums\UserRole;
 use App\Models\Profile;
 use App\Models\User;
@@ -50,7 +51,7 @@ class UserSeeder extends Seeder
                         'role' => UserRole::Student->value
                     ],
                     'profile' => [
-
+                        'student_status' => ProfileStudentStatus::Fourth_Year->value
                     ]
                 ],
                 [
@@ -63,7 +64,7 @@ class UserSeeder extends Seeder
                         'email_verified_at' => now()
                     ],
                     'profile' => [
-
+                        'student_status' => ProfileStudentStatus::Fourth_Year->value
                     ]
                 ],
                 [
@@ -76,7 +77,7 @@ class UserSeeder extends Seeder
                         'email_verified_at' => now()
                     ],
                     'profile' => [
-
+                        'student_status' => ProfileStudentStatus::Fourth_Year->value
                     ]
                 ],
             ];

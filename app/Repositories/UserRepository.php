@@ -205,7 +205,7 @@ class UserRepository
     /**
      * @return User
      */
-    public function getDoctorWithProfileById(int $id): Model|Collection|Builder|array|null
+    public function getUserWithProfileById(int $id): Model|Collection|Builder|array|null
     {
         return User::with('profile')->findOrFail($id);
     }
