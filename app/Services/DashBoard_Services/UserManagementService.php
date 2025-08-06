@@ -48,6 +48,19 @@ class UserManagementService
         return ['data' => $results];
     }
 
+    public function getAllStudentsDetailed()
+    {
+        $result = $this->userRepository->getAllStudentsWithProfile();
+
+        return [
+            'data' => $result->items(),
+            'current_page' => $result->currentPage(),
+            'next_page_url' => $result->nextPageUrl(),
+            'last_page' => $result->lastPage(),
+            'total' => $result->total(),
+        ];
+    }
+
     public function searchDoctorByName(string $name): array
     {
         $doctors = $this->userRepository->searchDoctorByName($name);

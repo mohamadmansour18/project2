@@ -8,6 +8,7 @@ use App\Http\Controllers\Other\StatisticsController;
 use App\Http\Controllers\User\UserController;
 use App\Models\User;
 use App\Services\FirebaseNotificationService;
+use Illuminate\Notifications\DatabaseNotification;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -85,6 +86,8 @@ Route::prefix('/admin')->group(function (){
             Route::post('/insertDoctors' , [UserController::class , 'insertDoctors']);
             Route::post('/editDoctorInfo/{doctor_id}' , [UserController::class , 'editDoctorInfoByAdmin'])->middleware('throttle:dashBoard');;
             Route::delete('/deleteDoctor/{doctor_id}', [UserController::class , 'deleteDoctorByAdmin']);
+
+            Route::get('/showStudentsWithProfile' , [UserController::class , 'showAllStudentsWithProfile']);
         });
 
     });
@@ -101,17 +104,20 @@ Route::prefix('/student')->group(function (){
 });
 
 
-Route::get('/test-fcm', function (FirebaseNotificationService $fcm) {
-    $fcm->send(
-        'مرحبا عبوووود',
-        'Test',
-        ['efQCy83ASEaAe16I1wBmSQ:APA91bGaPDs-9OneBHtNwlbnJOF3LsJVNjZbBhDglP5IPcboH2JpsH3gQXrhEjibGVOhYl8SWRAGAdGsB6MQz-2FdPbhLx_VlmdgBW8GEX2IFFyECGuIqQ0']
-    );
-
-    return '✅ تم الإرسال (تحقق من الجهاز)';
-});
-
-
+//Route::get('/test-fcm', function (FirebaseNotificationService $fcm) {
+//    $fcm->send(
+//        'مرحبا عبوووود',
+//        'Test',
+//        ['efQCy83ASEaAe16I1wBmSQ:APA91bGaPDs-9OneBHtNwlbnJOF3LsJVNjZbBhDglP5IPcboH2JpsH3gQXrhEjibGVOhYl8SWRAGAdGsB6MQz-2FdPbhLx_VlmdgBW8GEX2IFFyECGuIqQ0']
+//    );
+//
+//    return '✅ تم الإرسال (تحقق من الجهاز)';
+//});
+//
+//Route::get('/test' , function(){
+//    $user = DatabaseNotification::first();
+//    return response()->json(['title' => $user->data['title']]);
+//});
 
 Route::fallback(function (){
     return response()->json([

@@ -6,6 +6,7 @@ use App\Models\InterviewCommittee;
 use App\Models\Profile;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Carbon;
 use Illuminate\Database\Eloquent\Collection;
 use App\Enums\UserRole;
@@ -69,6 +70,31 @@ class UserRepository
         return User::with('profile')
             ->where('role' , UserRole::Doctor->value)
             ->get(['id' , 'name' , 'email' , 'created_at']);
+    }
+
+    public function getAllStudentsWithProfile(): LengthAwarePaginator
+    {
+        $currentYear = now()->year;
+
+        return User::with(['profile:id,user_id,phone_number,student_speciality,student_status'])
+            ->where('role' , UserRole::Student->value)
+            ->whereYear('created_at', $currentYear)
+            ->select(['id', 'name', 'university_number', 'email'])
+            ->paginate(100)
+            ->through(function($user){
+
+                $profile = optional($user->profile);
+
+                return [
+                    'id' => $user->id ,
+                    'university_number' => $user->university_number ,
+                    'name' => $user->name ,
+                    'email' => $user->email ,
+                    'student_status' => $profile->student_status,
+                    'phone_number' => $profile->phone_number,
+                    'student_speciality' => $profile->student_speciality,
+                ];
+            });
     }
 
     public function searchDoctorByName(string $name): Collection|array

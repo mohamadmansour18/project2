@@ -8,7 +8,6 @@ use App\Http\Requests\ExcelImportRequest;
 use App\Http\Requests\StoreDoctorRequest;
 use App\Http\Requests\UpdateDoctorFromDashboardRequest;
 use App\Jobs\ProcessDoctorExcelImportJob;
-use App\Models\User;
 use App\Services\DashBoard_Services\HomeDashBoardService;
 use App\Services\DashBoard_Services\UserManagementService;
 use App\Services\UserService;
@@ -47,6 +46,13 @@ class UserController extends Controller
     public function showAllDoctorsWithProfile(): JsonResponse
     {
         $response = $this->userManagementService->getAllDoctorsDetailed();
+
+        return $this->dataResponse($response , 200);
+    }
+
+    public function showAllStudentsWithProfile(): JsonResponse
+    {
+        $response = $this->userManagementService->getAllStudentsDetailed();
 
         return $this->dataResponse($response , 200);
     }
