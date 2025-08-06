@@ -2,7 +2,7 @@
 
 namespace App\Jobs;
 
-use App\Imports\DoctorImport;
+use App\Imports\StudentImport;
 use App\Mail\UserImportFailedMail;
 use App\Mail\UserImportSuccessMail;
 use App\Services\DashBoard_Services\UserManagementService;
@@ -15,17 +15,17 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
 use Maatwebsite\Excel\Facades\Excel;
-use Throwable;
 
-class ProcessDoctorExcelImportJob implements ShouldQueue
+class ProcessStudentExcelImportJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    protected string $filePath ;
-    protected string $AdminEmail ;
-    public function __construct(string $filePath , string $AdminEmail)
+    protected string $filePath;
+    protected string $AdminEmail;
+
+    public function __construct(string $filePath, string $AdminEmail)
     {
-        $this->filePath = $filePath ;
+        $this->filePath = $filePath;
         $this->AdminEmail = $AdminEmail;
     }
 
@@ -36,30 +36,26 @@ class ProcessDoctorExcelImportJob implements ShouldQueue
     {
         try {
             //import file from excel
-            $import = new DoctorImport();
+            $import = new StudentImport();
             //storage_path return : storage/app/public/temp_excel/filename.Extension
-            Excel::import($import , storage_path('app/public/' . $this->filePath));
+            Excel::import($import, storage_path('app/public/' . $this->filePath));
 
             $validRows = $import->validRows;
             $importErrors = $import->errors;
 
             //move correct data from excel to database
-            $result = $userManagementService->importDoctorsFromExcel($validRows);
+            $result = $userManagementService->importStudentsFromExcel($validRows);
 
             //merge all errors array in one array like
-            $allErrors = array_merge($importErrors , $result['failed']);
+            $allErrors = array_merge($importErrors, $result['failed']);
 
-            //register the error list in log
-            if(!empty($allErrors))
-            {
-                foreach ($allErrors as $error)
-                {
-                    Log::error('[ImportDoctorsJob] ' . $error);
+            if (!empty($allErrors)) {
+                foreach ($allErrors as $error) {
+                    Log::error('[ImportStudentJob] ' . $error);
                 }
-
-                Mail::to($this->AdminEmail)->queue(new UserImportFailedMail($allErrors , $result['inserted'] , 'doctor'));
+                Mail::to($this->AdminEmail)->queue(new UserImportFailedMail($allErrors , null , 'student'));
             } else {
-                Mail::to($this->AdminEmail)->queue(new UserImportSuccessMail(count($result['inserted']) , 'doctor'));
+                Mail::to($this->AdminEmail)->queue(new UserImportSuccessMail(count($result['inserted']) , 'student'));
             }
 
             //delete temp file after processing
@@ -68,10 +64,8 @@ class ProcessDoctorExcelImportJob implements ShouldQueue
             {
                 Storage::disk('public')->deleteDirectory('temp_excel');
             }
-
-        }catch (Throwable $e)
-        {
-            Log::error('[ImportDoctorsJob] خطأ غير متوقع: ' . $e->getMessage());
+        }catch (\Throwable $exception){
+            Log::error('[ImportStudentsJob] خطأ غير متوقع: ' . $exception->getMessage());
         }
     }
 }

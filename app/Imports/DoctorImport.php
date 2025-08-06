@@ -35,7 +35,7 @@ class DoctorImport implements ToCollection , WithHeadingRow , WithDrawings
         return $this->drawingsByRow;
     }
 
-    public function collection(Collection $collection)
+    public function collection(Collection $collection): void
     {
 
         if($collection->isEmpty() || !isset($collection[0]['name']) || !isset($collection[0]['email']))

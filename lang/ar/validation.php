@@ -138,6 +138,7 @@ return [
         'invitations.*' => 'المستخدم المدعو',
         'search' => 'البحث',
         'profile_image' => 'الصورة الشخصية',
-        'file' => 'الملف'
+        'file' => 'الملف',
+        'university_number' => 'الرقم الجامعي'
     ],
 ];

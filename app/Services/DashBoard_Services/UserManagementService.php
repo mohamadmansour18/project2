@@ -2,6 +2,7 @@
 
 namespace App\Services\DashBoard_Services;
 
+use App\Enums\ProfileStudentStatus;
 use App\Enums\UserRole;
 use App\Exceptions\DeleteDoctorException;
 use App\Exceptions\PermissionDeniedException;
@@ -176,7 +177,27 @@ class UserManagementService
                 );
             }
 
-            $this->profileRepository->createProfileWithImage($user->id , $imagePath);
+            $this->profileRepository->createProfile([
+                'user_id' => $user->id ,
+                'profile_image' => $imagePath
+            ]);
+        });
+    }
+
+    public function insertStudent(array $data): void
+    {
+        DB::transaction(function () use ($data){
+            $user = $this->userRepository->createUser([
+                'university_number' => $data['university_number'],
+                'name' => $data['name'],
+                'role' => UserRole::Student
+            ]);
+
+            $profile = $this->profileRepository->createProfile([
+                'user_id' => $user->id ,
+                'student_status' => ProfileStudentStatus::Fourth_Year,
+            ]);
+
         });
     }
 
@@ -203,7 +224,10 @@ class UserManagementService
                     'role' => UserRole::Doctor
                 ]);
 
-                $profile = $this->profileRepository->createProfileWithImage($user->id , $row['profile_image']);
+                $profile = $this->profileRepository->createProfile([
+                    'user_id' => $user->id ,
+                    'profile_image' => $row['profile_image']
+                ]);
 
                 DB::commit();
 
@@ -217,6 +241,46 @@ class UserManagementService
         }
 
         return ['inserted' => $inserted, 'failed' => $failed];
+    }
+
+    public function importStudentsFromExcel(array $rows)
+    {
+        $inserted = [];
+        $failed = [];
+
+        foreach ($rows as $row)
+        {
+            try {
+
+                if(User::where('university_number' , $row['university_number'])->exists())
+                {
+                    $failed[] ="فشل ترحيل: {$row['name']} - {$row['university_number']} (السبب : البريد موجود مسبقًا)";
+                    continue ;
+                }
+
+                DB::beginTransaction();
+
+                $user = $this->userRepository->createUser([
+                    'university_number' => $row['university_number'],
+                    'name' => $row['name'],
+                    'role' => UserRole::Student
+                ]);
+
+                $profile = $this->profileRepository->createProfile([
+                    'user_id' => $user->id ,
+                    'student_status' => ProfileStudentStatus::Fourth_Year,
+                ]);
+
+                DB::commit();
+            }catch(\Throwable $exception)
+            {
+                DB::rollBack();
+
+                $failed[] = "فشل ترحيل: {$row['name']} - {$row['email']} (خطأ داخلي) ";
+            }
+        }
+
+        return ['inserted' => $inserted , 'failed' => $failed];
     }
 
     public function updateDoctorInfo(int $doctorId , array $data): void

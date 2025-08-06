@@ -83,13 +83,15 @@ Route::prefix('/admin')->group(function (){
             Route::post('/searchDoctorByName' , [UserController::class , 'searchDoctorsByName']);
             Route::get('/sortDoctors' , [UserController::class , 'sortDoctors']);
             Route::post('/insertDoctor' , [UserController::class , 'insertDoctor']);
-            Route::post('/insertDoctors' , [UserController::class , 'insertDoctors']);
-            Route::post('/editDoctorInfo/{doctor_id}' , [UserController::class , 'editDoctorInfoByAdmin'])->middleware('throttle:dashBoard');;
+            Route::post('/insertDoctors' , [UserController::class , 'insertDoctors'])->middleware('throttle:dashBoard');
+            Route::post('/editDoctorInfo/{doctor_id}' , [UserController::class , 'editDoctorInfoByAdmin'])->middleware('throttle:dashBoard');
             Route::delete('/deleteDoctor/{doctor_id}', [UserController::class , 'deleteDoctorByAdmin']);
 
             Route::get('/showStudentsWithProfile' , [UserController::class , 'showAllStudentsWithProfile']);
             Route::post('/searchStudentByName' , [UserController::class , 'searchStudentsByName']);
             Route::get('/sortStudents' , [UserController::class , 'sortStudents']);
+            Route::post('/insertStudent' , [UserController::class , 'insertStudent']);
+            Route::post('/insertStudents' , [UserController::class , 'insertStudents'])->middleware('throttle:dashBoard');
         });
 
     });

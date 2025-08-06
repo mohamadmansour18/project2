@@ -6,8 +6,10 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\DoctorSearchRequest;
 use App\Http\Requests\ExcelImportRequest;
 use App\Http\Requests\StoreDoctorRequest;
+use App\Http\Requests\StoreStudentRequest;
 use App\Http\Requests\UpdateDoctorFromDashboardRequest;
 use App\Jobs\ProcessDoctorExcelImportJob;
+use App\Jobs\ProcessStudentExcelImportJob;
 use App\Services\DashBoard_Services\HomeDashBoardService;
 use App\Services\DashBoard_Services\UserManagementService;
 use App\Services\UserService;
@@ -96,6 +98,13 @@ class UserController extends Controller
         return $this->successResponse('تمت عملية الاضافة بنجاح !' , 'تم اضافة الدكتور المحدد الى نظام الكلية ليتولى المهام المكلف بها' , 201);
     }
 
+    public function insertStudent(StoreStudentRequest $request): JsonResponse
+    {
+        $this->userManagementService->insertStudent($request->validated());
+
+        return $this->successResponse('تمت عملية الاضافة بنجاح !' , 'تم اضافة الطالب المحدد الى نظام الكلية' , 201);
+    }
+
     public function insertDoctors(ExcelImportRequest $request): JsonResponse
     {
         $fileName = 'doctor_import_' . Str::random(10) . '.' . $request->file('file')->getClientOriginalExtension();
@@ -106,7 +115,22 @@ class UserController extends Controller
 
         $adminEmail = Auth::user()->email;
 
-        ProcessDoctorExcelImportJob::dispatch($path , '360mohamad360@gmail.com');
+        ProcessDoctorExcelImportJob::dispatch($path ,$adminEmail);
+
+        return $this->successResponse('تمت عملية الاضافة بنجاح !' , 'يتم معالجة عملية ترحيل بيانات المستخدمين الى قاعدة البيانات في الخلفية' , 201);
+    }
+
+    public function insertStudents(ExcelImportRequest $request): JsonResponse
+    {
+        $fileName = 'student_import_' . Str::random(10) . '.' . $request->file('file')->getClientOriginalExtension();
+
+        //store path = storage/app/public/temp_excel/filename.Extension
+        //variable $path = temp_excel/filename.Extension
+        $path = $request->file('file')->storeAs('temp_excel' , $fileName , 'public');
+
+        $adminEmail = Auth::user()->email;
+
+        ProcessStudentExcelImportJob::dispatch($path , $adminEmail);
 
         return $this->successResponse('تمت عملية الاضافة بنجاح !' , 'يتم معالجة عملية ترحيل بيانات المستخدمين الى قاعدة البيانات في الخلفية' , 201);
     }
