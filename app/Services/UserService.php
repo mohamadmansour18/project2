@@ -10,7 +10,6 @@ class UserService
 
     public function __construct(
         protected UserRepository $userRepository,
-        protected ImageService $imageService
     ) {}
 
     public function getStudentsForCurrentYear(): array
@@ -24,7 +23,7 @@ class UserService
                 'name' => $user->name,
                 'student_status' => $profile->student_status?->value,
                 'student_speciality' => $profile->student_speciality?->value,
-                'profile_image' => $this->imageService->getFullUrl($profileImagePath),
+                'profile_image' => UrlHelper::imageUrl($profileImagePath),
             ];
         })->toArray();
     }

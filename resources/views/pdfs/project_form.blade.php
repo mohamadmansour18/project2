@@ -93,6 +93,7 @@
             <th>اسم الطالب</th>
             <th>الاختصاص</th>
             <th>رقم الهاتف</th>
+            <th>التوقيع</th>
         </tr>
         </thead>
         <tbody>
@@ -101,6 +102,13 @@
                 <td>{{ $member->user->name }}</td>
                 <td>{{ $member->specialization ?? '---' }}</td>
                 <td>{{ $member->user->phone ?? '---' }}</td>
+                <td>
+                    @if($form->signatures->contains('user_id', $member->user_id))
+                        ✔ تم التوقيع
+                    @else
+                        ---
+                    @endif
+                </td>
             </tr>
         @endforeach
         </tbody>

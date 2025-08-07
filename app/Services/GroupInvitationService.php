@@ -5,6 +5,7 @@ use App\Enums\GroupInvitationStatus;
 use App\Enums\GroupMemberRole;
 use App\Enums\UserRole;
 use App\Exceptions\PermissionDeniedException;
+use App\Helpers\UrlHelper;
 use App\Models\User;
 use App\Repositories\GroupInvitationRepository;
 use App\Repositories\GroupMemberRepository;
@@ -18,7 +19,7 @@ class GroupInvitationService
         protected GroupMemberRepository $groupMemberRepo,
         protected GroupRepository $groupRepo,
         protected UserRepository $userRepo,
-        protected ImageService $imageService
+        protected FcmNotificationDispatcherService $dispatcherService
     ){ }
 
     public function send(int $groupId, int $userId, User $inviter): void
@@ -72,6 +73,12 @@ class GroupInvitationService
 
         // create invitation
         $this->invitationRepo->create($groupId, $userId, $inviter->id);
+
+        // إرسال إشعار للمستخدم المدعو
+        $group = $this->groupRepo->getById($groupId);
+        $title = 'دعوة للانضمام إلى المجموعة';
+        $body = "قام {$inviter->name} بدعوتك للانضمام إلى مجموعة {$group->name}";
+        $this->dispatcherService->sendToUser($targetUser, $title, $body);
     }
 
     public function getUserInvitations(User $user): array
@@ -90,7 +97,7 @@ class GroupInvitationService
                         'id' => $invitation->group->id,
                         'name' => $invitation->group->name,
                         'speciality_needed' => $invitation->group->speciality_needed,
-                        'image' => $this->imageService->getFullUrl($groupImagePath),
+                        'image' => UrlHelper::imageUrl($groupImagePath),
                     ],
                 ];
             })
@@ -119,7 +126,8 @@ class GroupInvitationService
                     'user' => [
                         'name' => $invitation->invitedUser->name,
                         'student_speciality' => optional($invitation->invitedUser->profile)->student_speciality,
-                        'profile_image' => $this->imageService->getFullUrl($profileImagePath),
+                        'profile_image' => UrlHelper::imageUrl($profileImagePath)
+
                     ],
                 ];
             })
@@ -153,6 +161,14 @@ class GroupInvitationService
         $this->invitationRepo->updateStatus($invitation, GroupInvitationStatus::Accepted);
 
         $group->increment('number_of_members');
+
+        // إشعار قائد المجموعة
+        $leader = $this->groupMemberRepo->getLeader($group->id);
+        if ($leader) {
+            $title = 'تم قبول الدعوة';
+            $body = "{$user->name} قبل الدعوة وانضم إلى مجموعتك {$group->name}";
+            $this->dispatcherService->sendToUser($leader, $title, $body);
+        }
     }
 
     public function reject(int $invitationId, User $user): void
@@ -168,6 +184,15 @@ class GroupInvitationService
         }
 
         $this->invitationRepo->updateStatus($invitation, GroupInvitationStatus::Rejected);
+
+        // إشعار المرسل
+        $inviter = $this->userRepo->findById($invitation->invited_by_user_id);
+        if ($inviter) {
+            $group = $invitation->group;
+            $title = 'تم رفض الدعوة';
+            $body = "{$user->name} رفض الانضمام إلى مجموعة {$group->name}";
+            $this->dispatcherService->sendToUser($inviter, $title, $body);
+        }
     }
 
     public function cancel(int $invitationId, User $user): void

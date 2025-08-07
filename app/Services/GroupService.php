@@ -3,6 +3,8 @@
 namespace App\Services;
 
 use App\Exceptions\PermissionDeniedException;
+use App\Helpers\ImageHelper;
+use App\Helpers\UrlHelper;
 use App\Http\Requests\CreateGroupRequest;
 use App\Http\Requests\UpdateGroupRequest;
 use App\Models\Group;
@@ -18,7 +20,6 @@ class GroupService
 
     public function __construct(
       protected GroupRepository $groupRepo,
-      protected ImageService $imageService,
       protected GroupMemberRepository $groupMemberRepo,
       protected GroupInvitationRepository $groupInvitationRepo) {
     }
@@ -28,11 +29,11 @@ class GroupService
         //image
         $imagePath = null;
         if ($request->hasFile('image')) {
-            $imagePath = $this->imageService->storeImageWithCustomName($request->file('image'), 'group_images', $request->name);
+            $imagePath = ImageHelper::storeImageWithCustomName($request->file('image'), 'group_images', $request->name);
         }
 
         //QR
-        $qrImagePathForDb = $this->imageService->generateAndStoreQrCode($request->name);
+        $qrImagePathForDb = ImageHelper::generateAndStoreQrCode($request->name);
 
         //Create group
         $group = $this->groupRepo->create([
@@ -73,7 +74,7 @@ class GroupService
 
         //image
         if ($request->hasFile('image')) {
-            $data['image'] = $this->imageService->storeImageWithCustomName($request->file('image'), 'group_images', $group->name);
+            $data['image'] = ImageHelper::storeImageWithCustomName($request->file('image'), 'group_images', $group->name);
         }
 
         //update
@@ -86,7 +87,7 @@ class GroupService
     {
         $data = $this->groupRepo->getGroupDetails($group);
 
-        $data['image'] = $this->imageService->getFullUrl($data['image']);
+        $data['image'] = UrlHelper::imageUrl($data['image']);
 
         return $data;
     }
@@ -121,7 +122,7 @@ class GroupService
             return [
                 'id' => $group->id,
                 'name' => $group->name,
-                'image' => $this->imageService->getFullUrl($group->image),
+                'image' => UrlHelper::imageUrl($group->image),
                 'specialities_needed' => $group->speciality_needed,
                 'members_count' => $group->number_of_members,
             ];

@@ -16,6 +16,7 @@ class ProjectFormService
     public function __construct(
         protected ProjectFormRepository $repository,
         protected GroupMemberRepository $groupRepo,
+        protected FcmNotificationDispatcherService $dispatcherService,
     ) {}
 
     public function store(array $data): void
@@ -49,6 +50,7 @@ class ProjectFormService
         ]);
 
         $this->regeneratePdf($form);
+
     }
 
     public function sign(ProjectForm $form): void
@@ -79,6 +81,16 @@ class ProjectFormService
         }
 
         $this->repository->signForm($form->id, $user->id);
+
+        $this->regeneratePdf($form);
+
+        // إشعار باقي أعضاء المجموعة
+        $members = $form->group->members->pluck('user');
+        $title = 'توقيع استمارة';
+        $body = "{$user->name} قام بتوقيع استمارة المشروع.";
+        foreach ($members as $member) {
+            $this->dispatcherService->sendToUser($member, $title, $body);
+        }
     }
 
 
@@ -124,35 +136,64 @@ class ProjectFormService
 
         $this->repository->markAsSubmitted($form);
 
+        // إشعار المشرف
+        if ($form->user) {
+            $title = 'استمارة مشروع بانتظار المراجعة';
+            $body = "استمارة المشروع الخاصة بالمجموعة {$form->group->name} جاهزة للمراجعة.";
+            $this->dispatcherService->sendToUser($form->user, $title, $body);
+        }
+
     }
 
     public function downloadFilledForm(ProjectForm $form)
     {
-        $user = Auth::user();
+        $user = auth()->user();
 
-        // تحقق من الصلاحيات
-        $isOwner = $form->user_id === $user->id;
+        $isSupervisor = $form->user_id === $user->id;
         $isMember = $this->groupRepo->isMember($form->group_id, $user->id);
 
-        if (!$isOwner && !$isMember && !$user->isSupervisor()) {
-            throw new PermissionDeniedException(
-                'غير مسموح',
-                'لا تملك صلاحية لتحميل هذه الاستمارة.'
-            );
+        if (!$isSupervisor && !$isMember) {
+            throw new PermissionDeniedException('غير مصرح','لا يمكنك تحميل هذا الملف غير مخول لك بهذا.');
         }
 
-        // تحقق من وجود ملف PDF
         if (!$form->filled_form_file_path || !Storage::disk('public')->exists($form->filled_form_file_path)) {
-            throw new \Exception('الملف غير متوفر أو لم يتم إنشاؤه بعد.');
+            throw new PermissionDeniedException('غير موجود','الملف غير متوفر أو لم يتم إنشاؤه بعد.');
         }
 
-        // أرجع الملف كاستجابة قابلة للتحميل
         return Response::download(
             storage_path('app/public/' . $form->filled_form_file_path),
             'project_form_' . $form->id . '.pdf',
             ['Content-Type' => 'application/pdf']
         );
     }
+
+    public function getPreviewPdfBase64(ProjectForm $form): array
+    {
+        $user = auth()->user();
+
+        $isSupervisor = $form->user_id === $user->id;
+        $isMember = $this->groupRepo->isMember($form->group_id, $user->id);
+
+        if (!$isSupervisor && !$isMember) {
+            throw new PermissionDeniedException('غير مصرح', 'لا يمكنك رؤية هذا الملف غير مخول لك بهذا.');
+        }
+
+        if (!$form->filled_form_file_path || !\Storage::disk('public')->exists($form->filled_form_file_path)) {
+            throw new PermissionDeniedException('غير موجود', 'الملف غير متوفر أو لم يتم إنشاؤه بعد.');
+        }
+
+        $filePath = storage_path('app/public/' . $form->filled_form_file_path);
+        $pdfContent = file_get_contents($filePath);
+        $base64Pdf = base64_encode($pdfContent);
+
+        return [
+            'file_name' => 'project_form_' . $form->id . '.pdf',
+            'file_type' => 'application/pdf',
+            'file_base64' => $base64Pdf,
+        ];
+    }
+
+
 
     private function regeneratePdf(ProjectForm $form): void
     {

@@ -88,6 +88,7 @@ Route::prefix('/student')->group(function (){
         //form 1 APIs
         Route::post('/project-form-one/{form}/sign', [ProjectFormController::class, 'sign']);
         Route::get('/form-1/{form}/download', [ProjectFormController::class, 'download']);
+        Route::get('/form-1/{form}/preview', [ProjectFormController::class, 'preview']);
 
     });
 });

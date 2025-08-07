@@ -31,6 +31,15 @@ class GroupMemberRepository
             ->exists();
     }
 
+    public function getLeader(int $groupId)
+    {
+        return GroupMember::with('user')
+            ->where('group_id', $groupId)
+            ->where('role', GroupMemberRole::Leader)
+            ->first()?->user;
+    }
+
+
     public function isInAnyGroup(int $userId): bool
     {
         return GroupMember::where('user_id', $userId)->exists();

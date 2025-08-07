@@ -50,4 +50,13 @@ class ProjectFormController extends Controller
     {
         return $this->service->downloadFilledForm($form);
     }
+
+    public function preview(ProjectForm $form): JsonResponse
+    {
+        $pdfData = $this->service->getPreviewPdfBase64($form);
+        return $this->dataResponse([
+            'PDF' => $pdfData,
+        ]);
+    }
+
 }

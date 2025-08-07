@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Helpers\UrlHelper;
 use App\Repositories\GroupMemberRepository;
 
 
@@ -9,7 +10,6 @@ class GroupMemberService
 {
     public function __construct(
         protected GroupMemberRepository $groupMemberRepo,
-        protected ImageService $imageService,
     ){}
 
     public function getMyGroupMembers(int $userId): array
@@ -23,7 +23,7 @@ class GroupMemberService
                 'id' => $member->id,
                 'user_id'=> $member->user->id,
                 'name' => $member->user->name,
-                'profile_image' => $this->imageService->getFullUrl($profileImage),
+                'profile_image' => UrlHelper::imageUrl($profileImage),
             ];
         })->toArray();
     }

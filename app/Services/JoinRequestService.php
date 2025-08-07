@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Enums\GroupMemberRole;
 use App\Enums\JoinRequestStatus;
+use App\Helpers\UrlHelper;
 use App\Models\User;
 use App\Repositories\JoinRequestRepository;
 use App\Repositories\GroupMemberRepository;
@@ -16,7 +17,7 @@ class JoinRequestService
         protected JoinRequestRepository $requestRepo,
         protected GroupRepository $groupRepo,
         protected GroupMemberRepository $memberRepo,
-        protected ImageService $imageService
+        protected FcmNotificationDispatcherService $dispatcherService
     ) {}
 
     public function send(int $groupId, User $user): void
@@ -36,6 +37,15 @@ class JoinRequestService
         }
 
         $this->requestRepo->create($groupId, $user->id);
+
+        // إشعار قائد المجموعة
+        $leader = $this->memberRepo->getLeader($groupId);
+        if ($leader) {
+            $group = $this->groupRepo->getById($groupId);
+            $title = 'طلب انضمام جديد';
+            $body = "{$user->name} أرسل طلب انضمام إلى مجموعتك {$group->name}";
+            $this->dispatcherService->sendToUser($leader, $title, $body);
+        }
     }
 
     public function getPendingForGroup(int $groupId): array
@@ -53,7 +63,7 @@ class JoinRequestService
                 'user' => [
                     'name' => $request->user->name,
                     'student_speciality' => $profile->student_speciality?->value,
-                    'profile_image' => $this->imageService->getFullUrl($profileImagePath)
+                    'profile_image' => UrlHelper::imageUrl($profileImagePath)
 
                 ],
             ];
@@ -73,7 +83,7 @@ class JoinRequestService
                     'id' => $request->group->id,
                     'name' => $request->group->name,
                     'speciality_needed' => $request->group->speciality_needed,
-                    'image' => $this->imageService->getFullUrl($request->group->image),
+                    'image' => UrlHelper::imageUrl($request->group->image)
                 ],
             ];
         })->toArray();
@@ -92,6 +102,13 @@ class JoinRequestService
         $request->group->increment('number_of_members');
 
         $this->requestRepo->updateStatus($request, JoinRequestStatus::Accepted);
+
+        // إشعار الطالب
+        $student = $request->user;
+        $group = $request->group;
+        $title = 'تم قبول طلبك';
+        $body = "تمت الموافقة على انضمامك إلى مجموعة {$group->name}";
+        $this->dispatcherService->sendToUser($student, $title, $body);
     }
 
     public function reject(int $requestId, User $leader): void
@@ -99,6 +116,13 @@ class JoinRequestService
         $request = $this->requestRepo->findPendingById($requestId);
 
         $this->requestRepo->updateStatus($request, JoinRequestStatus::Rejected);
+
+        // إشعار الطالب
+        $student = $request->user;
+        $group = $request->group;
+        $title = 'تم رفض طلبك';
+        $body = "تم رفض طلب انضمامك إلى مجموعة {$group->name}";
+        $this->dispatcherService->sendToUser($student, $title, $body);
     }
 
     public function cancel(int $requestId, User $student): void
