@@ -15,7 +15,11 @@ return new class extends Migration
             $table->id();
             $table->text('question');
             $table->text('answer');
+            $table->boolean('is_active')->default(true);
             $table->timestamps();
+
+            //index
+            $table->index('updated_at');
         });
     }
 

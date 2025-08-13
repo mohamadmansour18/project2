@@ -18,6 +18,7 @@ class DatabaseSeeder extends Seeder
             AnnouncementSeeder::class,
             FavoriteSeeder::class,
             GroupSeeder::class,
+            FAQSeeder::class
         ]);
     }
 }

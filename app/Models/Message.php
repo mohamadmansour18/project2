@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\MessageStatus;
 use App\Enums\MessageType;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -24,10 +25,13 @@ class Message extends Model
         'faq_id' ,
         'message_type' ,
         'content' ,
+        'attachment_path',
+        'status'
     ];
 
     protected $casts = [
         'message_type' => MessageType::class ,
+        'status' => MessageStatus::class
     ];
 
     public function user(): BelongsTo

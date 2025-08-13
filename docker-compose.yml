@@ -25,6 +25,7 @@ services:
             - redis
             - mailpit
             - mysql
+            - meilisearch
 
     redis:
         image: 'redis:alpine'
@@ -81,6 +82,27 @@ services:
         networks:
             - sail
 
+
+    meilisearch:
+        image: getmeili/meilisearch:v1.16
+        environment:
+            MEILI_ENV: development
+            MEILI_NO_ANALYTICS: "true"
+            MEILI_DB_PATH: /meili_data
+            MEILI_MASTER_KEY: "972c181a1f5a2a50d235d4010b72c257"
+        ports:
+            - "7700:7700"
+        volumes:
+            - "sail-meilisearch:/meili_data"
+        networks:
+            - sail
+        healthcheck:
+            test: ["CMD", "wget", "--spider", "http://localhost:7700/health"]
+            interval: 5s
+            timeout: 2s
+            retries: 15
+
+
 networks:
     sail:
         driver: bridge
@@ -90,3 +112,6 @@ volumes:
         driver: local
     sail-mysql:
         driver: local
+    sail-meilisearch:
+        driver: local
+

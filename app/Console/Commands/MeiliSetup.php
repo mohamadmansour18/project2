@@ -1,0 +1,53 @@
+<?php
+
+namespace App\Console\Commands;
+
+use Illuminate\Console\Command;
+
+class MeiliSetup extends Command
+{
+    /**
+     * The name and signature of the console command.
+     *
+     * @var string
+     */
+    protected $signature = 'meili:setup';
+
+    /**
+     * The console command description.
+     *
+     * @var string
+     */
+    protected $description = 'Setup Meilisearch index for FAQs';
+
+    /**
+     * Execute the console command.
+     */
+    public function handle()
+    {
+        /** @var \Meilisearch\Client $client */
+        $client = app(\Meilisearch\Client::class);
+        $index = $client->index('faqs');
+
+        $index->updateSettings([
+            'searchableAttributes' => ['arr_question_normalized' , 'question'],
+            'displayedAttributes'  => ['id', 'question', 'answer', 'is_active'] ,
+            'filterableAttributes' => ['is_active'],
+        ]);
+
+        $index->updateStopWords([
+            'ما','هو','هي','من','الى','إلى','في','على','عن','هل','كم','كيف','متى','اين','أين','او','أو','و','ال','هذا','هذه','ذلك','تلك'
+        ]);
+
+        $index->updateSynonyms([
+            'مجموعة' => ['غروب' , 'غروبات' , 'فريق' , 'طواقم' , 'طاقم' , 'مجموعات'],
+            'استمارة' => ['وثيقة' , 'عقد'],
+            'عضو' => ['فرد' , 'شخص' , 'اعضاء'],
+            'علامة' => ['درجة' , 'درجات' , 'نتيجة' , 'نتائج' , 'علامات'],
+        ]);
+
+        $this->info('Meilisearch index "faqs" configured');
+
+        return self::SUCCESS;
+    }
+}
