@@ -110,6 +110,8 @@ return [
         'symbols' => 'يجب أن تحتوي :attribute على رمز واحد على الأقل.',
         'uncompromised' => 'تم تسريب :attribute في قاعدة بيانات عامة. الرجاء اختيار كلمة مرور مختلفة.',
     ],
+    'mimetypes' => 'حقل :attribute يجب أن يكون ملف PDF حصراً.',
+    'mimes'     => 'حقل :attribute يجب أن يكون ملف PDF حصراً.',
 
     /*
     |--------------------------------------------------------------------------
@@ -140,6 +142,13 @@ return [
         'profile_image' => 'الصورة الشخصية',
         'file' => 'الملف',
         'university_number' => 'الرقم الجامعي',
-        'student_status' => 'حالة الطالب'
+        'student_status' => 'حالة الطالب',
+        'group_id'             => 'معرّف المجموعة',
+        'arabic_title'         => 'عنوان المشروع بالعربية',
+        'user_segment'         => 'شريحة المستخدمين',
+        'development_procedure'=> 'إجرائية التطوير',
+        'libraries_and_tools'  => 'المكتبات والأدوات',
+        'roadmap_file'         => 'ملف خريطة الطريق',
+        'work_plan_file'       => 'ملف خطة العمل',
     ],
 ];

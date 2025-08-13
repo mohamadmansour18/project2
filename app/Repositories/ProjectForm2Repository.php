@@ -2,6 +2,8 @@
 
 namespace App\Repositories;
 
+use App\Enums\GroupMemberRole;
+use App\Models\ProjectForm;
 use App\Models\ProjectForm2;
 
 class ProjectForm2Repository
@@ -12,4 +14,21 @@ class ProjectForm2Repository
             ->distinct('group_id')
             ->count('group_id');
     }
+
+    public function create(array $data): ProjectForm2
+    {
+        return ProjectForm2::create($data);
+    }
+
+    public function existsForGroup(int $groupId, int $leaderId): bool
+    {
+        return ProjectForm2::where('group_id', $groupId)
+            ->whereHas('group.members', function ($query) use ($leaderId) {
+                $query->where('user_id', $leaderId)
+                    ->where('role', GroupMemberRole::Leader);
+            })
+            ->exists();
+    }
+
+
 }
