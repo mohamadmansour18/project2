@@ -140,6 +140,139 @@ class JoinRequestService
         $this->requestRepo->updateStatus($request, JoinRequestStatus::Cancelled);
     }
 
+    public function sendSixthMemberRequest(int $groupId, User $user, ?string $description = null): void
+    {
+        // تحقق: الطالب مو داخل أي مجموعة
+        if ($this->memberRepo->isInAnyGroup($user->id)) {
+            throw new PermissionDeniedException('طلب مرفوض', 'أنت بالفعل عضو في مجموعة.', 403);
+        }
+
+        // تحقق: ما عنده طلب سابق
+        if ($this->requestRepo->hasPendingRequestSixthStudent($groupId, $user->id)) {
+            throw new PermissionDeniedException('طلب موجود', 'لديك طلب انضمام معلق لهذه المجموعة.', 403);
+        }
+
+        // تحقق: المجموعة فيها 5 أعضاء فقط (الطالب السادس)
+        $memberCount = $this->groupRepo->getMemberCount($groupId);
+        if ($memberCount < 5) {
+            throw new PermissionDeniedException('غير مؤهل', 'هذا الطلب مخصص فقط للانضمام كمشارك سادس.', 403);
+        }
+        if ($memberCount >= 6) {
+            throw new PermissionDeniedException('ممتلئة', 'المجموعة مكتملة بالكامل ولا يمكن الانضمام.', 403);
+        }
+
+        // إنشاء الطلب
+        $this->requestRepo->createSixthMemberRequest($groupId, $user->id, $description);
+
+        // إشعار القائد
+        $leader = $this->memberRepo->getLeader($groupId);
+        if ($leader) {
+            $group = $this->groupRepo->getById($groupId);
+            $title = 'طلب انضمام جديد (طالب سادس)';
+            $body = "{$user->name} أرسل طلب انضمام كمشارك سادس إلى مجموعتك {$group->name}";
+            $this->dispatcherService->sendToUser($leader, $title, $body);
+        }
+    }
+
+    public function getLeaderPendingRequests(int $groupId): array
+    {
+        $requests = $this->requestRepo->getPendingForLeader($groupId);
+
+        return $requests->map(fn($r) => [
+            'id' => $r->id,
+            'group_id' => $r->group_id,
+            'user_id' => $r->user_id,
+            'status' => $r->status->value,
+            'description' => $r->description,
+            'user' => [
+                'name' => $r->user->name,
+                'student_speciality' => $r->user->profile?->student_speciality?->value,
+                'profile_image' => UrlHelper::imageUrl($r->user->profile?->profile_image)
+            ]
+        ])->toArray();
+    }
+
+    public function leaderApprove(int $requestId, int $leaderId): void
+    {
+        $request = $this->requestRepo->findPendingByIdSixth($requestId);
+
+        if (!$request || $request->status !== JoinRequestStatus::PendingLeader) {
+            throw new PermissionDeniedException('غير موجود', 'الطلب غير موجود أو تم التعامل معه', 404);
+        }
+
+        $this->requestRepo->updateStatus($request, JoinRequestStatus::PendingHead);
+    }
+
+    public function leaderReject(int $requestId, int $leaderId): void
+    {
+        $request = $this->requestRepo->findPendingByIdSixth($requestId);
+
+        if (!$request || $request->status !== JoinRequestStatus::PendingLeader) {
+            throw new PermissionDeniedException('غير موجود', 'الطلب غير موجود أو تم التعامل معه', 404);
+        }
+        $this->requestRepo->updateStatus($request, JoinRequestStatus::Rejected);
+
+        // إشعار الطالب
+        $title = 'تم رفض طلبك';
+        $body = "رفض الليدر طلبك للانضمام إلى {$request->group->name}";
+        $this->dispatcherService->sendToUser($request->user, $title, $body);
+    }
+
+    // طلبات رئيس القسم
+    public function getHeadPendingRequests(): array
+    {
+        $requests = $this->requestRepo->getPendingForHead();
+        return $requests->map(fn($r) => [
+            'id' => $r->id,
+            'group_id' => $r->group_id,
+            'group_name'=>$r->group->name,
+            'user_id' => $r->user_id,
+            'status' => $r->status->value,
+            'description' => $r->description,
+            'user' => [
+                'name' => $r->user->name,
+                'student_speciality' => $r->user->profile?->student_speciality?->value,
+                'profile_image' => UrlHelper::imageUrl($r->user->profile?->profile_image)
+            ]
+        ])->toArray();
+    }
+
+    public function headApprove(int $requestId): void
+    {
+        $request = $this->requestRepo->findPendingByIdSixthHead($requestId);
+
+        if (!$request || $request->status !== JoinRequestStatus::PendingHead) {
+            throw new PermissionDeniedException('غير موجود', 'الطلب غير موجود أو تم التعامل معه', 404);
+        }
+
+        // إضافة الطالب للمجموعة
+        $this->memberRepo->create($request->group_id, $request->user_id, GroupMemberRole::Member);
+        $request->group->increment('number_of_members');
+
+        $this->requestRepo->updateStatus($request, JoinRequestStatus::Accepted);
+
+        // إشعار الطالب
+        $title = 'تم قبول طلبك';
+        $body = "تمت الموافقة على انضمامك إلى مجموعة {$request->group->name}";
+        $this->dispatcherService->sendToUser($request->user, $title, $body);
+    }
+
+    public function headReject(int $requestId): void
+    {
+        $request = $this->requestRepo->findPendingByIdSixthHead($requestId);
+
+        if (!$request || $request->status !== JoinRequestStatus::PendingHead) {
+            throw new PermissionDeniedException('غير موجود', 'الطلب غير موجود أو تم التعامل معه', 404);
+        }
+
+        $this->requestRepo->updateStatus($request, JoinRequestStatus::Rejected);
+
+        // إشعار الطالب
+        $title = 'تم رفض طلبك';
+        $body = "رفض رئيس القسم طلبك للانضمام إلى {$request->group->name}";
+        $this->dispatcherService->sendToUser($request->user, $title, $body);
+    }
+
 
 
 }

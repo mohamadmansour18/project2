@@ -63,18 +63,21 @@ class EnsureUserIsGroupLeader
 
     private function handleJoinRequest(Request $request): ?int
     {
-        $joinRequest = JoinRequest::find($request->route('id'));
+        $joinRequestId = $request->route('id') ?? $request->route('requestId');
+
+        $joinRequest = JoinRequest::find($joinRequestId);
 
         if (!$joinRequest) {
             abort(404, 'الطلب غير موجود.');
         }
 
-        if ($joinRequest->status !== JoinRequestStatus::Pending) {
+        if (!in_array($joinRequest->status, [JoinRequestStatus::Pending, JoinRequestStatus::PendingLeader])) {
             abort(404, 'تم التعامل مع الطلب.');
         }
 
         return $joinRequest->group_id;
     }
+
 
     private function handleInvitation(Request $request): ?int
     {

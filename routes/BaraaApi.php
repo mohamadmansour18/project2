@@ -65,6 +65,11 @@ Route::prefix('/student')->group(function (){
 
             //form 2 APIs
             Route::post('/project-form-two', [ProjectForm2Controller::class, 'store']);
+
+            //Sixth student APIs
+            Route::get('/groups/{group}/leader-requests', [JoinRequestController::class, 'leaderRequests']);
+            Route::post('/join-request/{id}/approve', [JoinRequestController::class, 'leaderApprove']);
+            Route::post('/join-request/{id}/reject',  [JoinRequestController::class, 'leaderReject']);
         });
 
         //Group APIs
@@ -98,6 +103,20 @@ Route::prefix('/student')->group(function (){
         Route::get('/form-2/{form}/download', [ProjectForm2Controller::class, 'download']);
         Route::get('/form-2/{form}/preview', [ProjectForm2Controller::class, 'preview']);
 
+        //Sixth student APIs
+        Route::post('/groups/{groupId}/join-request-sixth', [JoinRequestController::class, 'storeSixthMemberRequest']);
+
+    });
+});
+
+
+Route::prefix('/admin')->group(function (){
+    Route::middleware(['auth:api' , 'role:admin'])->group(function (){
+
+        //Sixth student APIs
+        Route::get('/requests',[JoinRequestController::class, 'headRequests']);
+        Route::post('/requests/{requestId}/approve', [JoinRequestController::class, 'headApprove']);
+        Route::post('/requests/{requestId}/reject',  [JoinRequestController::class, 'headReject']);
     });
 });
 
