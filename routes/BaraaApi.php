@@ -3,6 +3,7 @@
 use App\Http\Controllers\Auth\AuthenticationStudentController;
 use App\Http\Controllers\Favorite\AnnouncementsController;
 use App\Http\Controllers\FormOne\ProjectFormController;
+use App\Http\Controllers\FormTwo\ProjectForm2Controller;
 use App\Http\Controllers\Group\GroupController;
 use App\Http\Controllers\Group\GroupInvitationController;
 use App\Http\Controllers\Group\GroupMemberController;
@@ -61,6 +62,14 @@ Route::prefix('/student')->group(function (){
             Route::post('/project-form-one', [ProjectFormController::class, 'store']);
             Route::post('/project-form-one/{form}', [ProjectFormController::class, 'update']);
             Route::post('/project-form-one/{form}/submit', [ProjectFormController::class, 'submit']);
+
+            //form 2 APIs
+            Route::post('/project-form-two', [ProjectForm2Controller::class, 'store']);
+
+            //Sixth student APIs
+            Route::get('/groups/{group}/leader-requests', [JoinRequestController::class, 'leaderRequests']);
+            Route::post('/join-request/{id}/approve', [JoinRequestController::class, 'leaderApprove']);
+            Route::post('/join-request/{id}/reject',  [JoinRequestController::class, 'leaderReject']);
         });
 
         //Group APIs
@@ -90,6 +99,24 @@ Route::prefix('/student')->group(function (){
         Route::get('/form-1/{form}/download', [ProjectFormController::class, 'download']);
         Route::get('/form-1/{form}/preview', [ProjectFormController::class, 'preview']);
 
+        //form 2 APIs
+        Route::get('/form-2/{form}/download', [ProjectForm2Controller::class, 'download']);
+        Route::get('/form-2/{form}/preview', [ProjectForm2Controller::class, 'preview']);
+
+        //Sixth student APIs
+        Route::post('/groups/{groupId}/join-request-sixth', [JoinRequestController::class, 'storeSixthMemberRequest']);
+
+    });
+});
+
+
+Route::prefix('/admin')->group(function (){
+    Route::middleware(['auth:api' , 'role:admin'])->group(function (){
+
+        //Sixth student APIs
+        Route::get('/requests',[JoinRequestController::class, 'headRequests']);
+        Route::post('/requests/{requestId}/approve', [JoinRequestController::class, 'headApprove']);
+        Route::post('/requests/{requestId}/reject',  [JoinRequestController::class, 'headReject']);
     });
 });
 
