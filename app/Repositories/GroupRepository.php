@@ -67,6 +67,16 @@ class GroupRepository
             ->get(['id', 'name', 'image', 'speciality_needed', 'number_of_members']);
     }
 
+    public function getUserGroup(int $userId)
+    {
+        return Group::query()
+            ->whereHas('members', function ($query) use ($userId) {
+                $query->where('user_id', $userId);
+            })
+            ->first();
+    }
+
+
 
 
 }

@@ -57,6 +57,13 @@ class GroupController extends Controller
         return $this->dataResponse(['groups' => $groups]);
     }
 
+    public function myGroup()
+    {
+        $userId = auth()->id();
+        $data = $this->groupService->getMyGroup($userId);
+
+        return $this->dataResponse(['data' => $data]);
+    }
 
 
 }
