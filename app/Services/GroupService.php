@@ -129,5 +129,21 @@ class GroupService
         })->toArray();
     }
 
+    public function getMyGroup(int $userId): ?array
+    {
+        $group = $this->groupRepo->getUserGroup($userId);
+
+        if (!$group) {
+            throw new PermissionDeniedException(
+                'خطأ',
+                'أنت لست عضو في أي مجموعة',
+                404
+            );
+        }
+
+        return $this->getGroupData($group);
+    }
+
+
 
 }

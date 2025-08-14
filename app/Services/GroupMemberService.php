@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Enums\GroupMemberRole;
 use App\Helpers\UrlHelper;
 use App\Repositories\GroupMemberRepository;
 
@@ -24,6 +25,7 @@ class GroupMemberService
                 'user_id'=> $member->user->id,
                 'name' => $member->user->name,
                 'profile_image' => UrlHelper::imageUrl($profileImage),
+                'is_leader' => $member->role === GroupMemberRole::Leader,
             ];
         })->toArray();
     }
