@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Auth\AuthenticationAdminController;
 use App\Http\Controllers\Auth\AuthenticationDoctorController;
+use App\Http\Controllers\Conversation\ConversationController;
 use App\Http\Controllers\Favorite\AnnouncementsController;
 use App\Http\Controllers\Other\FormSubmissionPeriodController;
 use App\Http\Controllers\Other\StatisticsController;
@@ -106,6 +107,9 @@ Route::prefix('/student')->group(function (){
         //home
         Route::get('/home/showFormDates' , [FormSubmissionPeriodController::class , 'getFormDataForStudent']);
         Route::get('/home/showNumbersStatistics' , [StatisticsController::class , 'getHomeStatistics']);
+
+        //Conversation
+        Route::get('/showConversations' , [ConversationController::class , 'showStudentConversations']);
     });
 });
 

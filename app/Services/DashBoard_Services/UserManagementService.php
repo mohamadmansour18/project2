@@ -2,12 +2,15 @@
 
 namespace App\Services\DashBoard_Services;
 
+use App\Enums\ConversationType;
 use App\Enums\ProfileStudentStatus;
 use App\Enums\UserRole;
 use App\Exceptions\DeleteDoctorException;
 use App\Exceptions\PermissionDeniedException;
 use App\Helpers\UrlHelper;
+use App\Models\Conversation;
 use App\Models\User;
+use App\Repositories\ConversationRepository;
 use App\Repositories\FormSubmissionPeriodRepository;
 use App\Repositories\InterviewCommitteeRepository;
 use App\Repositories\ProfileRepository;
@@ -24,6 +27,7 @@ class UserManagementService
         protected FcmNotificationDispatcherService $dispatcherService,
         protected FormSubmissionPeriodRepository $formSubmissionPeriodRepository,
         protected InterviewCommitteeRepository $interviewCommitteeRepository,
+        protected ConversationRepository $conversationRepository,
     )
     {}
 
@@ -181,6 +185,15 @@ class UserManagementService
                 'user_id' => $user->id ,
                 'profile_image' => $imagePath
             ]);
+
+            $conversation = $this->conversationRepository->createConversation([
+                'user_one_id' => $user->id ,
+                'user_two_id' => null ,
+                'type' => ConversationType::Self ,
+                'last_message_at' => null
+            ]);
+
+
         });
     }
 
@@ -196,6 +209,13 @@ class UserManagementService
             $profile = $this->profileRepository->createProfile([
                 'user_id' => $user->id ,
                 'student_status' => ProfileStudentStatus::Fourth_Year,
+            ]);
+
+            $conversation = $this->conversationRepository->createConversation([
+                'user_one_id' => $user->id ,
+                'user_two_id' => null ,
+                'type' => ConversationType::Self ,
+                'last_message_at' => null
             ]);
 
         });
@@ -229,6 +249,13 @@ class UserManagementService
                     'profile_image' => $row['profile_image']
                 ]);
 
+                $conversation = $this->conversationRepository->createConversation([
+                    'user_one_id' => $user->id ,
+                    'user_two_id' => null ,
+                    'type' => ConversationType::Self ,
+                    'last_message_at' => null
+                ]);
+
                 DB::commit();
 
                 $inserted[] = $row['email'];
@@ -243,7 +270,7 @@ class UserManagementService
         return ['inserted' => $inserted, 'failed' => $failed];
     }
 
-    public function importStudentsFromExcel(array $rows)
+    public function importStudentsFromExcel(array $rows): array
     {
         $inserted = [];
         $failed = [];
@@ -269,6 +296,13 @@ class UserManagementService
                 $profile = $this->profileRepository->createProfile([
                     'user_id' => $user->id ,
                     'student_status' => ProfileStudentStatus::Fourth_Year,
+                ]);
+
+                $conversation = $this->conversationRepository->createConversation([
+                    'user_one_id' => $user->id ,
+                    'user_two_id' => null ,
+                    'type' => ConversationType::Self ,
+                    'last_message_at' => null
                 ]);
 
                 DB::commit();
