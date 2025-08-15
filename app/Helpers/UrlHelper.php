@@ -2,6 +2,8 @@
 
 namespace App\Helpers;
 
+use Illuminate\Support\Facades\Storage;
+
 class UrlHelper
 {
     public static function imageUrl(?string $path): ?string
@@ -11,6 +13,7 @@ class UrlHelper
             return null;
         }
 
-        return config('app.url') . ltrim($path , '/');
+        //asset : generate APP_URL & Storage::url generate rest of url : /storage/app/public/{image_path}
+        return asset(Storage::url($path));
     }
 }

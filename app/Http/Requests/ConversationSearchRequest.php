@@ -5,7 +5,7 @@ namespace App\Http\Requests;
 use App\Traits\ValidationFailedResponse;
 use Illuminate\Foundation\Http\FormRequest;
 
-class DoctorSearchRequest extends FormRequest
+class ConversationSearchRequest extends FormRequest
 {
     use ValidationFailedResponse ;
 
@@ -27,7 +27,7 @@ class DoctorSearchRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'search' => ['required' , 'string' , 'max:80' ,'min:1']
+            'search' => ['required' , 'string' , 'min:1' , 'max:80']
         ];
     }
 

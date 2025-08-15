@@ -110,6 +110,9 @@ Route::prefix('/student')->group(function (){
 
         //Conversation
         Route::get('/showConversations' , [ConversationController::class , 'showStudentConversations']);
+        Route::get('/showConversationOption' , [ConversationController::class , 'selectUserToStartConversation']);
+        Route::get('/createConversation/{otherUserId}' , [ConversationController::class , 'createConversation']);
+        Route::post('/search' , [ConversationController::class , 'searchConversation']);
     });
 });
 
