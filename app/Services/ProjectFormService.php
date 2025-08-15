@@ -4,6 +4,7 @@ namespace App\Services;
 use App\Enums\ProjectFormStatus;
 use App\Exceptions\PermissionDeniedException;
 use App\Models\ProjectForm;
+use App\Repositories\FormSubmissionPeriodRepository;
 use App\Repositories\GroupMemberRepository;
 use App\Repositories\ProjectFormRepository;
 use Illuminate\Support\Facades\Auth;
@@ -17,6 +18,7 @@ class ProjectFormService
         protected ProjectFormRepository $repository,
         protected GroupMemberRepository $groupRepo,
         protected FcmNotificationDispatcherService $dispatcherService,
+        protected FormSubmissionPeriodRepository $periodRepo,
     ) {}
 
     public function store(array $data): void
@@ -26,6 +28,8 @@ class ProjectFormService
         if ($this->repository->existsForGroupByLeader($data['group_id'], $user->id)) {
             throw new PermissionDeniedException('عملية مكررة', 'لا يمكنك تعبئة الاستمارة أكثر من مرة لنفس المجموعة.');
         }
+
+        $this->ensureFormPeriodIsActive("form1");
 
         $form = $this->repository->create([
             'group_id' => $data['group_id'],
@@ -108,6 +112,8 @@ class ProjectFormService
             }
         }
 
+        $this->ensureFormPeriodIsActive("form1");
+
         $this->repository->update($form, $data);
         $this->regeneratePdf($form);
     }
@@ -122,6 +128,8 @@ class ProjectFormService
         if ($form->status === ProjectFormStatus::Rejected && $form->updated_at <= $form->submission_date) {
             throw new PermissionDeniedException('لم يتم التعديل', 'قم بتعديل النموذج قبل إعادة الإرسال.');
         }
+
+        $this->ensureFormPeriodIsActive("form1");
 
         $groupMemberIds = $this->groupRepo->getGroupMemberIds($form->group_id);
         $signedUserIds = $form->signatures->pluck('user_id')->toArray();
@@ -178,7 +186,7 @@ class ProjectFormService
             throw new PermissionDeniedException('غير مصرح', 'لا يمكنك رؤية هذا الملف غير مخول لك بهذا.');
         }
 
-        if (!$form->filled_form_file_path || !\Storage::disk('public')->exists($form->filled_form_file_path)) {
+        if (!$form->filled_form_file_path || !Storage::disk('public')->exists($form->filled_form_file_path)) {
             throw new PermissionDeniedException('غير موجود', 'الملف غير متوفر أو لم يتم إنشاؤه بعد.');
         }
 
@@ -192,8 +200,6 @@ class ProjectFormService
             'file_base64' => $base64Pdf,
         ];
     }
-
-
 
     private function regeneratePdf(ProjectForm $form): void
     {
@@ -226,5 +232,15 @@ class ProjectFormService
 
         // 5) حدِّث العمود في قاعدة البيانات
         $form->updateQuietly(['filled_form_file_path' => $filePath]);
+    }
+
+    private function ensureFormPeriodIsActive(string $formName): void
+    {
+        if (!$this->periodRepo->isFormPeriodActive($formName)) {
+            throw new PermissionDeniedException(
+                'انتهى الوقت',
+                'لا يمكنك تعديل أو إرسال هذا النموذج بعد انتهاء الفترة المحددة.'
+            );
+        }
     }
 }

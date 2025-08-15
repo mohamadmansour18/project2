@@ -65,5 +65,18 @@ class GroupController extends Controller
         return $this->dataResponse(['data' => $data]);
     }
 
+    public function showPublic($groupId)
+    {
+        $details = $this->groupService->getGroupDetails2($groupId);
+
+        return $this->dataResponse(['details' => $details]);
+    }
+
+    public function myGroupDetails()
+    {
+        $details = $this->groupService->getMyGroupDetails();
+
+        return $this->dataResponse(['details' => $details]);
+    }
 
 }

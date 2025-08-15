@@ -76,6 +76,26 @@ class GroupRepository
             ->first();
     }
 
+    public function getGroupWithRelations(int $groupId)
+    {
+        return Group::with([
+            'members.user.profile',
+            'projectForms.signatures.user.profile'
+        ])->findOrFail($groupId);
+    }
+
+    public function getUserGroupWithRelations(int $userId)
+    {
+        return Group::with([
+            'members.user.profile',
+            'projectForms.signatures.user'
+        ])
+            ->whereHas('members', function ($q) use ($userId) {
+                $q->where('user_id', $userId);
+            })
+            ->first();
+    }
+
 
 
 

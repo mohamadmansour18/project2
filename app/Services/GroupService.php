@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Enums\UserRole;
 use App\Exceptions\PermissionDeniedException;
 use App\Helpers\ImageHelper;
 use App\Helpers\UrlHelper;
@@ -144,6 +145,77 @@ class GroupService
         return $this->getGroupData($group);
     }
 
+    public function getGroupDetails2(int $groupId): array
+    {
+        $group = $this->groupRepo->getGroupWithRelations($groupId);
+
+        $form1 = $group->projectForms()->first();
+
+        $supervisorSignature = $form1?->signatures()
+            ->whereHas('user', function ($q) {
+                $q->where('role', UserRole::Doctor);
+            })
+            ->with('user')
+            ->first();
+
+        return [
+            'supervisor_name' => $supervisorSignature?->user?->name,
+            'group_created_at' => $group->created_at->toDateString(),
+            'idea_arabic_name' => $form1?->arabic_title,
+            'members_count' => $group->members->count(),
+            'members' => $group->members->map(function ($member) {
+                return [
+                    'name' => $member->user->name,
+                    'speciality' => $member->user->profile?->student_speciality,
+                    'student_status' => $member->user->profile?->student_status,
+                    'image' => UrlHelper::imageUrl( $member->user->profile?->profile_image),
+                    'is_leader' => $member->role === GroupMemberRole::Leader,
+                ];
+            }),
+            'qr_code' => UrlHelper::imageUrl($group->qr_code),
+        ];
+        }
+
+    public function getMyGroupDetails(): ?array
+    {
+        $user = auth()->user();
+        $group = $this->groupRepo->getUserGroupWithRelations($user->id);
+
+        if (!$group) {
+            throw new PermissionDeniedException(
+                'خطأ',
+                'أنت لست عضو في أي مجموعة',
+                404
+            );
+        }
+
+        $form1 = $group->projectForms()->first();
+
+        $supervisorSignature = $form1?->signatures()
+            ->whereHas('user', function ($q) {
+                $q->where('role', UserRole::Doctor);
+            })
+            ->with('user')
+            ->first();
+
+        return [
+            'group_id' => $group->id,
+            'supervisor_name' => $supervisorSignature?->user?->name,
+            'group_created_at' => $group->created_at->toDateString(),
+            'idea_arabic_name' => $form1?->arabic_title,
+            'members_count' => $group->members->count(),
+            'members' => $group->members->map(function ($member) {
+                return [
+                    'name' => $member->user->name,
+                    'speciality' => $member->user->profile?->student_speciality,
+                    'student_status' => $member->user->profile?->student_status,
+                    'image' => UrlHelper::imageUrl( $member->user->profile?->profile_image),
+                    'is_leader' => $member->role === GroupMemberRole::Leader,
+                ];
+            }),
+            'qr_code' => UrlHelper::imageUrl($group->qr_code),
+        ];
+    }
 
 
 }
