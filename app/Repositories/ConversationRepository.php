@@ -113,7 +113,8 @@ class ConversationRepository
         $date = Carbon::parse($datetime);
 
         if ($date->isToday()) {
-            return $date->format('g:i A');
+            $time = $date->format('g:i A');
+            return str_replace([' AM',' PM'],[' ص',' م'],$time);
         }
 
         if ($date->isYesterday()) {

@@ -3,6 +3,7 @@
 use App\Http\Controllers\Auth\AuthenticationAdminController;
 use App\Http\Controllers\Auth\AuthenticationDoctorController;
 use App\Http\Controllers\Conversation\ConversationController;
+use App\Http\Controllers\Conversation\MessageController;
 use App\Http\Controllers\Favorite\AnnouncementsController;
 use App\Http\Controllers\Other\FormSubmissionPeriodController;
 use App\Http\Controllers\Other\StatisticsController;
@@ -113,6 +114,8 @@ Route::prefix('/student')->group(function (){
         Route::get('/showConversationOption' , [ConversationController::class , 'selectUserToStartConversation']);
         Route::get('/createConversation/{otherUserId}' , [ConversationController::class , 'createConversation']);
         Route::post('/search' , [ConversationController::class , 'searchConversation']);
+
+        Route::post('/showMessages/{conversation_id}' , [MessageController::class , 'showMessages']);
     });
 });
 
