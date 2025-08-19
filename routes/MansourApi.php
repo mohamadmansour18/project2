@@ -5,6 +5,8 @@ use App\Http\Controllers\Auth\AuthenticationDoctorController;
 use App\Http\Controllers\Conversation\ConversationController;
 use App\Http\Controllers\Conversation\MessageController;
 use App\Http\Controllers\Favorite\AnnouncementsController;
+use App\Http\Controllers\Group\GroupController;
+use App\Http\Controllers\Interview\InterviewCommitteeController;
 use App\Http\Controllers\Other\FormSubmissionPeriodController;
 use App\Http\Controllers\Other\StatisticsController;
 use App\Http\Controllers\User\UserController;
@@ -50,6 +52,17 @@ Route::prefix('/doctor')->group(function (){
             Route::get('/announcementStatistics', [AnnouncementsController::class, 'getAnnouncementStatistics']);
             Route::get('/showNumbersStatistics', [StatisticsController::class, 'getHomeStatistics']);
             Route::get('/showFlowChartStatistics', [StatisticsController::class, 'getDoctorHomeGroupStatistics']);
+        });
+
+        Route::prefix('/groups')->group(function (){
+            Route::get('/showALlGroups' , [GroupController::class , 'showAllGroup']);
+            Route::get('/showDoctorGroups' , [GroupController::class , 'showDoctorFormOneGroup']);
+            Route::get('/showDoctorInterviewGroups' , [InterviewCommitteeController::class , 'showDoctorInterviewGroup']);
+            Route::post('/searchGroupInterview' , [InterviewCommitteeController::class , 'showDoctorInterviewGroupSearched']);
+        });
+
+        Route::prefix('/groupDetails')->group(function (){
+            Route::get('/finalInterview/{group_id}' , [GroupController::class , 'showGroupDetailsInInterview']);
         });
     });
 });

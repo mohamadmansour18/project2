@@ -15,9 +15,9 @@ return new class extends Migration
             $table->id();
             $table->foreignId('committee_id')->constrained('interview_committees' , 'id')->onDelete('cascade')->onUpdate('cascade');
             $table->foreignId('group_id')->constrained('groups' , 'id')->onDelete('cascade')->onUpdate('cascade');
-            $table->json('interview_day');
-            $table->timestamp('interview_time');
-            $table->timestamp('interview_end_time');
+            $table->date('interview_date');
+            $table->time('interview_time');
+            $table->time('interview_end_time');
             $table->timestamps();
         });
     }

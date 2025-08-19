@@ -2,10 +2,10 @@
 
 namespace App\Models;
 
-use App\Enums\InterviewCommitteeDays;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class InterviewCommittee extends Model
 {
@@ -28,6 +28,7 @@ class InterviewCommittee extends Model
 
     protected $casts = [
         'days' => 'array' ,
+        'interview_time' => 'datetime:H:i:s',
     ];
 
     public function adminSupervisor(): BelongsTo
@@ -38,5 +39,10 @@ class InterviewCommittee extends Model
     public function adminMember(): BelongsTo
     {
         return $this->belongsTo(User::class , 'member_id' , 'id')->withDefault();
+    }
+
+    public function schedules(): HasMany
+    {
+        return $this->hasMany(InterviewSchedule::class, 'committee_id' , 'id');
     }
 }

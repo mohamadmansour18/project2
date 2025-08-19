@@ -9,6 +9,7 @@ use App\Http\Requests\UpdateGroupRequest;
 use App\Models\Group;
 use App\Services\GroupService;
 use App\Traits\ApiSuccessTrait;
+use Illuminate\Http\JsonResponse;
 
 class GroupController extends Controller
 {
@@ -17,7 +18,7 @@ class GroupController extends Controller
     public function __construct(protected GroupService $groupService)
     {}
 
-    public function store(CreateGroupRequest $request)
+    public function store(CreateGroupRequest $request): JsonResponse
     {
         $user = auth()->user();
         if ($user->groupMember()->exists()) {
@@ -30,7 +31,7 @@ class GroupController extends Controller
 
     }
 
-    public function update(UpdateGroupRequest $request, Group $group)
+    public function update(UpdateGroupRequest $request, Group $group): JsonResponse
     {
         $user = auth()->user();
 
@@ -39,25 +40,25 @@ class GroupController extends Controller
         return $this->successResponse('تعديل مجموعة', 'تم تعديل بيانات المجموعة بنجاح', 200);
     }
 
-    public function show(Group $group)
+    public function show(Group $group): JsonResponse
     {
         $data = $this->groupService->getGroupData($group);
         return $this->dataResponse($data ,200);
     }
 
-    public function ChangeLeadership(ChangeLeadershipRequest $request, Group $group)
+    public function ChangeLeadership(ChangeLeadershipRequest $request, Group $group): JsonResponse
     {
         $this->groupService->changeLeadership($group, auth()->id(), $request->new_leader_id);
         return $this->successResponse('نقل القيادة', 'تم نقل القيادة بنجاح', 200);
     }
 
-    public function getIncompletePublicGroups()
+    public function getIncompletePublicGroups(): JsonResponse
     {
         $groups = $this->groupService->getIncompletePublicGroups();
         return $this->dataResponse(['groups' => $groups]);
     }
 
-    public function myGroup()
+    public function myGroup(): JsonResponse
     {
         $userId = auth()->id();
         $data = $this->groupService->getMyGroup($userId);
@@ -65,5 +66,24 @@ class GroupController extends Controller
         return $this->dataResponse(['data' => $data]);
     }
 
+    public function showAllGroup(): JsonResponse
+    {
+        $data = $this->groupService->getGroupDataForDoctor();
 
+        return response()->json($data , 200);
+    }
+
+    public function showDoctorFormOneGroup(): JsonResponse
+    {
+        $data = $this->groupService->getGroupFormOneForDoctor();
+
+        return response()->json($data , 200);
+    }
+
+    public function showGroupDetailsInInterview(int $groupId): JsonResponse
+    {
+        $data = $this->groupService->getGroupDetailsForFinalInterview($groupId);
+
+        return $this->dataResponse($data ,200);
+    }
 }

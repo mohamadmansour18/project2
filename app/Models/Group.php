@@ -72,8 +72,4 @@ class Group extends Model
         return $this->hasOne(ProjectGrade::class, 'group_id', 'id');
     }
 
-//    public function getImageAttribute($value): string
-//    {
-//        return $value != null ? asset('storage/' . $value) : 'null' ;
-//    }
 }
