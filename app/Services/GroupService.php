@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Enums\ProjectFormStatus;
 use App\Enums\UserRole;
 use App\Exceptions\PermissionDeniedException;
 use App\Helpers\ImageHelper;
@@ -14,6 +15,8 @@ use App\Repositories\GroupInvitationRepository;
 use App\Repositories\GroupMemberRepository;
 use App\Repositories\GroupRepository;
 use App\Enums\GroupMemberRole;
+use Carbon\Carbon;
+use Illuminate\Support\Facades\Auth;
 
 class GroupService
 {
@@ -217,5 +220,137 @@ class GroupService
         ];
     }
 
+    public function getGroupDataForDoctor()
+    {
+        $groups = $this->groupRepo->getAllGroupsWithForms();
+
+        return $groups->map(function ($group) {
+
+            return [
+                'id' => $group->id,
+                'name' => $group->name,
+                'group_image' => UrlHelper::imageUrl($group->image) ,
+                'number_of_members' => $this->getCustomGroupNumber($group),
+                'form1' => $this->checkForm1($group),
+                'form2' => $this->checkForm2($group),
+            ];
+        });
+    }
+
+    public function getGroupFormOneForDoctor()
+    {
+        $doctorId = Auth::id();
+
+        $groups = $this->groupRepo->getDoctorFormOneGroups($doctorId);
+
+        return $groups->map(function ($group) {
+            return [
+                'id' => $group->id,
+                'name' => $group->name,
+                'group_image' => UrlHelper::imageUrl($group->image) ,
+                'number_of_members' => $this->getCustomGroupNumber($group),
+                'form1' => $this->checkForm1($group),
+                'form2' => $this->checkForm2($group),
+            ];
+        });
+    }
+
+    public function getGroupDetailsForFinalInterview($groupId)
+    {
+        $data = $this->groupRepo->getGroupDetailsInFinalInterview($groupId);
+
+        $group = $data['group'];
+        $schedule = $data['schedule'];
+        $form1 = $data['form1'];
+        $form2 = $data['form2'];
+        $grade = $data['grade'];
+        $exceptions = $data['exceptionGrades'];
+        $isSupervisor = $data['isSupervisor'];
+
+        return [
+            'interview_information' => $schedule ? [
+                'time' => $this->formatTime($schedule->interview_time),
+                'day' => $this->getDayName($schedule->interview_date),
+                'date' => Carbon::parse($schedule->interview_date)->format('d/m/Y')
+            ] : [],
+
+            'main' => [
+                'group_name' => $group->name,
+                'project_title' => $form1 ? $form1->arabic_title : null,
+                'leader' => optional($group->members()->where('role' , GroupMemberRole::Leader->value)->first()?->user)->name ,
+                'members_count' => $this->getCustomGroupNumber($group),
+                'members' => $group->members->map(function ($member){
+                    return [
+                        'id' => $member->user->id,
+                        'name' => $member->user->name,
+                        'profile_image' => optional($member->user->profile)->profile_image ?? null
+                    ];
+                })->values(),
+            ],
+
+            'project' => [
+                'form_supervisor' => $form1 ? optional($form1->users)->name : "لايوجد مشرف",
+                'form1_date' => $form1 ? Carbon::parse($form1->submission_date)->format('d/m/Y') : "غير موجودة",
+                'form2_date' => $form2 ? $form2->created_at->format('d/m/Y') : "غير موجودة",
+            ],
+
+            'grade' => $grade ? [
+                'presentation_grade' => $grade->presentation_grade,
+                'project_grade' => $grade->project_grade,
+                'total_grade' => $grade->total_grade,
+                'exceptions' => $exceptions->map(function ($exception){
+                    return [
+                        'id' => $exception->user->id,
+                        'name' => $exception->user->name
+                    ];
+                })->values(),
+            ] : [],
+
+            'is_Supervisor' => $isSupervisor,
+        ];
+    }
+
+    private function getCustomGroupNumber($group): string
+    {
+        $numberOfMembers = $group->number_of_members;
+
+        return $numberOfMembers > 5 ? "6/$numberOfMembers" : "5/$numberOfMembers";
+    }
+
+    private function checkForm1($group): ?string
+    {
+        $form1 = $group->projectForms()->whereIn('status' , [ProjectFormStatus::Approved->value , ProjectFormStatus::Pending->value])->first();
+
+        return $form1 ? "# استمارة 1" : null ;
+    }
+
+    private function checkForm2($group): ?string
+    {
+        $form2 = $group->projectForm2()->first();
+
+        return $form2 ?"# استمارة 2" : null ;
+    }
+
+    private function formatTime($time): string
+    {
+        $carbon = Carbon::createFromFormat('H:i:s', $time);
+        $formatted = $carbon->format('h:i');
+        $suffix = $carbon->format('A') === 'AM' ? 'ص' : 'م';
+        return $formatted . $suffix;
+    }
+
+    private function getDayName($date): string
+    {
+        $days = [
+            'Saturday' => 'السبت',
+            'Sunday' => 'الاحد',
+            'Monday' => 'الاثنين',
+            'Tuesday' => 'الثلاثاء',
+            'Wednesday' => 'الاربعاء',
+            'Thursday' => 'الخميس',
+            'Friday' => 'الجمعة',
+        ];
+        return $days[Carbon::parse($date)->format('l')] ?? '';
+    }
 
 }
