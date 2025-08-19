@@ -77,6 +77,8 @@ Route::prefix('/student')->group(function (){
         Route::get('/showGroupInfo/{group}', [GroupController::class, 'show']);
         Route::get('/groups/incomplete/public', [GroupController::class, 'getIncompletePublicGroups']);
         Route::get('/my-group', [GroupController::class, 'myGroup']);
+        Route::get('/showGroupInfoPublic/{groupId}/details', [GroupController::class, 'showPublic']);
+        Route::get('/my-group-details', [GroupController::class, 'myGroupDetails']);
 
         //group member APIs
         Route::get('/my-group-members', [GroupMemberController::class, 'myGroupMembers']);

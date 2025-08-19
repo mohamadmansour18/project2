@@ -2,14 +2,17 @@
 
 namespace App\Services;
 
+use App\Enums\FormSubmissionPeriodFormName;
 use App\Enums\GroupMemberRole;
 use App\Enums\JoinRequestStatus;
 use App\Helpers\UrlHelper;
 use App\Models\User;
+use App\Repositories\FormSubmissionPeriodRepository;
 use App\Repositories\JoinRequestRepository;
 use App\Repositories\GroupMemberRepository;
 use App\Repositories\GroupRepository;
 use App\Exceptions\PermissionDeniedException;
+use App\Repositories\ProjectFormRepository;
 
 class JoinRequestService
 {
@@ -17,11 +20,21 @@ class JoinRequestService
         protected JoinRequestRepository $requestRepo,
         protected GroupRepository $groupRepo,
         protected GroupMemberRepository $memberRepo,
-        protected FcmNotificationDispatcherService $dispatcherService
+        protected FcmNotificationDispatcherService $dispatcherService,
+        protected ProjectFormRepository $projectForm1Repo,
+        protected FormSubmissionPeriodRepository $formPeriodRepo
     ) {}
 
     public function send(int $groupId, User $user): void
     {
+        if ($this->projectForm1Repo->isApprovedForGroup($groupId)) {
+            throw new PermissionDeniedException('غير مسموح', 'لا يمكنك الانضمام بعد الموافقة على الاستمارة الأولى.',403);
+        }
+
+        if (!$this->formPeriodRepo->isFormPeriodActive(FormSubmissionPeriodFormName::Form1->value)) {
+            throw new PermissionDeniedException('غير مسموح', 'انتهت فترة الانضمام، لم يعد ممكناً الانضمام للمجموعة.',403);
+        }
+
         if ($this->memberRepo->isInAnyGroup($user->id)) {
             throw new PermissionDeniedException('طلب مرفوض', 'أنت بالفعل عضو في مجموعة.', 403);
         }
@@ -142,6 +155,14 @@ class JoinRequestService
 
     public function sendSixthMemberRequest(int $groupId, User $user, ?string $description = null): void
     {
+        if ($this->projectForm1Repo->isApprovedForGroup($groupId)) {
+            throw new PermissionDeniedException('غير مسموح', 'لا يمكنك الانضمام بعد الموافقة على الاستمارة الأولى.');
+        }
+
+        if (!$this->formPeriodRepo->isFormPeriodActive(FormSubmissionPeriodFormName::Form1->value)) {
+            throw new PermissionDeniedException('غير مسموح', 'انتهت فترة الانضمام، لم يعد ممكناً الانضمام للمجموعة.');
+        }
+
         // تحقق: الطالب مو داخل أي مجموعة
         if ($this->memberRepo->isInAnyGroup($user->id)) {
             throw new PermissionDeniedException('طلب مرفوض', 'أنت بالفعل عضو في مجموعة.', 403);

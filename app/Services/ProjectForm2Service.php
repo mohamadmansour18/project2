@@ -6,6 +6,7 @@ use App\Enums\ProjectForm2Status;
 use App\Exceptions\PermissionDeniedException;
 use App\Jobs\GenerateProjectForm2Pdf;
 use App\Models\ProjectForm2;
+use App\Repositories\FormSubmissionPeriodRepository;
 use App\Repositories\GroupMemberRepository;
 use App\Repositories\ProjectForm2Repository;
 use Illuminate\Support\Facades\Auth;
@@ -18,12 +19,11 @@ class ProjectForm2Service
     public function __construct(
         protected ProjectForm2Repository $repository,
         protected GroupMemberRepository $groupRepo,
+        protected FormSubmissionPeriodRepository $periodRepo,
     ) {}
 
     public function store(array $data): void
     {
-        $user = Auth::user();
-
         $user = Auth::user();
 
         if ($this->repository->existsForGroup($data['group_id'], $user->id)) {
@@ -32,6 +32,7 @@ class ProjectForm2Service
                 'لا يمكنك تعبئة الاستمارة أكثر من مرة لنفس المجموعة.'
             );
         }
+        $this->ensureFormPeriodIsActive("form2");
 
         $this->validatePdfFile($data['roadmap_file'] ?? null);
         $this->validatePdfFile($data['work_plan_file'] ?? null);
@@ -154,6 +155,16 @@ class ProjectForm2Service
         $form->updateQuietly([
             'filled_form_file_path' => 'forms2/' . basename($filePath)
         ]);
+    }
+
+    private function ensureFormPeriodIsActive(string $formName): void
+    {
+        if (!$this->periodRepo->isFormPeriodActive($formName)) {
+            throw new PermissionDeniedException(
+                'انتهى الوقت',
+                'لا يمكنك تعديل أو إرسال هذا النموذج بعد انتهاء الفترة المحددة.'
+            );
+        }
     }
 
 

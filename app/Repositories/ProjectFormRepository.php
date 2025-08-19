@@ -92,4 +92,11 @@ class ProjectFormRepository
             ->exists();
     }
 
+    public function isApprovedForGroup(int $groupId): bool
+    {
+        return ProjectForm::where('group_id', $groupId)
+            ->where('status', ProjectFormStatus::Approved)
+            ->exists();
+    }
+
 }

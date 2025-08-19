@@ -4,17 +4,11 @@ namespace App\Repositories;
 
 use App\Enums\GroupMemberRole;
 use App\Enums\GroupType;
-use App\Enums\ProjectFormStatus;
-use App\Models\GradeException;
 use App\Models\Group;
 use App\Models\GroupInvitation;
 use App\Models\GroupMember;
 use App\Enums\GroupInvitationStatus;
-use App\Models\InterviewCommittee;
-use App\Models\InterviewSchedule;
-use App\Models\ProjectGrade;
 use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\Auth;
 
 class GroupRepository
 {
@@ -82,48 +76,27 @@ class GroupRepository
             ->first();
     }
 
-    public function getAllGroupsWithForms(): Collection|array
+    public function getGroupWithRelations(int $groupId)
     {
-        return Group::with(['projectForms:id,group_id,status' , 'projectForm2:id,group_id'])
-            ->whereYear('created_at' , now()->year)
-            ->get(['id' , 'name' , 'image' , 'number_of_members']);
+        return Group::with([
+            'members.user.profile',
+            'projectForms.signatures.user.profile'
+        ])->findOrFail($groupId);
     }
 
-    public function getDoctorFormOneGroups(int $doctorId): Collection|array
+    public function getUserGroupWithRelations(int $userId)
     {
-        return Group::query()
-            ->whereHas('projectForms' , function($query) use ($doctorId) {
-                $query->where('user_id' , $doctorId);
+        return Group::with([
+            'members.user.profile',
+            'projectForms.signatures.user'
+        ])
+            ->whereHas('members', function ($q) use ($userId) {
+                $q->where('user_id', $userId);
             })
-            ->with(['projectForms:id,group_id,status' , 'projectForm2:id,group_id'])
-            ->whereYear('created_at' , now()->year)
-            ->get(['id' , 'name' , 'image' , 'number_of_members']);
+            ->first();
     }
 
-    public function getGroupDetailsInFinalInterview(int $groupId): array
-    {
-        $group = Group::with(['members.user.profile' , 'projectForms' , 'projectForm2'])->findOrFail($groupId);
 
-        $schedule = InterviewSchedule::query()->where('group_id' , $groupId)->first();
 
-        $form1 = $group->projectForms()->where('status' , ProjectFormStatus::Approved->value)->first();
-
-        $form2 = $group->projectForm2()->first();
-
-        $grade = ProjectGrade::query()->where('group_id' , $groupId)->first();
-
-        $exceptionGrades = [];
-        if($grade)
-        {
-            $exceptionGrades = GradeException::query()
-                ->where('grade_id' , $grade->id)
-                ->with('user:id,name')
-                ->get();
-        }
-
-        $isSupervisor = InterviewCommittee::query()->where('supervisor_id' , Auth::id())->exists();
-
-        return compact('group' , 'schedule' , 'form1' , 'form2' , 'grade' , 'exceptionGrades' , 'isSupervisor');
-    }
 
 }

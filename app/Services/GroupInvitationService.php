@@ -1,15 +1,18 @@
 <?php
 namespace App\Services;
 
+use App\Enums\FormSubmissionPeriodFormName;
 use App\Enums\GroupInvitationStatus;
 use App\Enums\GroupMemberRole;
 use App\Enums\UserRole;
 use App\Exceptions\PermissionDeniedException;
 use App\Helpers\UrlHelper;
 use App\Models\User;
+use App\Repositories\FormSubmissionPeriodRepository;
 use App\Repositories\GroupInvitationRepository;
 use App\Repositories\GroupMemberRepository;
 use App\Repositories\GroupRepository;
+use App\Repositories\ProjectFormRepository;
 use App\Repositories\UserRepository;
 
 class GroupInvitationService
@@ -19,11 +22,21 @@ class GroupInvitationService
         protected GroupMemberRepository $groupMemberRepo,
         protected GroupRepository $groupRepo,
         protected UserRepository $userRepo,
-        protected FcmNotificationDispatcherService $dispatcherService
+        protected FcmNotificationDispatcherService $dispatcherService,
+        protected ProjectFormRepository $projectForm1Repo,
+        protected FormSubmissionPeriodRepository $formPeriodRepo
     ){ }
 
     public function send(int $groupId, int $userId, User $inviter): void
     {
+        if ($this->projectForm1Repo->isApprovedForGroup($groupId)) {
+            throw new PermissionDeniedException('غير مسموح', 'لا يمكنك دعوة احد بعد الموافقة على الاستمارة الأولى.',403);
+        }
+
+        if (!$this->formPeriodRepo->isFormPeriodActive(FormSubmissionPeriodFormName::Form1->value)) {
+            throw new PermissionDeniedException('غير مسموح', 'انتهت فترة الانضمام، لم يعد ممكناً دعوة احد للمجموعة.',403);
+        }
+
         //not me
         if ($inviter->id === $userId) {
             throw new PermissionDeniedException(

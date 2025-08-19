@@ -32,4 +32,18 @@ class FormSubmissionPeriodRepository
             ->whereDate('end_date', '>=', now())
             ->exists();
     }
+
+    public function isFormPeriodActive(string $formName): bool
+    {
+        $period = FormSubmissionPeriod::where('form_name', $formName)
+            ->whereYear('start_date', now()->year)
+            ->first();
+
+        if (!$period) {
+            return false;
+        }
+
+        return now()->between($period->start_date, $period->end_date);
+    }
+
 }
