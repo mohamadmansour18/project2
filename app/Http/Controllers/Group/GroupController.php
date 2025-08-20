@@ -117,4 +117,11 @@ class GroupController extends Controller
 
         return $this->dataResponse([GroupResource::collection($groups)->response()->getData(true)['data']], 200);
     }
+
+    public function showGroupDetailsFormOneRequest(int $groupId): JsonResponse
+    {
+        $data = $this->groupService->getGroupDetailsForFormOneRequest($groupId);
+
+        return $this->dataResponse($data , 200);
+    }
 }

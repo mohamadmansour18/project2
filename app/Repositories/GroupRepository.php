@@ -162,4 +162,16 @@ class GroupRepository
         return $query->get();
     }
 
+    public function getGroupWithRelation($groupId): \Illuminate\Database\Eloquent\Model|\Illuminate\Database\Eloquent\Collection|\Illuminate\Database\Eloquent\Builder|array|null
+    {
+        return Group::with([
+            'members.user.profile',
+            'projectForms' => function($query){
+                $query->whereIn('status' , [ProjectFormStatus::Approved->value , ProjectFormStatus::Pending->value]);
+            },
+            'interviewSchedules.committee',
+            'projectGrade'
+        ])->findOrFail($groupId);
+    }
+
 }
