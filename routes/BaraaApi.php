@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Auth\AuthenticationStudentController;
 use App\Http\Controllers\Favorite\AnnouncementsController;
+use App\Http\Controllers\Favorite\FavoriteController;
 use App\Http\Controllers\FormOne\ProjectFormController;
 use App\Http\Controllers\FormTwo\ProjectForm2Controller;
 use App\Http\Controllers\Group\GroupController;
@@ -109,9 +110,55 @@ Route::prefix('/student')->group(function (){
         //Sixth student APIs
         Route::post('/groups/{groupId}/join-request-sixth', [JoinRequestController::class, 'storeSixthMemberRequest']);
 
+        //Announcement APIs
+        Route::prefix('announcement')->group(function () {
+            Route::get('/{announcement}/download', [AnnouncementsController::class, 'download']);
+            Route::get('/{announcement}/preview', [AnnouncementsController::class, 'preview']);
+            Route::get('/images', [AnnouncementsController::class, 'images']);
+            Route::get('/files', [AnnouncementsController::class, 'files']);
+            Route::get('/images/latest', [AnnouncementsController::class, 'latestImages']);
+            Route::get('/files/latest', [AnnouncementsController::class, 'latestFiles']);
+            Route::get('/last-year/images', [AnnouncementsController::class, 'lastYearImages']);
+            Route::get('/last-year/files', [AnnouncementsController::class, 'lastYearFiles']);
+        });
+
+        //favorites APIs
+        Route::prefix('favorites')->group(function () {
+            Route::get('/images', [FavoriteController::class, 'imageFavorites']);
+            Route::get('/files', [FavoriteController::class, 'fileFavorites']);
+            Route::post('/{announcement}', [FavoriteController::class, 'store']);
+            Route::delete('/{announcement}', [FavoriteController::class, 'destroy']);
+        });
+
     });
 });
 
+Route::prefix('/doctor')->group(function (){
+
+    Route::middleware(['auth:api' , 'role:doctor'])->group(function (){
+
+        //Announcement APIs
+        Route::prefix('announcement')->group(function () {
+            Route::get('/{announcement}/download', [AnnouncementsController::class, 'download']);
+            Route::get('/{announcement}/preview', [AnnouncementsController::class, 'preview']);
+            Route::get('/images/current-year', [AnnouncementsController::class, 'getCurrentYearImages']);
+            Route::get('/files/current-year', [AnnouncementsController::class, 'getCurrentYearFiles']);
+            Route::get('/images/professor', [AnnouncementsController::class, 'getAdminImages']);
+            Route::get('/files/professor', [AnnouncementsController::class, 'getAdminFiles']);
+            Route::get('/images/latest', [AnnouncementsController::class, 'getLatestImages']);
+            Route::get('/files/latest', [AnnouncementsController::class, 'getLatestFiles']);
+        });
+
+        //favorites APIs
+        Route::prefix('favorites')->group(function () {
+            Route::get('/images', [FavoriteController::class, 'imageFavorites']);
+            Route::get('/files', [FavoriteController::class, 'fileFavorites']);
+            Route::post('/{announcement}', [FavoriteController::class, 'store']);
+            Route::delete('/{announcement}', [FavoriteController::class, 'destroy']);
+        });
+
+    });
+});
 
 Route::prefix('/admin')->group(function (){
     Route::middleware(['auth:api' , 'role:admin'])->group(function (){
@@ -120,6 +167,17 @@ Route::prefix('/admin')->group(function (){
         Route::get('/requests',[JoinRequestController::class, 'headRequests']);
         Route::post('/requests/{requestId}/approve', [JoinRequestController::class, 'headApprove']);
         Route::post('/requests/{requestId}/reject',  [JoinRequestController::class, 'headReject']);
+
+        //Announcement APIs
+        Route::prefix('announcement')->group(function () {
+            Route::post('/', [AnnouncementsController::class, 'store']);
+            Route::delete('/{announcement}', [AnnouncementsController::class, 'destroy']);
+            Route::get('/{announcement}/download', [AnnouncementsController::class, 'download']);
+            Route::get('/{announcement}/preview', [AnnouncementsController::class, 'preview']);
+            Route::get('/images/current-year', [AnnouncementsController::class, 'getCurrentYearImages']);
+            Route::get('/files/current-year', [AnnouncementsController::class, 'getCurrentYearFiles']);
+            Route::get('/latest', [AnnouncementsController::class, 'getLatestAnnouncements']);
+        });
     });
 });
 

@@ -84,9 +84,10 @@ class User extends Authenticatable implements JWTSubject
         return $this->hasMany(OtpCode::class , 'user_id' , 'id');
     }
 
-    public function Announcements(): BelongsToMany
+    public function Announcements()
     {
-        return $this->belongsToMany(Announcement::class , 'favorites' , 'user_id' , 'announcement_id');
+        return $this->belongsToMany(Announcement::class, 'favorites', 'user_id', 'announcement_id')
+            ->withTimestamps();
     }
 
     public function sendInvitations(): HasMany
