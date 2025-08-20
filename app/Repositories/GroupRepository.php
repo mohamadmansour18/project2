@@ -146,5 +146,20 @@ class GroupRepository
         return compact('group' , 'schedule' , 'form1' , 'form2' , 'grade' , 'exceptionGrades' , 'isSupervisor');
     }
 
+    public function getAllWithForms()
+    {
+        return Group::with(['projectForms', 'projectForm2'])->get();
+    }
+
+    public function searchByName(string $keyword)
+    {
+        $query = Group::with(['projectForms', 'projectForm2']);
+
+        if ($keyword !== '') {
+            $query->where('name', 'LIKE', "{$keyword}%");
+        }
+
+        return $query->get();
+    }
 
 }

@@ -353,4 +353,23 @@ class GroupService
         return $days[Carbon::parse($date)->format('l')] ?? '';
     }
 
+    public function getGroupsWithForms()
+    {
+        return $this->groupRepo->getAllWithForms();
+    }
+
+    public function searchGroupsByName(string $keyword)
+    {
+        $groups = $this->groupRepo->searchByName($keyword);
+
+        if ($groups->isEmpty()) {
+            throw new PermissionDeniedException(
+                'خطأ',
+                'لا يوجد مجموعة بهذا الاسم',
+                404
+            );
+        }
+
+        return $groups;
+    }
 }

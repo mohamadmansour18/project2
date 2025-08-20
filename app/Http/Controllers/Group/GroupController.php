@@ -5,7 +5,9 @@ namespace App\Http\Controllers\Group;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ChangeLeadershipRequest;
 use App\Http\Requests\CreateGroupRequest;
+use App\Http\Requests\SearchGroupRequest;
 use App\Http\Requests\UpdateGroupRequest;
+use App\Http\Resources\GroupResource;
 use App\Models\Group;
 use App\Services\GroupService;
 use App\Traits\ApiSuccessTrait;
@@ -99,5 +101,20 @@ class GroupController extends Controller
         $data = $this->groupService->getGroupDetailsForFinalInterview($groupId);
 
         return $this->dataResponse($data, 200);
+    }
+
+    public function index(): JsonResponse
+    {
+        $groups = $this->groupService->getGroupsWithForms();
+
+        return $this->dataResponse([GroupResource::collection($groups)->response()->getData(true)['data']], 200);
+    }
+
+    public function search(SearchGroupRequest  $request): JsonResponse
+    {
+        $keyword = $request->query('name', '');
+        $groups = $this->groupService->searchGroupsByName($keyword);
+
+        return $this->dataResponse([GroupResource::collection($groups)->response()->getData(true)['data']], 200);
     }
 }
