@@ -66,6 +66,7 @@ Route::prefix('/doctor')->group(function (){
             Route::get('/finalInterview/{group_id}' , [GroupController::class , 'showGroupDetailsInInterview']);
             Route::post('/insertGrade' , [ProjectGradeController::class , 'insertGroupGrade']);
             Route::post('/updateGrade' , [ProjectGradeController::class , 'updateGroupGrade']);
+            Route::get('/formRequest/{group_id}' , [GroupController::class , 'showGroupDetailsFormOneRequest']);
         });
     });
 });
