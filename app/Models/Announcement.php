@@ -31,6 +31,7 @@ class Announcement extends Model
 
     public function users()
     {
-        return $this->belongsToMany(User::class , 'favorites' , 'user_id' , 'announcement_id');
+        return $this->belongsToMany(User::class, 'favorites', 'announcement_id', 'user_id')
+            ->withTimestamps();
     }
 }

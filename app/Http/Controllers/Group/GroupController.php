@@ -34,7 +34,6 @@ class GroupController extends Controller
 
     public function update(UpdateGroupRequest $request, Group $group): JsonResponse
     {
-        $user = auth()->user();
 
         $this->groupService->updateGroup($request, $group);
 
