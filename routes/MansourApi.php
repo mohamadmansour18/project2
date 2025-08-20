@@ -5,6 +5,7 @@ use App\Http\Controllers\Auth\AuthenticationDoctorController;
 use App\Http\Controllers\Conversation\ConversationController;
 use App\Http\Controllers\Conversation\MessageController;
 use App\Http\Controllers\Favorite\AnnouncementsController;
+use App\Http\Controllers\FormOne\ProjectFormController;
 use App\Http\Controllers\Grade\ProjectGradeController;
 use App\Http\Controllers\Group\GroupController;
 use App\Http\Controllers\Interview\InterviewCommitteeController;
@@ -26,6 +27,9 @@ use Illuminate\Support\Facades\Route;
 | be assigned to the "api" middleware group. Make something great!
 |
 */
+
+//[----------------------------->>>>>>>>>>[DOCTOR APIS]<<<<<<<<<<-----------------------------]//
+
 Route::prefix('/doctor')->group(function (){
 
     Route::controller(AuthenticationDoctorController::class)->group(function (){
@@ -55,6 +59,7 @@ Route::prefix('/doctor')->group(function (){
             Route::get('/showFlowChartStatistics', [StatisticsController::class, 'getDoctorHomeGroupStatistics']);
         });
 
+        //group APIs
         Route::prefix('/groups')->group(function (){
             Route::get('/showALlGroups' , [GroupController::class , 'showAllGroup']);
             Route::get('/showDoctorGroups' , [GroupController::class , 'showDoctorFormOneGroup']);
@@ -62,17 +67,24 @@ Route::prefix('/doctor')->group(function (){
             Route::post('/searchGroupInterview' , [InterviewCommitteeController::class , 'showDoctorInterviewGroupSearched']);
         });
 
+        //group details APIs
         Route::prefix('/groupDetails')->group(function (){
             Route::get('/finalInterview/{group_id}' , [GroupController::class , 'showGroupDetailsInInterview']);
             Route::post('/insertGrade' , [ProjectGradeController::class , 'insertGroupGrade']);
             Route::post('/updateGrade' , [ProjectGradeController::class , 'updateGroupGrade']);
             Route::get('/formRequest/{group_id}' , [GroupController::class , 'showGroupDetailsFormOneRequest']);
         });
+
+        //Form One
+        Route::prefix('/formOne')->group(function (){
+            Route::get('/approved/{form_id}' , [ProjectFormController::class , 'approveForm']);
+            Route::get('/reject/{form_id}' , [ProjectFormController::class , 'rejectForm']);
+        });
     });
 });
 
 
-
+//[----------------------------->>>>>>>>>>[ADMIN APIS]<<<<<<<<<<-----------------------------]//
 Route::prefix('/admin')->group(function (){
 
     Route::controller(AuthenticationAdminController::class)->group(function (){
@@ -119,7 +131,7 @@ Route::prefix('/admin')->group(function (){
 
 });
 
-
+//[----------------------------->>>>>>>>>>[STUDENT APIS]<<<<<<<<<<-----------------------------]//
 Route::prefix('/student')->group(function (){
     Route::middleware(['auth:api' , 'role:student'])->group(function (){
         //home

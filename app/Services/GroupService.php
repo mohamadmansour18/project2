@@ -397,6 +397,7 @@ class GroupService
         //form_1
         $form = $group->projectForms->first();
         $formData = $form ? [
+            'form_id' => $form->id ,
             'arabic_title' => $form->arabic_title,
             'creation_date' => $form->updated_at->format('d/m/Y'),
             'filled_form_file_path' => UrlHelper::imageUrl($form->filled_form_file_path),

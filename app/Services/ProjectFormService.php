@@ -2,6 +2,7 @@
 namespace App\Services;
 
 use App\Enums\ProjectFormStatus;
+use App\Exceptions\FormException;
 use App\Exceptions\PermissionDeniedException;
 use App\Models\ProjectForm;
 use App\Repositories\FormSubmissionPeriodRepository;
@@ -242,5 +243,66 @@ class ProjectFormService
                 'لا يمكنك تعديل أو إرسال هذا النموذج بعد انتهاء الفترة المحددة.'
             );
         }
+    }
+
+    public function signForm(int $formId): void
+    {
+        $form = $this->repository->findById($formId);
+
+        if(!$form)
+        {
+            throw new FormException('لايمكنك اجراء هذه العملية !','الاستمارة التي تحاول الوصول اليها غير موجودة', 404);
+        }
+
+        if($form->status === ProjectFormStatus::Approved)
+        {
+            throw new FormException('لايمكنك اجراء هذه العملية !' , 'الاستمارة موقعة اساسا ولايمكنك اعادة توقيعها مرة اخرى' , 422);
+        }
+
+        if($form->user_id !== Auth::id())
+        {
+            throw new FormException('لايمكنك اجراء هذه العملية !' , 'غير مصرح لك بتوقيع هذه الاستمارة لانك لست المشرف عليها' , 403);
+        }
+
+        $this->repository->approve($form);
+
+        //send notification
+        $leader = $this->repository->getLeaderGroupFromForm($form->group_id);
+        $doctor = $form->users()->name;
+
+        $this->dispatcherService->sendToUser($leader->user , 'موافقة على فكرة الاستمارة !' , " بالموفقة على الاستمارة الواحد الخاصة بكم$doctor قام الدكتور ");
+    }
+
+    public function rejectForm(int $formId ): void
+    {
+        $form = $this->repository->findById($formId);
+
+        if(!$form)
+        {
+            throw new FormException('لايمكنك اجراء هذه العملية !','الاستمارة التي تحاول الوصول اليها غير موجودة', 404);
+        }
+
+        if($form->status === ProjectFormStatus::Approved)
+        {
+            throw new FormException('لايمكنك اجراء هذه العملية !' , 'لا يمكن رفض استمارة تم توقيعها بالفعل' , 422);
+        }
+
+        if($form->status === ProjectFormStatus::Rejected)
+        {
+            throw new FormException('لايمكنك اجراء هذه العملية !' , 'الاستمارة مرفوضة بالفعل ولايمكنك رفضها مرة اخرى' , 422);
+        }
+
+        if($form->user_id !== Auth::id())
+        {
+            throw new FormException('لايمكنك اجراء هذه العملية !' , 'غير مصرح لك برفض هذه الاستمارة لانك لست المشرف عليها' , 403);
+        }
+
+        $this->repository->reject($form);
+
+        //send notification
+        $leader = $this->repository->getLeaderGroupFromForm($form->group_id);
+        $doctor = $form->users()->name;
+
+        $this->dispatcherService->sendToUser($leader->user , 'موافقة على فكرة الاستمارة !' , " برفض الاستمارة الواحد الخاصة بكم الرجاء المعاودة بتقديم فكرة اخرى$doctor قام الدكتور ");
     }
 }

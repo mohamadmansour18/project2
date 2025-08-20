@@ -59,4 +59,17 @@ class ProjectFormController extends Controller
         ]);
     }
 
+    public function approveForm(int $formId): JsonResponse
+    {
+        $this->service->signForm($formId);
+
+        return $this->successResponse('تمت العملية بنجاح !' , 'تم توقيع هذه الاستمارة بنجاح' , 200);
+    }
+
+    public function rejectForm(int $formId): JsonResponse
+    {
+        $this->service->rejectForm($formId);
+
+        return $this->successResponse('تمت العملية بنجاح !' , 'تم رفض هذه الاستمارة بنجاح' , 200);
+    }
 }

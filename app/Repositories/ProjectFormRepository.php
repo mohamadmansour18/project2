@@ -5,6 +5,7 @@ namespace App\Repositories;
 use App\Enums\GroupMemberRole;
 use App\Enums\ProjectFormStatus;
 use App\Models\FormSignature;
+use App\Models\GroupMember;
 use App\Models\ProjectForm;
 
 class ProjectFormRepository
@@ -97,6 +98,30 @@ class ProjectFormRepository
         return ProjectForm::where('group_id', $groupId)
             ->where('status', ProjectFormStatus::Approved)
             ->exists();
+    }
+
+    public function approve(ProjectForm $form): ProjectForm
+    {
+        $form->status = ProjectFormStatus::Approved;
+        $form->submission_date = now();
+        $form->save();
+
+        return $form;
+    }
+
+    public function reject(ProjectForm $form): ProjectForm
+    {
+        $form->status = ProjectFormStatus::Rejected;
+        $form->save();
+
+        return $form;
+    }
+
+    public function getLeaderGroupFromForm(int $groupId)
+    {
+        return GroupMember::with('user')->where('group_id', $groupId)
+            ->where('role' , GroupMemberRole::Leader->value)
+            ->first();
     }
 
 }
