@@ -178,6 +178,10 @@ Route::prefix('/admin')->group(function (){
             Route::get('/files/current-year', [AnnouncementsController::class, 'getCurrentYearFiles']);
             Route::get('/latest', [AnnouncementsController::class, 'getLatestAnnouncements']);
         });
+
+        //groups APIs
+        Route::get('/groups', [GroupController::class, 'index']);
+        Route::get('/groups/search', [GroupController::class, 'search']);
     });
 });
 

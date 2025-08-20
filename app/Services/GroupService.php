@@ -9,7 +9,6 @@ use App\Helpers\ImageHelper;
 use App\Helpers\UrlHelper;
 use App\Http\Requests\CreateGroupRequest;
 use App\Http\Requests\UpdateGroupRequest;
-use App\Models\GradeException;
 use App\Models\Group;
 use App\Models\User;
 use App\Repositories\GroupInvitationRepository;
@@ -354,79 +353,23 @@ class GroupService
         return $days[Carbon::parse($date)->format('l')] ?? '';
     }
 
-    public function getGroupDetailsForFormOneRequest(int $groupId): array
+    public function getGroupsWithForms()
     {
-        $group = $this->groupRepo->getGroupWithRelation($groupId);
+        return $this->groupRepo->getAllWithForms();
+    }
 
-        //group_information
-        $leader = $group->members->where('role' , GroupMemberRole::Leader)->first();
-        //dd($group);
-        $groupInformation = [
-            'group_name'    => $group->name,
-            'leader'        => optional($leader?->user)->name,
-            'members_count' => $this->getCustomGroupNumber($group),
-            'members'       => $group->members->map(function ($member){
-                return [
-                    'id'    => optional($member->user)->id,
-                    'name'  => optional($member->user)->name,
-                    'profile_image' => UrlHelper::imageUrl(optional($member->user->profile)->profile_image)
-                ];
-            })->values(),
-        ];
+    public function searchGroupsByName(string $keyword)
+    {
+        $groups = $this->groupRepo->searchByName($keyword);
 
-        //form_1
-        $form = $group->projectForms->first();
-        $formData = $form ? [
-            'arabic_title' => $form->arabic_title,
-            'creation_date' => $form->updated_at->format('d/m/Y'),
-            'filled_form_file_path' => UrlHelper::imageUrl($form->filled_form_file_path),
-        ] : [];
-
-        //interview_information
-        $schedule = $group->interviewSchedules->first();
-
-        $interviewInformation = [];
-        if($schedule)
-        {
-            $interviewInformation = [
-                'date' => Carbon::parse($schedule->interview_date)->format('d/m/Y') ,
-                'day'  => $this->getDayName($schedule->interview_date) ,
-            ];
+        if ($groups->isEmpty()) {
+            throw new PermissionDeniedException(
+                'خطأ',
+                'لا يوجد مجموعة بهذا الاسم',
+                404
+            );
         }
 
-        //group_grade
-        $grade = $group->projectGrade?->first();
-
-        $gradeData = [];
-        if($grade)
-        {
-            $exception = GradeException::query()->where('grade_id' , $grade->id)->pluck('student_id')->toArray();
-
-            $membersWithGrade = $group->members->filter(function ($member) use ($exception){
-                return !in_array($member->user_id , $exception);
-            })
-            ->map(function ($member){
-                return [
-                    'id' => $member->user_id,
-                    'name' => optional($member->user)->name,
-                    'profile_image' => UrlHelper::imageUrl(optional($member->user->profile)->profile_image)
-                ];
-            })
-            ->values();
-
-            $gradeData = [
-                'presentation_grade' => $grade->presentation_grade,
-                'project_grade'      => $grade->project_grade,
-                'total_grade'        => $grade->total_grade,
-                'member_with_grade'  => $membersWithGrade,
-            ];
-        }
-
-        return [
-            'group_information' => $groupInformation,
-            'form_1'            => $formData,
-            'interview_information' => $interviewInformation,
-            'group_grade'       => $gradeData,
-        ];
+        return $groups;
     }
 }

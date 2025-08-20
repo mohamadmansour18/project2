@@ -146,17 +146,20 @@ class GroupRepository
         return compact('group' , 'schedule' , 'form1' , 'form2' , 'grade' , 'exceptionGrades' , 'isSupervisor');
     }
 
-    public function getGroupWithRelation($groupId): \Illuminate\Database\Eloquent\Model|\Illuminate\Database\Eloquent\Collection|\Illuminate\Database\Eloquent\Builder|array|null
+    public function getAllWithForms()
     {
-        return Group::with([
-            'members.user.profile',
-            'projectForms' => function($query){
-                $query->whereIn('status' , [ProjectFormStatus::Approved->value , ProjectFormStatus::Pending->value]);
-            },
-            'interviewSchedules.committee',
-            'projectGrade'
-        ])->findOrFail($groupId);
+        return Group::with(['projectForms', 'projectForm2'])->get();
     }
 
+    public function searchByName(string $keyword)
+    {
+        $query = Group::with(['projectForms', 'projectForm2']);
+
+        if ($keyword !== '') {
+            $query->where('name', 'LIKE', "{$keyword}%");
+        }
+
+        return $query->get();
+    }
 
 }
