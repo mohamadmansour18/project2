@@ -5,6 +5,7 @@ use App\Http\Controllers\Auth\AuthenticationDoctorController;
 use App\Http\Controllers\Conversation\ConversationController;
 use App\Http\Controllers\Conversation\MessageController;
 use App\Http\Controllers\Favorite\AnnouncementsController;
+use App\Http\Controllers\Grade\ProjectGradeController;
 use App\Http\Controllers\Group\GroupController;
 use App\Http\Controllers\Interview\InterviewCommitteeController;
 use App\Http\Controllers\Other\FormSubmissionPeriodController;
@@ -63,6 +64,8 @@ Route::prefix('/doctor')->group(function (){
 
         Route::prefix('/groupDetails')->group(function (){
             Route::get('/finalInterview/{group_id}' , [GroupController::class , 'showGroupDetailsInInterview']);
+            Route::post('/insertGrade' , [ProjectGradeController::class , 'insertGroupGrade']);
+            Route::post('/updateGrade' , [ProjectGradeController::class , 'updateGroupGrade']);
         });
     });
 });
@@ -133,15 +136,15 @@ Route::prefix('/student')->group(function (){
 });
 
 
-//Route::get('/test-fcm', function (FirebaseNotificationService $fcm) {
-//    $fcm->send(
-//        'مرحبا عبوووود',
-//        'Test',
-//        ['efQCy83ASEaAe16I1wBmSQ:APA91bGaPDs-9OneBHtNwlbnJOF3LsJVNjZbBhDglP5IPcboH2JpsH3gQXrhEjibGVOhYl8SWRAGAdGsB6MQz-2FdPbhLx_VlmdgBW8GEX2IFFyECGuIqQ0']
-//    );
-//
-//    return '✅ تم الإرسال (تحقق من الجهاز)';
-//});
+Route::get('/test-fcm', function (FirebaseNotificationService $fcm) {
+    $fcm->send(
+        'hellooooo aboooooddddd',
+        'Test',
+        ['cmPxVuMxTtqUaT5z28ocbL:APA91bGr5yWRwRKWMGcfjlheRU_i8EI4Csti5ETW1Eqi7I9dQhzoQdtKRo-Dq6StZ6BmDJ5feOYUTyMUtirBhriyYHcYT2cg4fr72LoVSJY8601rJDLmc8g']
+    );
+
+    return '✅ تم الإرسال (تحقق من الجهاز)';
+});
 //
 //Route::get('/test' , function(){
 //    $user = DatabaseNotification::first();
