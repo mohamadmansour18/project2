@@ -150,5 +150,11 @@ return [
         'libraries_and_tools'  => 'المكتبات والأدوات',
         'roadmap_file'         => 'ملف خريطة الطريق',
         'work_plan_file'       => 'ملف خطة العمل',
+        'presentation_grade' => 'علامة العرض التقديمي',
+        'project_grade' => 'علامة المشروع',
+        'total_grade' => 'العلامة الكليّة للمشروع',
+        'exceptions' => 'الطلاب المستثنيين',
+        'exceptions.*' => 'الطالب المستثنى',
+
     ],
 ];
