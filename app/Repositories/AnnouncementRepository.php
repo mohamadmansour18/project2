@@ -5,6 +5,7 @@ namespace App\Repositories;
 use App\Enums\AnnouncementAudience;
 use App\Enums\AnnouncementType;
 use App\Models\Announcement;
+use Illuminate\Support\Facades\Storage;
 
 class AnnouncementRepository
 {
@@ -129,4 +130,36 @@ class AnnouncementRepository
             ->get();
     }
 
+    public function getByTypeForCurrentYear(string $type , ?string $audience = null)
+    {
+        $query = Announcement::select('id', 'title', 'type' , 'audience' , 'created_at')
+            ->where('type' , $type)
+            ->whereYear('created_at', now()->year);
+
+        if($audience)
+        {
+            $query->where('audience', $audience);
+        }
+
+        return $query->orderBy('created_at', 'desc')->get();
+    }
+
+    public function findAnnouncement(int $annoId)
+    {
+        return Announcement::find($annoId);
+    }
+    public function getAnnouncementPath(Announcement $Announcement): ?string
+    {
+
+        if(!$Announcement->attachment_path)
+        {
+            return null;
+        }
+        if(!Storage::disk('public')->exists($Announcement->attachment_path))
+        {
+            return null;
+        }
+
+        return Storage::disk('public')->path($Announcement->attachment_path);
+    }
 }

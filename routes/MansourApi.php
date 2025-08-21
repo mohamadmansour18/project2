@@ -79,6 +79,16 @@ Route::prefix('/doctor')->group(function (){
         Route::prefix('/formOne')->group(function (){
             Route::get('/approved/{form_id}' , [ProjectFormController::class , 'approveForm']);
             Route::get('/reject/{form_id}' , [ProjectFormController::class , 'rejectForm']);
+            Route::get('/download/{form_id}' , [ProjectFormController::class , 'downloadForm'])->middleware('throttle:login');
+        });
+
+        //Announcement
+        Route::prefix('/announcement')->group(function (){
+            Route::get('/showAllImage' , [AnnouncementsController::class , 'showAllImageAnnouncements']);
+            Route::get('/showAllFile' , [AnnouncementsController::class , 'showAllFileAnnouncements']);
+            Route::get('/showDoctorImage' , [AnnouncementsController::class , 'showProfessorImageAnnouncements']);
+            Route::get('/showDoctorFile' , [AnnouncementsController::class , 'showProfessorFileAnnouncements']);
+            Route::get('/downloadAnnouncement/{announcement_id}' , [AnnouncementsController::class , 'doctorDownloadAnnouncement'])->middleware('throttle:login');
         });
     });
 });
@@ -127,6 +137,9 @@ Route::prefix('/admin')->group(function (){
             Route::delete('/deleteStudent/{student_id}', [UserController::class , 'deleteStudentByAdmin']);
         });
 
+        Route::prefix('/projectManagement')->group(function (){
+
+        });
     });
 
 });

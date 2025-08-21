@@ -8,6 +8,7 @@ use App\Models\ProjectForm;
 use App\Services\ProjectFormService;
 use App\Traits\ApiSuccessTrait;
 use Illuminate\Http\JsonResponse;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 class ProjectFormController extends Controller
 {
@@ -71,5 +72,10 @@ class ProjectFormController extends Controller
         $this->service->rejectForm($formId);
 
         return $this->successResponse('تمت العملية بنجاح !' , 'تم رفض هذه الاستمارة بنجاح' , 200);
+    }
+
+    public function downloadForm(int $formId): BinaryFileResponse
+    {
+        return $this->service->downloadFormForDoctor($formId);
     }
 }

@@ -7,6 +7,7 @@ use App\Enums\ProjectFormStatus;
 use App\Models\FormSignature;
 use App\Models\GroupMember;
 use App\Models\ProjectForm;
+use Illuminate\Support\Facades\Storage;
 
 class ProjectFormRepository
 {
@@ -122,6 +123,20 @@ class ProjectFormRepository
         return GroupMember::with('user')->where('group_id', $groupId)
             ->where('role' , GroupMemberRole::Leader->value)
             ->first();
+    }
+
+    public function getFilePath(ProjectForm $form): ?string
+    {
+        if(!$form->filled_form_file_path)
+        {
+            return null;
+        }
+        if(!Storage::disk('public')->exists($form->filled_form_file_path))
+        {
+            return null;
+        }
+
+        return Storage::disk('public')->path($form->filled_form_file_path);
     }
 
 }

@@ -268,7 +268,7 @@ class ProjectFormService
 
         //send notification
         $leader = $this->repository->getLeaderGroupFromForm($form->group_id);
-        $doctor = $form->users()->name;
+        $doctor = $form->users->name;
 
         $this->dispatcherService->sendToUser($leader->user , 'موافقة على فكرة الاستمارة !' , " بالموفقة على الاستمارة الواحد الخاصة بكم$doctor قام الدكتور ");
     }
@@ -301,8 +301,27 @@ class ProjectFormService
 
         //send notification
         $leader = $this->repository->getLeaderGroupFromForm($form->group_id);
-        $doctor = $form->users()->name;
+        $doctor = $form->users->name;
 
-        $this->dispatcherService->sendToUser($leader->user , 'موافقة على فكرة الاستمارة !' , " برفض الاستمارة الواحد الخاصة بكم الرجاء المعاودة بتقديم فكرة اخرى$doctor قام الدكتور ");
+        $this->dispatcherService->sendToUser($leader->user , 'رفض فكرة الاستمارة !' , " برفض الاستمارة الواحد الخاصة بكم الرجاء المعاودة بتقديم فكرة اخرى$doctor قام الدكتور ");
+    }
+
+    public function downloadFormForDoctor(int $formId)
+    {
+        $form = $this->repository->findById($formId);
+
+        if(!$form)
+        {
+            throw new FormException('لايمكنك اجراء هذه العملية !','الاستمارة التي تحاول الوصول اليها غير موجودة', 404);
+        }
+
+        $filePath = $this->repository->getFilePath($form);
+
+        if(!$filePath)
+        {
+            throw new FormException('لايمكنك اجراء هذه العملية !','ملف الاستمارة التي تحاول تنزيلها غير موجود اساسا', 404);
+        }
+
+        return response()->download($filePath , basename($filePath) , ['Content-Type' => 'application/pdf']);
     }
 }

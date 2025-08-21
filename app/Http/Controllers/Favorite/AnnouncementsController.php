@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\Favorite;
 
+use App\Enums\AnnouncementAudience;
+use App\Enums\AnnouncementType;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreAnnouncementRequest;
 use App\Http\Resources\AnnouncementResource;
@@ -11,6 +13,7 @@ use App\Services\AnnouncementService;
 use App\Services\HomeMobileService;
 use App\Traits\ApiSuccessTrait;
 use Illuminate\Http\JsonResponse;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 class AnnouncementsController extends Controller
 {
@@ -185,5 +188,38 @@ class AnnouncementsController extends Controller
             'count' => $files->count(),
             'data' => DoctorAnnouncementResource::collection($files),
         ]);
+    }
+
+    public function showAllImageAnnouncements(): JsonResponse
+    {
+        $data = $this->service->getAllAnnouncements(AnnouncementType::Image->value);
+
+        return $this->dataResponse($data ,200);
+    }
+
+    public function showAllFileAnnouncements(): JsonResponse
+    {
+        $data = $this->service->getAllAnnouncements(AnnouncementType::File->value);
+
+        return $this->dataResponse($data ,200);
+    }
+
+    public function showProfessorImageAnnouncements(): JsonResponse
+    {
+        $data = $this->service->getAllAnnouncements(AnnouncementType::Image->value , AnnouncementAudience::Professors->value);
+
+        return $this->dataResponse($data ,200);
+    }
+
+    public function showProfessorFileAnnouncements(): JsonResponse
+    {
+        $data = $this->service->getAllAnnouncements(AnnouncementType::File->value , AnnouncementAudience::Professors->value);
+
+        return $this->dataResponse($data ,200);
+    }
+
+    public function doctorDownloadAnnouncement(int $announcementId): BinaryFileResponse
+    {
+        return $this->service->downloadAnnouncement($announcementId);
     }
 }

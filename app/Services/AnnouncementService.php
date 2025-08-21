@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Enums\AnnouncementAudience;
 use App\Enums\AnnouncementType;
+use App\Exceptions\AnnouncementException;
 use App\Exceptions\InvalidAttachmentException;
 use App\Exceptions\NotFoundException;
 use App\Exceptions\PermissionDeniedException;
@@ -11,6 +12,7 @@ use App\Models\Announcement;
 use App\Models\User;
 use App\Repositories\AnnouncementRepository;
 use Illuminate\Support\Facades\Storage;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 class AnnouncementService
 {
@@ -137,5 +139,46 @@ class AnnouncementService
     public function getLastYearFiles()
     {
         return $this->repo->getLastYearFiles();
+    }
+
+    public function getAllAnnouncements(string $type , ?string $audience = null): array
+    {
+        $announcements = $this->repo->getByTypeForCurrentYear($type , $audience)->map(function ($announcement){
+            return [
+                'id' => $announcement->id,
+                'title' => $announcement->title,
+                'type' => $announcement->type,
+                'created_at' => $announcement->created_at->format('Y-m-d'),
+            ];
+        });
+
+        $latest = $announcements->take(4);
+        $old = $announcements->skip(4)->values();
+        $oldCount = $old->count();
+
+        return [
+            'latest_announcements' => $latest,
+            'old_announcements' => $old,
+            'count' => $oldCount,
+        ];
+    }
+
+    public function downloadAnnouncement(int $annoId): BinaryFileResponse
+    {
+        $announcement = $this->repo->findAnnouncement($annoId);
+
+        if(!$announcement)
+        {
+            throw new AnnouncementException('لايمكنك اجراء هذه العملية !', 'الإعلان الذي تحاول الوصول اليه غير موجود', 404);
+        }
+
+        $filePath = $this->repo->getAnnouncementPath($announcement);
+
+        if(!$filePath)
+        {
+            throw new AnnouncementException('لايمكنك اجراء هذه العملية !', 'ملف الإعلان الذي تحاول تنزيله غير موجود أساساً', 404);
+        }
+
+        return response()->download($filePath , basename($filePath));
     }
 }
