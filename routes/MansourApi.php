@@ -137,8 +137,19 @@ Route::prefix('/admin')->group(function (){
             Route::delete('/deleteStudent/{student_id}', [UserController::class , 'deleteStudentByAdmin']);
         });
 
+        //PROJECT_MANAGEMENT
         Route::prefix('/projectManagement')->group(function (){
+            //form 1
+            Route::get('/getFormOne' , [FormSubmissionPeriodController::class , 'getForm1']);
+            Route::post('/createFormOne' , [FormSubmissionPeriodController::class , 'createForm1']);
+            Route::post('/updateFormOne/{form_id}' , [FormSubmissionPeriodController::class , 'updateForm1'])->middleware('throttle:dashBoard');
+            Route::delete('/deleteFormOne/{form_id}' , [FormSubmissionPeriodController::class , 'deleteForm1'])->middleware('throttle:dashBoard');
 
+            //form 2
+            Route::get('/getFormTwo' , [FormSubmissionPeriodController::class , 'getForm2']);
+            Route::post('/createFormTwo' , [FormSubmissionPeriodController::class , 'createForm2']);
+            Route::post('/updateFormTwo/{form_id}' , [FormSubmissionPeriodController::class , 'updateForm2'])->middleware('throttle:dashBoard');
+            Route::delete('/deleteFormTwo/{form_id}' , [FormSubmissionPeriodController::class , 'deleteForm2'])->middleware('throttle:dashBoard');
         });
     });
 
@@ -163,13 +174,20 @@ Route::prefix('/student')->group(function (){
 
 
 Route::get('/test-fcm', function (FirebaseNotificationService $fcm) {
-    $fcm->send(
-        'hellooooo aboooooddddd',
-        'Test',
-        ['cmPxVuMxTtqUaT5z28ocbL:APA91bGr5yWRwRKWMGcfjlheRU_i8EI4Csti5ETW1Eqi7I9dQhzoQdtKRo-Dq6StZ6BmDJ5feOYUTyMUtirBhriyYHcYT2cg4fr72LoVSJY8601rJDLmc8g']
-    );
-
-    return '✅ تم الإرسال (تحقق من الجهاز)';
+    try {
+        $fcm->send(
+            'hellooooo aboooooddddd',
+            'Test',
+            ['cmPxVuMxTtqUaT5z28ocbL:APA91bGr5yWRwRKWMGcfjlheRU_i8EI4Csti5ETW1Eqi7I9dQhzoQdtKRo-Dq6StZ6BmDJ5feOYUTyMUtirBhriyYHcYT2cg4fr72LoVSJY8601rJDLmc8g']
+        );
+        return "تمت العملية بنجاح";
+    }catch (\Exception $e)
+    {
+        return response()->json([
+            'title' => "خطا اتصال من الشبكة!",
+            'body' => $e->getMessage(),
+        ], 422);
+    }
 });
 //
 //Route::get('/test' , function(){

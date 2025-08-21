@@ -218,5 +218,11 @@ class UserRepository
         });
     }
 
-
+    public function getStudentCurrentYear(): Collection|array
+    {
+        return User::query()
+            ->where('role' , UserRole::Student->value)
+            ->whereYear('created_at' , now()->year)
+            ->get();
+    }
 }

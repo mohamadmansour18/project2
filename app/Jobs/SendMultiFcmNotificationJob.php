@@ -10,7 +10,7 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Log;
-
+use Illuminate\Database\Eloquent\Collection;
 class SendMultiFcmNotificationJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
@@ -18,14 +18,14 @@ class SendMultiFcmNotificationJob implements ShouldQueue
     public $tries = 2 ;
     public $backoff = 10;
 
-    protected User $users;
+    protected Collection $users;
     protected string $title;
     protected string $body;
 
     /**
      * Create a new job instance.
      */
-    public function __construct(User $users, string $title, string $body)
+    public function __construct(Collection $users, string $title, string $body)
     {
         $this->users = $users;
         $this->title = $title;

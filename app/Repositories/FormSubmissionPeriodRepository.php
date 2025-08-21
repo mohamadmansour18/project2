@@ -46,4 +46,49 @@ class FormSubmissionPeriodRepository
         return now()->between($period->start_date, $period->end_date);
     }
 
+    public function existsFormForCurrentYear(string $formName): bool
+    {
+        $currentYear = now()->year;
+
+        return FormSubmissionPeriod::query()
+            ->whereYear('created_at' , $currentYear)
+            ->where('form_name' , $formName)
+            ->exists();
+    }
+
+    public function getFormForCurrentYear(string $formName): ? FormSubmissionPeriod
+    {
+        $year = now()->year;
+
+        return FormSubmissionPeriod::select('id', 'start_date', 'end_date')
+            ->whereYear('created_at' , $year)
+            ->where('form_name' , $formName)
+            ->first();
+    }
+
+    public function createForm(array $data): FormSubmissionPeriod
+    {
+        $form = new FormSubmissionPeriod($data);
+        $form->save();
+        return $form;
+    }
+
+    public function updateForm(FormSubmissionPeriod $form , array $data): FormSubmissionPeriod
+    {
+        $form->fill($data);
+        $form->save();
+        return $form;
+    }
+
+    public function deleteForm(FormSubmissionPeriod $form): void
+    {
+        $form->forceDelete();
+    }
+
+    public function findById(int $formId)
+    {
+        return FormSubmissionPeriod::find($formId);
+    }
+
+
 }

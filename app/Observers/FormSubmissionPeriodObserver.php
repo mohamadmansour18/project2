@@ -4,6 +4,7 @@ namespace App\Observers;
 
 use App\Models\FormSubmissionPeriod;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Log;
 
 class FormSubmissionPeriodObserver
 {
@@ -29,6 +30,7 @@ class FormSubmissionPeriodObserver
     public function deleted(FormSubmissionPeriod $formSubmissionPeriod): void
     {
         Cache::forget('home_form_periods');
+        Log::info('hello from delete observer');
     }
 
     /**
