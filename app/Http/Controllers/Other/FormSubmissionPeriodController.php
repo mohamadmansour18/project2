@@ -3,13 +3,17 @@
 namespace App\Http\Controllers\Other;
 
 use App\Enums\FormSubmissionPeriodFormName;
+use App\Exceptions\FormException;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\CreateFormRequest;
+use App\Http\Requests\CreateInterviewRequest;
 use App\Http\Requests\UpdateFormRequest;
+use App\Http\Requests\UpdateInterviewRequest;
 use App\Services\DashBoard_Services\ProjectManagementService;
 use App\Services\HomeMobileService;
 use App\Traits\ApiSuccessTrait;
 use Illuminate\Http\JsonResponse;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 class FormSubmissionPeriodController extends Controller
 {
@@ -98,4 +102,40 @@ class FormSubmissionPeriodController extends Controller
 
         return $this->dataResponse($data , 200);
     }
+
+    //////////////////////////////////////////////////////////////////////////////////
+
+    public function createFormInterview(CreateInterviewRequest $request): JsonResponse
+    {
+        $this->projectManagementService->createInterview($request->validated());
+
+        return $this->successResponse('تم هذا الاجراء بنجاح !' , 'ان عملية تحديد مواعيد المقابلات النهائية تم بنجاح' , 201);
+    }
+
+    public function updateFormInterview(UpdateInterviewRequest $request , int $interPeriodId): JsonResponse
+    {
+        $this->projectManagementService->updateInterview($request->validated() , $interPeriodId);
+
+        return $this->successResponse('تم تعديل موعد المقابلات النهائية بنجاح !' , 'ان عملية تعديل مواعيد المقابلة النهائية تم بنجاح' , 200);
+    }
+
+    public function deleteFormInterview(int $periodId): JsonResponse
+    {
+        $this->projectManagementService->deleteInterview($periodId);
+
+        return $this->successResponse('تم هذا الاجراء بنجاح !' , 'ان عملية حذف مواعيد المقابلات النهائية تم بنجاح' , 200);
+    }
+
+    public function getFormInterview(): JsonResponse
+    {
+        $data = $this->projectManagementService->getInterview();
+
+        return response()->json($data, 200);
+    }
+
+    //////////////////////////////////////////////////////////////////////////////////
+     public function generateAndDownload(): BinaryFileResponse|JsonResponse
+     {
+         return $this->projectManagementService->generateAndDownloadFormsDate();
+     }
 }

@@ -89,6 +89,7 @@ Route::prefix('/doctor')->group(function (){
             Route::get('/showDoctorImage' , [AnnouncementsController::class , 'showProfessorImageAnnouncements']);
             Route::get('/showDoctorFile' , [AnnouncementsController::class , 'showProfessorFileAnnouncements']);
             Route::get('/downloadAnnouncement/{announcement_id}' , [AnnouncementsController::class , 'doctorDownloadAnnouncement'])->middleware('throttle:login');
+
         });
     });
 });
@@ -150,6 +151,14 @@ Route::prefix('/admin')->group(function (){
             Route::post('/createFormTwo' , [FormSubmissionPeriodController::class , 'createForm2']);
             Route::post('/updateFormTwo/{form_id}' , [FormSubmissionPeriodController::class , 'updateForm2'])->middleware('throttle:dashBoard');
             Route::delete('/deleteFormTwo/{form_id}' , [FormSubmissionPeriodController::class , 'deleteForm2'])->middleware('throttle:dashBoard');
+
+            //Interview
+            Route::get('/getFormInterview' , [FormSubmissionPeriodController::class , 'getFormInterview']);
+            Route::post('/createFormInterview' , [FormSubmissionPeriodController::class , 'createFormInterview']);
+            Route::post('/updateFormInterview/{interPeriod_id}' , [FormSubmissionPeriodController::class , 'updateFormInterview'])->middleware('throttle:dashBoard');
+            Route::delete('/deleteFormInterview/{interPeriod_id}' , [FormSubmissionPeriodController::class , 'deleteFormInterview'])->middleware('throttle:dashBoard');
+
+            Route::get('/downloadFormDate' , [FormSubmissionPeriodController::class , 'generateAndDownload']);
         });
     });
 

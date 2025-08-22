@@ -14,6 +14,7 @@ class FormSubmissionPeriodObserver
     public function created(FormSubmissionPeriod $formSubmissionPeriod): void
     {
         Cache::forget('home_form_periods');
+        Log::info("hello from create observer");
     }
 
     /**
@@ -22,6 +23,7 @@ class FormSubmissionPeriodObserver
     public function updated(FormSubmissionPeriod $formSubmissionPeriod): void
     {
         Cache::forget('home_form_periods');
+        Log::info("hello from update observer");
     }
 
     /**
