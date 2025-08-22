@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Other;
 
 use App\Enums\FormSubmissionPeriodFormName;
-use App\Exceptions\FormException;
+use App\Exceptions\ProjectManagementException;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\CreateFormRequest;
 use App\Http\Requests\CreateInterviewRequest;

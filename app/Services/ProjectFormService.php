@@ -2,7 +2,7 @@
 namespace App\Services;
 
 use App\Enums\ProjectFormStatus;
-use App\Exceptions\FormException;
+use App\Exceptions\ProjectManagementException;
 use App\Exceptions\PermissionDeniedException;
 use App\Models\ProjectForm;
 use App\Repositories\FormSubmissionPeriodRepository;
@@ -251,17 +251,17 @@ class ProjectFormService
 
         if(!$form)
         {
-            throw new FormException('لايمكنك اجراء هذه العملية !','الاستمارة التي تحاول الوصول اليها غير موجودة', 404);
+            throw new ProjectManagementException('لايمكنك اجراء هذه العملية !','الاستمارة التي تحاول الوصول اليها غير موجودة', 404);
         }
 
         if($form->status === ProjectFormStatus::Approved)
         {
-            throw new FormException('لايمكنك اجراء هذه العملية !' , 'الاستمارة موقعة اساسا ولايمكنك اعادة توقيعها مرة اخرى' , 422);
+            throw new ProjectManagementException('لايمكنك اجراء هذه العملية !' , 'الاستمارة موقعة اساسا ولايمكنك اعادة توقيعها مرة اخرى' , 422);
         }
 
         if($form->user_id !== Auth::id())
         {
-            throw new FormException('لايمكنك اجراء هذه العملية !' , 'غير مصرح لك بتوقيع هذه الاستمارة لانك لست المشرف عليها' , 403);
+            throw new ProjectManagementException('لايمكنك اجراء هذه العملية !' , 'غير مصرح لك بتوقيع هذه الاستمارة لانك لست المشرف عليها' , 403);
         }
 
         $this->repository->approve($form);
@@ -279,22 +279,22 @@ class ProjectFormService
 
         if(!$form)
         {
-            throw new FormException('لايمكنك اجراء هذه العملية !','الاستمارة التي تحاول الوصول اليها غير موجودة', 404);
+            throw new ProjectManagementException('لايمكنك اجراء هذه العملية !','الاستمارة التي تحاول الوصول اليها غير موجودة', 404);
         }
 
         if($form->status === ProjectFormStatus::Approved)
         {
-            throw new FormException('لايمكنك اجراء هذه العملية !' , 'لا يمكن رفض استمارة تم توقيعها بالفعل' , 422);
+            throw new ProjectManagementException('لايمكنك اجراء هذه العملية !' , 'لا يمكن رفض استمارة تم توقيعها بالفعل' , 422);
         }
 
         if($form->status === ProjectFormStatus::Rejected)
         {
-            throw new FormException('لايمكنك اجراء هذه العملية !' , 'الاستمارة مرفوضة بالفعل ولايمكنك رفضها مرة اخرى' , 422);
+            throw new ProjectManagementException('لايمكنك اجراء هذه العملية !' , 'الاستمارة مرفوضة بالفعل ولايمكنك رفضها مرة اخرى' , 422);
         }
 
         if($form->user_id !== Auth::id())
         {
-            throw new FormException('لايمكنك اجراء هذه العملية !' , 'غير مصرح لك برفض هذه الاستمارة لانك لست المشرف عليها' , 403);
+            throw new ProjectManagementException('لايمكنك اجراء هذه العملية !' , 'غير مصرح لك برفض هذه الاستمارة لانك لست المشرف عليها' , 403);
         }
 
         $this->repository->reject($form);
@@ -312,14 +312,14 @@ class ProjectFormService
 
         if(!$form)
         {
-            throw new FormException('لايمكنك اجراء هذه العملية !','الاستمارة التي تحاول الوصول اليها غير موجودة', 404);
+            throw new ProjectManagementException('لايمكنك اجراء هذه العملية !','الاستمارة التي تحاول الوصول اليها غير موجودة', 404);
         }
 
         $filePath = $this->repository->getFilePath($form);
 
         if(!$filePath)
         {
-            throw new FormException('لايمكنك اجراء هذه العملية !','ملف الاستمارة التي تحاول تنزيلها غير موجود اساسا', 404);
+            throw new ProjectManagementException('لايمكنك اجراء هذه العملية !','ملف الاستمارة التي تحاول تنزيلها غير موجود اساسا', 404);
         }
 
         return response()->download($filePath , basename($filePath) , ['Content-Type' => 'application/pdf']);

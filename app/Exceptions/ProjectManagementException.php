@@ -6,7 +6,7 @@ use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
-class FormException extends Exception
+class ProjectManagementException extends Exception
 {
     protected string $title;
     protected string $body;

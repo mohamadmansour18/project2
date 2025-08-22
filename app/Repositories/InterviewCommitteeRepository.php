@@ -5,6 +5,7 @@ namespace App\Repositories;
 use App\Models\InterviewCommittee;
 use App\Models\ProjectGrade;
 use Carbon\Carbon;
+use Illuminate\Support\Collection;
 
 class InterviewCommitteeRepository
 {
@@ -90,5 +91,33 @@ class InterviewCommitteeRepository
         });
 
         return $schedules;
+    }
+
+    public function existsForDoctorInYear(int $doctorId): bool
+    {
+        $currentYear = now()->year;
+
+        return InterviewCommittee::query()
+            ->whereYear('created_at' , $currentYear)
+            ->where(function ($query) use ($doctorId) {
+                $query->where('supervisor_id' , $doctorId)
+                      ->orWhere('member_id' , $doctorId);
+            })
+            ->exists();
+    }
+
+    public function getCommitteesForCurrentYear(): Collection|array
+    {
+        return InterviewCommittee::with([
+            'adminSupervisor.profile',
+            'adminMember.profile'
+        ])
+        ->whereYear('created_at' , now()->year)
+        ->get(['id' , 'supervisor_id' , 'member_id']);
+    }
+
+    public function createCommittee(array $data)
+    {
+        return InterviewCommittee::create($data);
     }
 }

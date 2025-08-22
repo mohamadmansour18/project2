@@ -158,7 +158,12 @@ Route::prefix('/admin')->group(function (){
             Route::post('/updateFormInterview/{interPeriod_id}' , [FormSubmissionPeriodController::class , 'updateFormInterview'])->middleware('throttle:dashBoard');
             Route::delete('/deleteFormInterview/{interPeriod_id}' , [FormSubmissionPeriodController::class , 'deleteFormInterview'])->middleware('throttle:dashBoard');
 
-            Route::get('/downloadFormDate' , [FormSubmissionPeriodController::class , 'generateAndDownload']);
+            Route::get('/downloadFormDate' , [FormSubmissionPeriodController::class , 'generateAndDownload'])->middleware('throttle:dashBoard');
+
+            //Interview Committee
+            Route::get('/showAvailableDoctors' , [InterviewCommitteeController::class , 'showAvailableDoctorsNotInCommittee']);
+            Route::post('/createInterviewCommittee' , [InterviewCommitteeController::class , 'createInterviewCommittee']);
+            Route::get('/showInterviewCommittee' , [InterviewCommitteeController::class , 'getInterviewCommittee']);
         });
     });
 

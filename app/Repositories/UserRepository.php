@@ -225,4 +225,13 @@ class UserRepository
             ->whereYear('created_at' , now()->year)
             ->get();
     }
+
+    public function getAvailableDoctors(): Collection|array
+    {
+        return User::query()
+            ->where('role' , UserRole::Doctor->value)
+            ->whereDoesntHave('supervisor')
+            ->whereDoesntHave('member')
+            ->get(['id' , 'name']);
+    }
 }
