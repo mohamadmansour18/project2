@@ -116,8 +116,26 @@ class InterviewCommitteeRepository
         ->get(['id' , 'supervisor_id' , 'member_id']);
     }
 
+    public function getCommitteesForYearOrdered(): Collection
+    {
+        return InterviewCommittee::with(['adminSupervisor', 'adminMember'])
+            ->whereYear('created_at', now()->year)
+            ->orderBy('id')
+            ->get();
+    }
+
     public function createCommittee(array $data)
     {
         return InterviewCommittee::create($data);
+    }
+
+    public function findOrFillById(int $committeeId)
+    {
+        return InterviewCommittee::findOrFail($committeeId);
+    }
+
+    public function forceDelete(InterviewCommittee  $committee): ?bool
+    {
+        return $committee->forceDelete();
     }
 }

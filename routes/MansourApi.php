@@ -164,6 +164,9 @@ Route::prefix('/admin')->group(function (){
             Route::get('/showAvailableDoctors' , [InterviewCommitteeController::class , 'showAvailableDoctorsNotInCommittee']);
             Route::post('/createInterviewCommittee' , [InterviewCommitteeController::class , 'createInterviewCommittee']);
             Route::get('/showInterviewCommittee' , [InterviewCommitteeController::class , 'getInterviewCommittee']);
+            Route::delete('/deleteInterviewCommittee/{committee_id}' , [InterviewCommitteeController::class , 'deleteInterviewCommittee']);
+            Route::get('/notifyCommittee' , [InterviewCommitteeController::class , 'notifyCommittee'])->middleware('throttle:dashBoard');
+            Route::get('/downloadCommittee', [InterviewCommitteeController::class , 'generateAndDownloadCommittee']);
         });
     });
 

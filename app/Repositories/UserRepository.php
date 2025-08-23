@@ -234,4 +234,18 @@ class UserRepository
             ->whereDoesntHave('member')
             ->get(['id' , 'name']);
     }
+
+    public function getDoctorInCommitteeCurrentYear(): Collection|array
+    {
+        return User::query()
+            ->where('role' , UserRole::Doctor->value)
+            ->where(function($query){
+                $query->whereHas('supervisor' , function($query1){
+                    $query1->whereYear('created_at' , now()->year);
+                })->orWhereHas('member' , function($query2){
+                    $query2->whereYear('created_at' , now()->year);
+                });
+            })
+            ->get(['id' , 'name']);
+    }
 }

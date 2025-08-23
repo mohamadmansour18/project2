@@ -13,6 +13,7 @@ use App\Services\FcmNotificationDispatcherService;
 use App\Traits\ApiSuccessTrait;
 use Carbon\Carbon;
 use DateInterval;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
@@ -276,7 +277,7 @@ class ProjectManagementService
         ];
     }
     ///////////////////////////////////////////////////////////////////////////////////////////////////
-    public function generateAndDownloadFormsDate()
+    public function generateAndDownloadFormsDate(): BinaryFileResponse|JsonResponse
     {
         try {
             //fetch dates of all forms (1 & 2 & interview)
@@ -288,7 +289,7 @@ class ProjectManagementService
             //verify if data exists or not
             if (!$form1 && !$form2 && !$interview) {
                return response()->json([
-                   'title' => 'لا يمكن إنشاء الملف',
+                   'title' => 'لا يمكن إنشاء الملف !',
                    'body' => 'لا توجد مواعيد للاستمارتيْن أو للمقابلات النهائية في السنة الحالية',
                    'statusCode' => 422
                ], 422);
@@ -420,6 +421,98 @@ class ProjectManagementService
                 'supervisor_name' => $committee->supervisor_id === $committee->adminSupervisor->id ? $committee->adminSupervisor->name : $committee->adminMember->name,
             ];
         });
+    }
+
+    public function deleteCommittee(int $committeeID): void
+    {
+        $committee = $this->interviewCommitteeRepository->findOrFillById($committeeID);
+
+        if(!is_null($committee->days) || !is_null($committee->start_interview_time) || !is_null($committee->end_interview_time))
+        {
+            throw new ProjectManagementException('لايمكن اتمام هذه العملية !' , 'لا يمكن حذف اللجنة بعد تحديد مواعيد المقابلات لها' , 422);
+        }
+
+        $this->interviewCommitteeRepository->forceDelete($committee);
+    }
+
+    public function notifyInterviewCommitteeDoctors(): void
+    {
+        $doctors = $this->userRepository->getDoctorInCommitteeCurrentYear();
+
+        if($doctors->isEmpty())
+        {
+            throw new ProjectManagementException('لايوجد لجان للسنة الحالية !' , 'لم يتم العثور على اي دكتور ضمن اي لجنة في السنة الحلية حتى يتم ارسال اشعار له' , 404);
+        }
+
+        $this->fcmNotificationDispatcherService->sendToUsers($doctors,'تم اختيارك كلجنة مقابلة', 'لقد تم اختيارك لتكون ضمن لجنة مقابلة في السنة الحالية');
+    }
+
+    public function generateAndDownloadCommittee(): BinaryFileResponse|JsonResponse
+    {
+        $committees = $this->interviewCommitteeRepository->getCommitteesForYearOrdered();
+
+        if($committees->isEmpty())
+        {
+            return response()->json([
+                'title' => 'لا يمكن إنشاء الملف !',
+                'body' => 'لاتوجد لجان مقابلات للسنة الحالية قم بتعين لجان اولا',
+                'statusCode' => 422
+            ], 422);
+        }
+
+        try {
+            //fetch logo from project files
+            $logoPath = storage_path('app/public/application_logo/logo.jpg');
+            $logoImg  = file_exists($logoPath) ? 'file://' . $logoPath : '';
+            $currentYear = now()->year;
+
+            //store html & css blade class in var and send to it some data
+            $html = view('pdfs.committeeInterview' , [
+                'year'       => $currentYear,
+                'committees' => $committees,
+                'logoImg'    => $logoImg,
+            ])->render();
+
+            //create temp directory related of mpdf library
+            $mpdfTemp = storage_path('app/mpdf-temp');
+            if (!File::exists($mpdfTemp)) {
+                File::makeDirectory($mpdfTemp, 0755, true);
+            }
+
+            //file store path
+            $disk = Storage::disk('public');
+            $dir = 'admin/committee';
+            if (!$disk->exists($dir)) {
+                $disk->makeDirectory($dir , 0755 , true);
+            }
+            $filename = "announcementCommittee_{$currentYear}_" . now()->format('YmdHis') . ".pdf";
+            $relativePath = $dir . '/' . $filename;
+            $absolutePath = $disk->path($relativePath);
+
+
+            //generate the pdf file and store it in project files
+            $mpdf = new Mpdf([
+                'mode'             => 'utf-8',
+                'format'           => 'A4',
+                'directionality'   => 'rtl',
+                'autoLangToFont'   => true,
+                'autoScriptToLang' => true,
+                'tempDir'          => $mpdfTemp,
+            ]);
+
+            $mpdf->WriteHTML($html);
+            $mpdf->Output($absolutePath, Destination::FILE);
+
+            return response()->download($absolutePath, $filename)->deleteFileAfterSend(true);
+
+        }catch (\Throwable $exception)
+        {
+            Log::error('PDF generation failed' , [
+                'message' => $exception->getMessage(),
+                'trace'   => $exception->getTraceAsString(),
+            ]);
+            throw new ProjectManagementException('حدث خطأ اثناء التنفيذ !', 'حدث خطا غير متوقع يرجى اعادة المحاولة لاحقا', 500);
+        }
     }
 
     //--------------------->>>>>>>>>>[HELPERS]<<<<<<<<<<---------------------//

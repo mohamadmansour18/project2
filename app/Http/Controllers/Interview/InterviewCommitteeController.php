@@ -9,6 +9,7 @@ use App\Services\DashBoard_Services\ProjectManagementService;
 use App\Services\InterviewCommitteeService;
 use App\Traits\ApiSuccessTrait;
 use Illuminate\Http\JsonResponse;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 class InterviewCommitteeController extends Controller
 {
@@ -52,5 +53,24 @@ class InterviewCommitteeController extends Controller
         $committees = $this->projectManagementService->getCommitteesForCurrentYear();
 
         return response()->json($committees, 200);
+    }
+
+    public function deleteInterviewCommittee(int $committeeId): JsonResponse
+    {
+        $this->projectManagementService->deleteCommittee($committeeId);
+
+        return $this->successResponse('تمت العملية بنجاح !' , 'تم حذف اللجنة المحددة ' , 200);
+    }
+
+    public function notifyCommittee(): JsonResponse
+    {
+        $this->projectManagementService->notifyInterviewCommitteeDoctors();
+
+        return $this->successResponse('تمت العملية بنجاح !' , 'تم ارسال اشعارات للدكاترة في جميع لجان المقابلة للسنة الحالية' , 200);
+    }
+
+    public function generateAndDownloadCommittee(): BinaryFileResponse|JsonResponse
+    {
+        return $this->projectManagementService->generateAndDownloadCommittee();
     }
 }
