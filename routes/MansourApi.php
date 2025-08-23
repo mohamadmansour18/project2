@@ -3,6 +3,7 @@
 use App\Http\Controllers\Auth\AuthenticationAdminController;
 use App\Http\Controllers\Auth\AuthenticationDoctorController;
 use App\Http\Controllers\Conversation\ConversationController;
+use App\Http\Controllers\Conversation\FAQController;
 use App\Http\Controllers\Conversation\MessageController;
 use App\Http\Controllers\Favorite\AnnouncementsController;
 use App\Http\Controllers\FormOne\ProjectFormController;
@@ -15,6 +16,7 @@ use App\Http\Controllers\User\UserController;
 use App\Models\User;
 use App\Services\FirebaseNotificationService;
 use Illuminate\Notifications\DatabaseNotification;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -166,7 +168,17 @@ Route::prefix('/admin')->group(function (){
             Route::get('/showInterviewCommittee' , [InterviewCommitteeController::class , 'getInterviewCommittee']);
             Route::delete('/deleteInterviewCommittee/{committee_id}' , [InterviewCommitteeController::class , 'deleteInterviewCommittee']);
             Route::get('/notifyCommittee' , [InterviewCommitteeController::class , 'notifyCommittee'])->middleware('throttle:dashBoard');
-            Route::get('/downloadCommittee', [InterviewCommitteeController::class , 'generateAndDownloadCommittee']);
+            Route::get('/downloadCommittee', [InterviewCommitteeController::class , 'generateAndDownloadCommittee'])->middleware('throttle:dashBoard');
+
+            //FAQs
+            Route::get('/showFAQs' , [FAQController::class , 'showFAQs']);
+            Route::post('/createFAQs' , [FAQController::class , 'createFAQ']);
+            Route::delete('/deleteFAQs/{question_id}' , [FAQController::class , 'deleteFAQ']);
+        });
+
+        //GROUP_MANAGEMENT
+        Route::prefix('/groupManagement')->group(function (){
+
         });
     });
 
@@ -211,6 +223,8 @@ Route::get('/test-fcm', function (FirebaseNotificationService $fcm) {
 //    $user = DatabaseNotification::first();
 //    return response()->json(['title' => $user->data['title']]);
 //});
+
+
 
 Route::fallback(function (){
     return response()->json([
