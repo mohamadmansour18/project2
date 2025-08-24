@@ -62,9 +62,6 @@ Route::prefix('/student')->group(function (){
             //form 1 APIs
             Route::post('/project-form-one/{form}/submit', [ProjectFormController::class, 'submit']);
 
-            //form 2 APIs
-            Route::post('/project-form-two', [ProjectForm2Controller::class, 'store']);
-
             //Sixth student APIs
             Route::get('/groups/{group}/leader-requests', [JoinRequestController::class, 'leaderRequests']);
             Route::post('/join-request/{id}/approve', [JoinRequestController::class, 'leaderApprove']);
@@ -101,11 +98,12 @@ Route::prefix('/student')->group(function (){
         Route::post('/project-form-one', [ProjectFormController::class, 'store']);
         Route::post('/project-form-one/{form}', [ProjectFormController::class, 'update']);
         Route::post('/project-form-one/{form}/sign', [ProjectFormController::class, 'sign']);
-        Route::get('/form-1/{form}/download', [ProjectFormController::class, 'download']);
+        Route::get('/form-1/{form}/download', [ProjectFormController::class, 'downloadForm']);
         Route::get('/form-1/{form}/preview', [ProjectFormController::class, 'preview']);
 
 
         //form 2 APIs
+        Route::post('/project-form-two', [ProjectForm2Controller::class, 'store']);
         Route::get('/form-2/{form}/download', [ProjectForm2Controller::class, 'download']);
         Route::get('/form-2/{form}/preview', [ProjectForm2Controller::class, 'preview']);
 

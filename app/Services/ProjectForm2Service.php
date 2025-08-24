@@ -26,7 +26,18 @@ class ProjectForm2Service
     {
         $user = Auth::user();
 
-        if ($this->repository->existsForGroup($data['group_id'], $user->id)) {
+        $groupMember = $user->groupMember;
+        if (!$groupMember) {
+            throw new PermissionDeniedException('خطأ', 'المستخدم غير موجود بأي مجموعة.');
+        }
+
+        $groupId = $groupMember->group_id;
+
+        if (!$this->groupRepo->isLeader($groupId, $user->id)) {
+            throw new PermissionDeniedException('صلاحيات', 'فقط قائد المجموعة يستطيع تعبئة الاستمارة.');
+        }
+
+        if ($this->repository->existsForGroup($groupId, $user->id)) {
             throw new PermissionDeniedException(
                 'عملية مكررة',
                 'لا يمكنك تعبئة الاستمارة أكثر من مرة لنفس المجموعة.'
@@ -49,7 +60,7 @@ class ProjectForm2Service
             : null;
 
         $form = $this->repository->create([
-            'group_id'             => $data['group_id'],
+            'group_id'             => $groupId,
             'arabic_project_title' => $data['arabic_title'],
             'user_segment'         => $data['user_segment'],
             'development_procedure'=> $data['development_procedure'],

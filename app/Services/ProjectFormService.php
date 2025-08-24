@@ -169,28 +169,6 @@ class ProjectFormService
 
     }
 
-    public function downloadFilledForm(ProjectForm $form)
-    {
-        $user = auth()->user();
-
-        $isSupervisor = $form->user_id === $user->id;
-        $isMember = $this->groupRepo->isMember($form->group_id, $user->id);
-
-        if (!$isSupervisor && !$isMember) {
-            throw new PermissionDeniedException('غير مصرح','لا يمكنك تحميل هذا الملف غير مخول لك بهذا.');
-        }
-
-        if (!$form->filled_form_file_path || !Storage::disk('public')->exists($form->filled_form_file_path)) {
-            throw new PermissionDeniedException('غير موجود','الملف غير متوفر أو لم يتم إنشاؤه بعد.');
-        }
-
-        return Response::download(
-            storage_path('app/public/' . $form->filled_form_file_path),
-            'project_form_' . $form->id . '.pdf',
-            ['Content-Type' => 'application/pdf']
-        );
-    }
-
     public function getPreviewPdfBase64(ProjectForm $form): array
     {
         $user = auth()->user();

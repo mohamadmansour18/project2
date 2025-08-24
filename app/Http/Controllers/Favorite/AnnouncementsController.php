@@ -53,9 +53,9 @@ class AnnouncementsController extends Controller
         return $this->successResponse('حذف إعلان', 'تم حذف الإعلان بنجاح', 200);
     }
 
-    public function download(Announcement $announcement)
+    public function download(int $announcement)
     {
-        return $this->service->downloadAttachment($announcement);
+        return $this->service->downloadAnnouncement($announcement);
     }
 
     public function preview(Announcement $announcement)

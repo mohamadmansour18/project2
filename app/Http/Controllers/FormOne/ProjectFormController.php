@@ -50,11 +50,6 @@ class ProjectFormController extends Controller
         return $this->successResponse('تم الإرسال', 'تم إرسال الاستمارة للمشرف بنجاح.');
     }
 
-    public function download(ProjectForm $form)
-    {
-        return $this->service->downloadFilledForm($form);
-    }
-
     public function preview(ProjectForm $form): JsonResponse
     {
         $pdfData = $this->service->getPreviewPdfBase64($form);
