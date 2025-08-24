@@ -28,7 +28,6 @@ class InterviewCommittee extends Model
     ];
 
     protected $casts = [
-        'days' => 'array' ,
         'interview_time' => 'datetime:H:i:s',
     ];
 

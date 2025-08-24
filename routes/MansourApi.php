@@ -12,6 +12,7 @@ use App\Http\Controllers\Grade\ProjectGradeController;
 use App\Http\Controllers\Group\GroupController;
 use App\Http\Controllers\Interview\InterviewCommitteeController;
 use App\Http\Controllers\Interview\InterviewPeriodController;
+use App\Http\Controllers\Interview\InterviewSchedulesController;
 use App\Http\Controllers\Other\FormSubmissionPeriodController;
 use App\Http\Controllers\Other\StatisticsController;
 use App\Http\Controllers\User\UserController;
@@ -123,6 +124,8 @@ Route::prefix('/admin')->group(function (){
             Route::get('/showDoctors' , [UserController::class , 'showAllDoctorsForAdminHomePage']);
 
             Route::get('/getCommitteeAndPeriod' , [InterviewPeriodController::class , 'getCommitteesAndPeriods']);
+            Route::get('/downloadFinalInterview' , [InterviewSchedulesController::class , 'generateAssignAndDownload']);
+            Route::delete('/deleteFinalInterview' , [InterviewSchedulesController::class , 'deleteFinalInterview']);
         });
 
         //USER_MANAGEMENT

@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('supervisor_id')->constrained('users' , 'id')->onDelete('cascade')->onUpdate('cascade');
             $table->foreignId('member_id')->constrained('users' , 'id')->onDelete('cascade')->onUpdate('cascade');
-            $table->json('days')->nullable();
+            $table->date('days')->nullable();
             $table->timestamp('start_interview_time')->nullable();
             $table->timestamp('end_interview_time')->nullable();
             $table->timestamps();

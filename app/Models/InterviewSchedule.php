@@ -20,13 +20,16 @@ class InterviewSchedule extends Model
     protected $fillable = [
         'committee_id' ,
         'group_id' ,
-        'interview_day' ,
+        'interview_date' ,
         'interview_time' ,
         'interview_end_time' ,
     ];
 
     protected $casts = [
         'interview_day' => 'array' ,
+        'interview_date'      => 'date:Y-m-d',
+        'interview_time'      => 'datetime',
+        'interview_end_time'  => 'datetime',
     ];
 
     public function committee(): BelongsTo
