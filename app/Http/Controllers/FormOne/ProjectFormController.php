@@ -5,17 +5,20 @@ namespace App\Http\Controllers\FormOne;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreProjectFormRequest;
 use App\Models\ProjectForm;
+use App\Services\DashBoard_Services\GroupManagementService;
 use App\Services\ProjectFormService;
 use App\Traits\ApiSuccessTrait;
 use Illuminate\Http\JsonResponse;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class ProjectFormController extends Controller
 {
     use ApiSuccessTrait ;
 
     public function __construct(
-        protected ProjectFormService $service
+        protected ProjectFormService $service,
+        protected GroupManagementService $groupManagementService
     ) {}
 
     public function store(StoreProjectFormRequest $request): JsonResponse
@@ -77,5 +80,10 @@ class ProjectFormController extends Controller
     public function downloadForm(int $formId): BinaryFileResponse
     {
         return $this->service->downloadFormForDoctor($formId);
+    }
+
+    public function downloadFormWeb(int $groupId): StreamedResponse
+    {
+        return $this->groupManagementService->downloadForm1($groupId);
     }
 }

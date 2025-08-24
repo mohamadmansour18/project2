@@ -3,6 +3,8 @@
 namespace App\Services\DashBoard_Services;
 use App\Helpers\UrlHelper;
 use App\Repositories\GroupRepository;
+use App\Repositories\InterviewCommitteeRepository;
+use App\Repositories\InterviewPeriodRepository;
 use App\Repositories\ProjectFormRepository;
 use App\Repositories\UserRepository;
 
@@ -11,7 +13,9 @@ class HomeDashBoardService
     public function __construct(
         protected UserRepository $userRepository ,
         protected GroupRepository $groupRepository,
-        protected ProjectFormRepository $projectFormRepository
+        protected ProjectFormRepository $projectFormRepository,
+        protected InterviewCommitteeRepository $interviewCommitteeRepository,
+        protected InterviewPeriodRepository $interviewPeriodRepository,
     )
     {}
 
@@ -49,5 +53,31 @@ class HomeDashBoardService
         });
 
         return ['data' => $results];
+    }
+
+    public function getCommitteesAndPeriods(): array
+    {
+        $committees = $this->interviewCommitteeRepository->getCommitteesForCurrentYear()->map(function($committee){
+            return [
+                'firstName'   => $committee->adminSupervisor?->name ?? 'لايوجد',
+                'secondName'  => $committee->adminMember?->name ?? 'لايوجد',
+                'firstImage'  => UrlHelper::imageUrl($committee->adminSupervisor?->profile?->profile_image) ?? null,
+                'secondImage' => UrlHelper::imageUrl($committee->adminMember?->profile?->profile_image) ?? null,
+                'supervisor'  => $committee->adminSupervisor?->name ?? 'لايوجد',
+            ];
+        })->values();
+
+        $period = $this->interviewPeriodRepository->getCurrentYearInterview();
+
+        $periodSelect = [
+            'start_date' => $period->start_date,
+            'end_date' => $period->end_date,
+            'days' => $period->days
+        ];
+
+        return [
+            'committees'  => $committees ?? [],
+            'interview_periods' => $periodSelect ?? [],
+        ];
     }
 }

@@ -153,7 +153,7 @@ class GroupService
     {
         $group = $this->groupRepo->getGroupWithRelations($groupId);
 
-        $form1 = $group->projectForms()->first();
+        $form1 = $group->projectForm()->first();
 
         $supervisorSignature = $form1?->signatures()
             ->whereHas('user', function ($q) {
@@ -193,7 +193,7 @@ class GroupService
             );
         }
 
-        $form1 = $group->projectForms()->first();
+        $form1 = $group->projectForm()->first();
 
         $supervisorSignature = $form1?->signatures()
             ->whereHas('user', function ($q) {
@@ -395,7 +395,7 @@ class GroupService
         ];
 
         //form_1
-        $form = $group->projectForms->first();
+        $form = $group?->projectForms;
         $formData = $form ? [
             'form_id' => $form->id ,
             'arabic_title' => $form->arabic_title,
@@ -404,7 +404,7 @@ class GroupService
         ] : [];
 
         //interview_information
-        $schedule = $group->interviewSchedules->first();
+        $schedule = $group?->interviewSchedule;
 
         $interviewInformation = [];
         if($schedule)

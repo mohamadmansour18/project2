@@ -16,7 +16,7 @@ return new class extends Migration
             $table->date('start_date');
             $table->date('end_date');
             $table->json('days')->nullable();
-            $table->integer('duration')->nullable();
+            $table->integer('duration')->default(20);
             $table->timestamps();
         });
     }

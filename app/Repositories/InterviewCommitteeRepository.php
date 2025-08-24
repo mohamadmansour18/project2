@@ -37,7 +37,7 @@ class InterviewCommitteeRepository
 
         $schedules = $committee->schedules()
             ->whereYear('interview_date' , $currentYear)
-            ->with(['group.projectForms' , 'group.projectForm2'])
+            ->with(['group.projectForm' , 'group.projectForm2'])
             ->orderBy('interview_date') //sorting by date and if two row equally sort by time
             ->orderBy('interview_time')
             ->get();
@@ -75,7 +75,7 @@ class InterviewCommitteeRepository
             ->whereHas('group', function ($q) use ($searchKey) {
                 $q->where('name', 'like', $searchKey . '%');
             })
-            ->with(['group.projectForms', 'group.projectForm2'])
+            ->with(['group.projectForm', 'group.projectForm2'])
             ->orderBy('interview_date')
             ->orderBy('interview_time')
             ->get();

@@ -139,4 +139,8 @@ class ProjectFormRepository
         return Storage::disk('public')->path($form->filled_form_file_path);
     }
 
+    public function getFormByGroupId(int $groupId)
+    {
+        return ProjectForm::query()->where('group_id' , $groupId)->first();
+    }
 }

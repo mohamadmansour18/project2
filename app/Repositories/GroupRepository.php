@@ -86,7 +86,7 @@ class GroupRepository
     {
         return Group::with([
             'members.user.profile',
-            'projectForms.signatures.user.profile'
+            'projectForm.signatures.user.profile'
         ])->findOrFail($groupId);
     }
 
@@ -94,7 +94,7 @@ class GroupRepository
     {
         return Group::with([
             'members.user.profile',
-            'projectForms.signatures.user'
+            'projectForm.signatures.user'
         ])
             ->whereHas('members', function ($q) use ($userId) {
                 $q->where('user_id', $userId);
@@ -104,7 +104,7 @@ class GroupRepository
 
     public function getAllGroupsWithForms(): Collection|array
     {
-        return Group::with(['projectForms:id,group_id,status' , 'projectForm2:id,group_id'])
+        return Group::with(['projectForm:id,group_id,status' , 'projectForm2:id,group_id'])
             ->whereYear('created_at' , now()->year)
             ->get(['id' , 'name' , 'image' , 'number_of_members']);
     }
@@ -112,21 +112,21 @@ class GroupRepository
     public function getDoctorFormOneGroups(int $doctorId): Collection|array
     {
         return Group::query()
-            ->whereHas('projectForms' , function($query) use ($doctorId) {
+            ->whereHas('projectForm' , function($query) use ($doctorId) {
                 $query->where('user_id' , $doctorId);
             })
-            ->with(['projectForms:id,group_id,status' , 'projectForm2:id,group_id'])
+            ->with(['projectForm:id,group_id,status' , 'projectForm2:id,group_id'])
             ->whereYear('created_at' , now()->year)
             ->get(['id' , 'name' , 'image' , 'number_of_members']);
     }
 
     public function getGroupDetailsInFinalInterview(int $groupId): array
     {
-        $group = Group::with(['members.user.profile' , 'projectForms' , 'projectForm2'])->findOrFail($groupId);
+        $group = Group::with(['members.user.profile' , 'projectForm' , 'projectForm2'])->findOrFail($groupId);
 
         $schedule = InterviewSchedule::query()->where('group_id' , $groupId)->first();
 
-        $form1 = $group->projectForms()->where('status' , ProjectFormStatus::Approved->value)->first();
+        $form1 = $group->projectForm()->where('status' , ProjectFormStatus::Approved->value)->first();
 
         $form2 = $group->projectForm2()->first();
 
@@ -148,12 +148,12 @@ class GroupRepository
 
     public function getAllWithForms()
     {
-        return Group::with(['projectForms', 'projectForm2'])->get();
+        return Group::with(['projectForm', 'projectForm2'])->get();
     }
 
     public function searchByName(string $keyword)
     {
-        $query = Group::with(['projectForms', 'projectForm2']);
+        $query = Group::with(['projectForm', 'projectForm2']);
 
         if ($keyword !== '') {
             $query->where('name', 'LIKE', "{$keyword}%");
@@ -166,12 +166,29 @@ class GroupRepository
     {
         return Group::with([
             'members.user.profile',
-            'projectForms' => function($query){
+            'projectForm' => function($query){
                 $query->whereIn('status' , [ProjectFormStatus::Approved->value , ProjectFormStatus::Pending->value]);
             },
-            'interviewSchedules.committee',
+            'interviewSchedule.committee',
             'projectGrade'
         ])->findOrFail($groupId);
+    }
+
+    public function getGroupWithRelationWeb(int $groupId): \Illuminate\Database\Eloquent\Model|\Illuminate\Database\Eloquent\Collection|\Illuminate\Database\Eloquent\Builder|array|null
+    {
+        return Group::query()
+            ->with([
+                'members.user.profile', //get group_members
+                'interviewSchedule.committee.adminSupervisor.profile', //get first user Committee
+                'interviewSchedule.committee.adminMember.profile', //get second user Committee
+                'projectForm' => function ($query) {
+                    $query->whereIn('status' , [ProjectFormStatus::Approved->value , ProjectFormStatus::Pending->value]);
+                },
+                'projectForm2',
+                'projectGrade.committee.adminSupervisor.profile',
+                'projectGrade.committee.adminMember.profile',
+                'projectGrade.GradeExceptions.user.profile'
+            ])->findOrFail($groupId);
     }
 
 }

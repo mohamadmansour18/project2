@@ -19,7 +19,7 @@ class GroupResource extends JsonResource
             'name'              => $this->name,
             'image'             => $this->image,
             'number_of_members' => $this->number_of_members,
-            'project_form_1'    => $this->projectForms->isNotEmpty()
+            'project_form_1'    => $this->projectForm->isNotEmpty()
                 ? "# form1"
                 : null,
             'project_form_2'    => $this->projectForm2

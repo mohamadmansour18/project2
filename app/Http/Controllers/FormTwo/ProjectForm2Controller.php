@@ -5,16 +5,19 @@ namespace App\Http\Controllers\FormTwo;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreProjectForm2Request;
 use App\Models\ProjectForm2;
+use App\Services\DashBoard_Services\GroupManagementService;
 use App\Services\ProjectForm2Service;
 use App\Traits\ApiSuccessTrait;
 use Illuminate\Http\JsonResponse;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class ProjectForm2Controller extends Controller
 {
     use ApiSuccessTrait;
 
     public function __construct(
-        protected ProjectForm2Service $service
+        protected ProjectForm2Service $service,
+        protected GroupManagementService $groupManagementService,
     ) {}
 
     public function store(StoreProjectForm2Request $request): JsonResponse
@@ -34,5 +37,10 @@ class ProjectForm2Controller extends Controller
         return $this->dataResponse([
             'PDF' => $pdfData,
         ]);
+    }
+
+    public function downloadFormWeb(int $groupId): StreamedResponse
+    {
+        return $this->groupManagementService->downloadForm2($groupId);
     }
 }

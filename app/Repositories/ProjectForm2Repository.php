@@ -30,5 +30,8 @@ class ProjectForm2Repository
             ->exists();
     }
 
-
+    public function getFormByGroupId(int $groupId)
+    {
+        return ProjectForm2::query()->where('group_id' , $groupId)->first();
+    }
 }

@@ -5,6 +5,7 @@ namespace App\Repositories;
 use App\Models\GradeException;
 use App\Models\InterviewCommittee;
 use App\Models\ProjectGrade;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 
 class GroupGradeRepository
@@ -58,6 +59,43 @@ class GroupGradeRepository
             return $grade;
         });
 
+    }
 
+    public function getGradesForLastThreeYears(): \Illuminate\Database\Eloquent\Collection|array
+    {
+        $since = now()->startOfYear()->subYears(2);
+
+        return ProjectGrade::query()
+            ->where('created_at', '>=', $since)
+            ->with([
+                // المجموعة
+                'group:id,name',
+
+                // علاقات المجموعة (مفرد)
+                'group.projectForm:id,group_id,arabic_title',
+                'group.interviewSchedule:id,group_id,interview_date',
+
+                // اللجنة + علاقاتها
+                'committee:id,supervisor_id,member_id',
+                'committee.adminSupervisor:id,name',
+                'committee.adminSupervisor.profile:id,user_id,profile_image',
+                'committee.adminMember:id,name',
+                'committee.adminMember.profile:id,user_id,profile_image',
+            ])
+            ->get()
+            ->groupBy(fn ($g) => (int) $g->created_at->format('Y'));
+    }
+
+    public function getGradesWithRelationsForYear(): Collection|array
+    {
+        $currentYear = now()->year;
+
+        return ProjectGrade::with([
+                'group.members.user',
+                'GradeExceptions.user'
+            ])
+            ->whereYear('created_at', $currentYear)
+            ->orderBy('group_id')
+            ->get();
     }
 }

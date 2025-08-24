@@ -52,14 +52,14 @@ class Group extends Model
         return $this->hasMany(GroupInvitation::class, 'group_id', 'id');
     }
 
-    public function projectForms(): HasMany
+    public function projectForm(): hasOne
     {
-        return $this->hasMany(ProjectForm::class, 'group_id', 'id');
+        return $this->hasOne(ProjectForm::class, 'group_id', 'id');
     }
 
-    public function interviewSchedules(): HasMany
+    public function interviewSchedule(): hasOne
     {
-        return $this->hasMany(InterviewSchedule::class, 'group_id', 'id');
+        return $this->hasOne(InterviewSchedule::class, 'group_id', 'id');
     }
 
     public function projectForm2(): HasOne

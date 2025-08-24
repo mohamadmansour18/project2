@@ -7,9 +7,11 @@ use App\Http\Controllers\Conversation\FAQController;
 use App\Http\Controllers\Conversation\MessageController;
 use App\Http\Controllers\Favorite\AnnouncementsController;
 use App\Http\Controllers\FormOne\ProjectFormController;
+use App\Http\Controllers\FormTwo\ProjectForm2Controller;
 use App\Http\Controllers\Grade\ProjectGradeController;
 use App\Http\Controllers\Group\GroupController;
 use App\Http\Controllers\Interview\InterviewCommitteeController;
+use App\Http\Controllers\Interview\InterviewPeriodController;
 use App\Http\Controllers\Other\FormSubmissionPeriodController;
 use App\Http\Controllers\Other\StatisticsController;
 use App\Http\Controllers\User\UserController;
@@ -119,6 +121,8 @@ Route::prefix('/admin')->group(function (){
             Route::get('/CurdStats' , [StatisticsController::class , 'getCurdStatistics']);
             Route::get('/showFormDates', [FormSubmissionPeriodController::class, 'getFormDateForDoctor']);
             Route::get('/showDoctors' , [UserController::class , 'showAllDoctorsForAdminHomePage']);
+
+            Route::get('/getCommitteeAndPeriod' , [InterviewPeriodController::class , 'getCommitteesAndPeriods']);
         });
 
         //USER_MANAGEMENT
@@ -178,7 +182,15 @@ Route::prefix('/admin')->group(function (){
 
         //GROUP_MANAGEMENT
         Route::prefix('/groupManagement')->group(function (){
+            Route::get('/showGroupDetails/{group_id}' , [GroupController::class , 'showGroupDetails']);
+            Route::get('/downloadFormOne/{group_id}' , [ProjectFormController::class , 'downloadFormWeb'])->middleware('throttle:dashBoard');
+            Route::get('/downloadFormTwo/{group_id}' , [ProjectForm2Controller::class , 'downloadFormWeb'])->middleware('throttle:dashBoard');
+        });
 
+        //GRADE_MANAGEMENT
+        Route::prefix('/gradeManagement')->group(function (){
+            Route::get('/showGrades' , [ProjectGradeController::class , 'getGrades']);
+            Route::get('/downloadGrades' , [ProjectGradeController::class , 'downloadGrades']);
         });
     });
 

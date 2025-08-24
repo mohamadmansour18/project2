@@ -9,6 +9,7 @@ use App\Http\Requests\SearchGroupRequest;
 use App\Http\Requests\UpdateGroupRequest;
 use App\Http\Resources\GroupResource;
 use App\Models\Group;
+use App\Services\DashBoard_Services\GroupManagementService;
 use App\Services\GroupService;
 use App\Traits\ApiSuccessTrait;
 use Illuminate\Http\JsonResponse;
@@ -17,9 +18,11 @@ class GroupController extends Controller
 {
     use ApiSuccessTrait;
 
-    public function __construct(protected GroupService $groupService)
-    {
-    }
+    public function __construct(
+        protected GroupService $groupService,
+        protected GroupManagementService $groupManagementService,
+    )
+    {}
 
     public function store(CreateGroupRequest $request): JsonResponse
     {
@@ -123,5 +126,12 @@ class GroupController extends Controller
         $data = $this->groupService->getGroupDetailsForFormOneRequest($groupId);
 
         return $this->dataResponse($data , 200);
+    }
+
+    public function showGroupDetails(int $groupId): JsonResponse
+    {
+        $data = $this->groupManagementService->getGroupDetails($groupId);
+
+        return $this->dataResponse($data, 200);
     }
 }

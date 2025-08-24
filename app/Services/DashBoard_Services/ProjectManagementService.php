@@ -456,8 +456,8 @@ class ProjectManagementService
             return response()->json([
                 'title' => 'لا يمكن إنشاء الملف !',
                 'body' => 'لاتوجد لجان مقابلات للسنة الحالية قم بتعين لجان اولا',
-                'statusCode' => 422
-            ], 422);
+                'statusCode' => 404
+            ], 404);
         }
 
         try {
