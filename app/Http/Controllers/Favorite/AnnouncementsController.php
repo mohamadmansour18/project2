@@ -8,6 +8,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreAnnouncementRequest;
 use App\Http\Resources\AnnouncementResource;
 use App\Http\Resources\DoctorAnnouncementResource;
+use App\Http\Resources\StudentAnnouncementResource;
 use App\Models\Announcement;
 use App\Services\AnnouncementService;
 use App\Services\HomeMobileService;
@@ -141,7 +142,7 @@ class AnnouncementsController extends Controller
         $images = $this->service->getImagesForStudents();
         return $this->dataResponse([
             'count' => $images->count(),
-            'data' => DoctorAnnouncementResource::collection($images),
+            'data' => StudentAnnouncementResource::collection($images),
         ]);
     }
 
@@ -150,7 +151,7 @@ class AnnouncementsController extends Controller
         $files = $this->service->getFilesForStudents();
         return $this->dataResponse([
             'count' => $files->count(),
-            'data' => DoctorAnnouncementResource::collection($files),
+            'data' => StudentAnnouncementResource::collection($files),
         ]);
     }
 
@@ -159,7 +160,7 @@ class AnnouncementsController extends Controller
         $images = $this->service->getLatestImagesForStudents();
         return $this->dataResponse([
             'count' => $images->count(),
-            'data' => DoctorAnnouncementResource::collection($images),
+            'data' => StudentAnnouncementResource::collection($images),
         ]);
     }
 
@@ -168,7 +169,7 @@ class AnnouncementsController extends Controller
         $files = $this->service->getLatestFilesForStudents();
         return $this->dataResponse([
             'count' => $files->count(),
-            'data' => DoctorAnnouncementResource::collection($files),
+            'data' => StudentAnnouncementResource::collection($files),
         ]);
     }
 
@@ -177,7 +178,7 @@ class AnnouncementsController extends Controller
         $images = $this->service->getLastYearImages();
         return $this->dataResponse([
             'count' => $images->count(),
-            'data' => DoctorAnnouncementResource::collection($images),
+            'data' => StudentAnnouncementResource::collection($images),
         ]);
     }
 
@@ -186,7 +187,7 @@ class AnnouncementsController extends Controller
         $files = $this->service->getLastYearFiles();
         return $this->dataResponse([
             'count' => $files->count(),
-            'data' => DoctorAnnouncementResource::collection($files),
+            'data' => StudentAnnouncementResource::collection($files),
         ]);
     }
 

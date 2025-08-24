@@ -60,8 +60,6 @@ Route::prefix('/student')->group(function (){
             Route::post('join-request/{id}/reject', [JoinRequestController::class, 'reject']);
 
             //form 1 APIs
-            Route::post('/project-form-one', [ProjectFormController::class, 'store']);
-            Route::post('/project-form-one/{form}', [ProjectFormController::class, 'update']);
             Route::post('/project-form-one/{form}/submit', [ProjectFormController::class, 'submit']);
 
             //form 2 APIs
@@ -83,6 +81,7 @@ Route::prefix('/student')->group(function (){
 
         //group member APIs
         Route::get('/my-group-members', [GroupMemberController::class, 'myGroupMembers']);
+        Route::get('/my-group/members', [GroupMemberController::class, 'myGroupMembersFormOne']);
 
         //invitations APIs
         Route::get('/groups/invitations/user', [GroupInvitationController::class, 'index']);
@@ -99,9 +98,12 @@ Route::prefix('/student')->group(function (){
         Route::get('/students-without-group', [UserController::class, 'getUsersWithoutGroup']);
 
         //form 1 APIs
+        Route::post('/project-form-one', [ProjectFormController::class, 'store']);
+        Route::post('/project-form-one/{form}', [ProjectFormController::class, 'update']);
         Route::post('/project-form-one/{form}/sign', [ProjectFormController::class, 'sign']);
         Route::get('/form-1/{form}/download', [ProjectFormController::class, 'download']);
         Route::get('/form-1/{form}/preview', [ProjectFormController::class, 'preview']);
+
 
         //form 2 APIs
         Route::get('/form-2/{form}/download', [ProjectForm2Controller::class, 'download']);

@@ -3,8 +3,10 @@
 namespace App\Services;
 
 use App\Enums\GroupMemberRole;
+use App\Exceptions\PermissionDeniedException;
 use App\Helpers\UrlHelper;
 use App\Repositories\GroupMemberRepository;
+use Illuminate\Support\Facades\Auth;
 
 
 class GroupMemberService
@@ -28,5 +30,17 @@ class GroupMemberService
                 'is_leader' => $member->role === GroupMemberRole::Leader,
             ];
         })->toArray();
+    }
+
+    public function getMyGroupMembersFormOne()
+    {
+        $user = Auth::user();
+        $groupMember = $user->groupMember;
+
+        if (!$groupMember) {
+            throw new PermissionDeniedException('خطا','لايوجد اعضاء في هذه المجموعة');
+        }
+
+        return $this->groupMemberRepo->getMembersWithProfile($groupMember->group_id);
     }
 }

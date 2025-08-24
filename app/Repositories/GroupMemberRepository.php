@@ -70,6 +70,13 @@ class GroupMemberRepository
             ->toArray();
     }
 
+    public function getMembersWithProfile(int $groupId)
+    {
+        return GroupMember::with(['user.profile'])
+            ->where('group_id', $groupId)
+            ->get();
+    }
+
 
 
 }
