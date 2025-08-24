@@ -53,15 +53,6 @@ class AnnouncementService
         return $this->repo->delete($announcement);
     }
 
-    public function downloadAttachment(Announcement $announcement)
-    {
-        if (!Storage::disk('public')->exists($announcement->attachment_path)) {
-            throw new NotFoundException('الملف غير موجود', 'المرفق المطلوب غير موجود في السيرفر');
-        }
-
-        return Storage::disk('public')->download($announcement->attachment_path);
-    }
-
     public function previewAttachment(Announcement $announcement)
     {
         if (!Storage::disk('public')->exists($announcement->attachment_path)) {

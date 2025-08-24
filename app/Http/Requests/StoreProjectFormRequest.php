@@ -27,7 +27,6 @@ class StoreProjectFormRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'group_id' => ['required', 'exists:groups,id'],
             'user_id' => ['required', 'exists:users,id'],
             'arabic_title' => ['required', 'string'],
             'english_title' => ['required', 'string'],

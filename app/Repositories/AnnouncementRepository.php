@@ -76,7 +76,8 @@ class AnnouncementRepository
 
     public function getImagesForStudents()
     {
-        return Announcement::whereYear('created_at', now()->year)
+        return Announcement::with('users') // 👈 eager load favorites
+        ->whereYear('created_at', now()->year)
             ->where('audience', AnnouncementAudience::All->value)
             ->where('type', AnnouncementType::Image->value)
             ->get();
@@ -84,7 +85,8 @@ class AnnouncementRepository
 
     public function getFilesForStudents()
     {
-        return Announcement::whereYear('created_at', now()->year)
+        return Announcement::with('users')
+            ->whereYear('created_at', now()->year)
             ->where('audience', AnnouncementAudience::All->value)
             ->where('type', AnnouncementType::File->value)
             ->get();
@@ -92,7 +94,8 @@ class AnnouncementRepository
 
     public function getLatestImagesForStudents()
     {
-        return Announcement::whereYear('created_at', now()->year)
+        return Announcement::with('users')
+            ->whereYear('created_at', now()->year)
             ->where('audience', AnnouncementAudience::All->value)
             ->where('type', AnnouncementType::Image->value)
             ->orderByDesc('created_at')
@@ -102,7 +105,8 @@ class AnnouncementRepository
 
     public function getLatestFilesForStudents()
     {
-        return Announcement::whereYear('created_at', now()->year)
+        return Announcement::with('users')
+            ->whereYear('created_at', now()->year)
             ->where('audience', AnnouncementAudience::All->value)
             ->where('type', AnnouncementType::File->value)
             ->orderByDesc('created_at')
@@ -114,7 +118,8 @@ class AnnouncementRepository
     {
         $lastYear = now()->subYear()->year;
 
-        return Announcement::where('audience', AnnouncementAudience::All->value)
+        return Announcement::with('users')
+            ->where('audience', AnnouncementAudience::All->value)
             ->where('type', AnnouncementType::Image->value)
             ->whereYear('created_at', $lastYear)
             ->get();
@@ -124,7 +129,8 @@ class AnnouncementRepository
     {
         $lastYear = now()->subYear()->year;
 
-        return Announcement::where('audience', AnnouncementAudience::All->value)
+        return Announcement::with('users')
+            ->where('audience', AnnouncementAudience::All->value)
             ->where('type', AnnouncementType::File->value)
             ->whereYear('created_at', $lastYear)
             ->get();

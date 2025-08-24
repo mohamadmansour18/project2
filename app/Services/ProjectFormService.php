@@ -26,36 +26,38 @@ class ProjectFormService
     {
         $user = Auth::user();
 
-        if ($this->repository->existsForGroupByLeader($data['group_id'], $user->id)) {
+        $groupMember = $user->groupMember;
+        if (!$groupMember) {
+            throw new PermissionDeniedException('خطأ', 'المستخدم غير موجود بأي مجموعة.');
+        }
+
+        $groupId = $groupMember->group_id;
+
+        if (!$this->groupRepo->isLeader($groupId, $user->id)) {
+            throw new PermissionDeniedException('صلاحيات', 'فقط قائد المجموعة يستطيع تعبئة الاستمارة.');
+        }
+
+        // منع التكرار
+        if ($this->repository->existsForGroupByLeader($groupId, $user->id)) {
             throw new PermissionDeniedException('عملية مكررة', 'لا يمكنك تعبئة الاستمارة أكثر من مرة لنفس المجموعة.');
         }
 
         $this->ensureFormPeriodIsActive("form1");
 
         $form = $this->repository->create([
-            'group_id' => $data['group_id'],
-            'user_id' => $data['user_id'],
-            'arabic_title' => $data['arabic_title'],
-            'english_title' => $data['english_title'],
-            'description' => $data['description'],
-            'project_scope' => $data['project_scope'],
-            'targeted_sector' => $data['targeted_sector'],
+            'group_id'          => $groupId,
+            'user_id'           => $user->id,
+            'arabic_title'      => $data['arabic_title'],
+            'english_title'     => $data['english_title'],
+            'description'       => $data['description'],
+            'project_scope'     => $data['project_scope'],
+            'targeted_sector'   => $data['targeted_sector'],
             'sector_classification' => $data['sector_classification'],
-            'stakeholders' => $data['stakeholders'],
-            'status' => ProjectFormStatus::Draft,
-        ]);
-
-        $html = view('pdfs.project_form', ['form' => $form])->render();
-
-        $mpdf = new Mpdf([
-            'mode' => 'utf-8',
-            'format' => 'A4',
-            'default_font' => 'cairo',
-            'direction' => 'rtl',
+            'stakeholders'      => $data['stakeholders'],
+            'status'            => ProjectFormStatus::Draft,
         ]);
 
         $this->regeneratePdf($form);
-
     }
 
     public function sign(ProjectForm $form): void
@@ -101,6 +103,19 @@ class ProjectFormService
 
     public function update(ProjectForm $form, array $data): void
     {
+        $user = Auth::user();
+
+        $groupMember = $user->groupMember;
+        if (!$groupMember) {
+            throw new PermissionDeniedException('خطأ', 'المستخدم غير موجود بأي مجموعة.');
+        }
+
+        $groupId = $groupMember->group_id;
+
+        if (!$this->groupRepo->isLeader($groupId, $user->id)) {
+            throw new PermissionDeniedException('صلاحيات', 'فقط قائد المجموعة يستطيع تعبئة الاستمارة.');
+        }
+
         if (!in_array($form->status, [ProjectFormStatus::Draft, ProjectFormStatus::Rejected])) {
             throw new PermissionDeniedException('لا يمكن التعديل', 'لا يمكنك تعديل الاستمارة في حالتها الحالية.');
         }
@@ -152,28 +167,6 @@ class ProjectFormService
             $this->dispatcherService->sendToUser($form->user, $title, $body);
         }
 
-    }
-
-    public function downloadFilledForm(ProjectForm $form)
-    {
-        $user = auth()->user();
-
-        $isSupervisor = $form->user_id === $user->id;
-        $isMember = $this->groupRepo->isMember($form->group_id, $user->id);
-
-        if (!$isSupervisor && !$isMember) {
-            throw new PermissionDeniedException('غير مصرح','لا يمكنك تحميل هذا الملف غير مخول لك بهذا.');
-        }
-
-        if (!$form->filled_form_file_path || !Storage::disk('public')->exists($form->filled_form_file_path)) {
-            throw new PermissionDeniedException('غير موجود','الملف غير متوفر أو لم يتم إنشاؤه بعد.');
-        }
-
-        return Response::download(
-            storage_path('app/public/' . $form->filled_form_file_path),
-            'project_form_' . $form->id . '.pdf',
-            ['Content-Type' => 'application/pdf']
-        );
     }
 
     public function getPreviewPdfBase64(ProjectForm $form): array
