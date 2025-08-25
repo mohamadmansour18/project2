@@ -14,12 +14,11 @@ use App\Http\Controllers\Interview\InterviewCommitteeController;
 use App\Http\Controllers\Interview\InterviewPeriodController;
 use App\Http\Controllers\Interview\InterviewSchedulesController;
 use App\Http\Controllers\Other\FormSubmissionPeriodController;
+use App\Http\Controllers\Other\NotificationsController;
+use App\Http\Controllers\Other\SearchHistoryController;
 use App\Http\Controllers\Other\StatisticsController;
 use App\Http\Controllers\User\UserController;
-use App\Models\User;
 use App\Services\FirebaseNotificationService;
-use Illuminate\Notifications\DatabaseNotification;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -213,6 +212,15 @@ Route::prefix('/student')->group(function (){
         Route::post('/search' , [ConversationController::class , 'searchConversation']);
 
         Route::post('/showMessages/{conversation_id}' , [MessageController::class , 'showMessages']);
+
+        //Search
+        Route::get('/getSearchHistory' , [SearchHistoryController::class , 'getUserSearchHistory']);
+        Route::post('/searchStudent' , [SearchHistoryController::class , 'search']);
+        Route::delete('/deleteItem/{item_id}' , [SearchHistoryController::class , 'deleteItem']);
+
+        //notification
+        Route::get('/showNotifications' , [NotificationsController::class , 'getNotifications']);
+        Route::get('/countNotifications' , [NotificationsController::class , 'unreadCount']);
     });
 });
 

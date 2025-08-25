@@ -159,4 +159,9 @@ class User extends Authenticatable implements JWTSubject
     {
         return $this->hasMany(FcmToken::class , 'user_id' , 'id');
     }
+
+    public function searchHistories(): HasMany
+    {
+        return $this->hasMany(SearchHistory::class , 'user_id' , 'id');
+    }
 }
