@@ -9,16 +9,20 @@ use Illuminate\Database\Eloquent\Collection;
 class FavoriteRepository
 {
 
-    public function getUserImageFavorites($user): Collection
+    public function getUserImageFavorites($user)
     {
-        return $user->Announcements()
+        return Announcement::whereHas('users', function ($query) use ($user) {
+            $query->where('user_id', $user->id);
+        })
             ->where('type', AnnouncementType::Image)
             ->get();
     }
 
-    public function getUserFileFavorites($user): Collection
+    public function getUserFileFavorites($user)
     {
-        return $user->Announcements()
+        return Announcement::whereHas('users', function ($query) use ($user) {
+            $query->where('user_id', $user->id);
+        })
             ->where('type', AnnouncementType::File)
             ->get();
     }
