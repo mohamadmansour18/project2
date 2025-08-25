@@ -28,4 +28,9 @@ class UserService
         })->toArray();
     }
 
+    public function getAllDoctors()
+    {
+        return $this->userRepository->getAllDoctors();
+    }
+
 }

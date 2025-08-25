@@ -138,16 +138,12 @@ class JoinRequestService
         $this->dispatcherService->sendToUser($student, $title, $body);
     }
 
-    public function cancel(int $requestId, User $student): void
+    public function cancelByGroup(int $groupId, User $student): void
     {
-        $request = $this->requestRepo->findPendingById($requestId);
+        $request = $this->requestRepo->findPendingByGroupAndUser($groupId, $student->id);
 
         if (!$request) {
             throw new PermissionDeniedException('غير موجود', 'الطلب غير موجود أو تم التعامل معه', 404);
-        }
-
-        if ($request->user_id !== $student->id) {
-            throw new PermissionDeniedException('مرفوض', 'فقط الطالب صاحب الطلب يمكنه إلغاءه', 403);
         }
 
         $this->requestRepo->updateStatus($request, JoinRequestStatus::Cancelled);

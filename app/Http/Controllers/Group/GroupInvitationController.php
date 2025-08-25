@@ -53,11 +53,12 @@ class GroupInvitationController extends Controller
         return $this->successResponse('رفض الانضمام الى مجموعة', 'تم رفض الدعوة بنجاح');
     }
 
-    public function cancel(Request $request, int $invitationId): JsonResponse
+    public function cancel(Request $request, int $invitedUserId): JsonResponse
     {
-        $this->invitationService->cancel($invitationId, $request->user());
+        $this->invitationService->cancel($invitedUserId, $request->user());
 
-        return $this->successResponse('الغاء الدعوة', 'تم إلغاء الدعوة بنجاح');
+        return $this->successResponse('إلغاء الدعوة', 'تم إلغاء الدعوة بنجاح');
     }
+
 
 }

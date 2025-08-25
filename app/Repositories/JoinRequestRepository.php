@@ -58,6 +58,15 @@ class JoinRequestRepository
             ->first();
     }
 
+    public function findPendingByGroupAndUser(int $groupId, int $userId)
+    {
+        return JoinRequest::with('group')
+            ->where('group_id', $groupId)
+            ->where('user_id', $userId)
+            ->where('status', JoinRequestStatus::Pending)
+            ->first();
+    }
+
     public function findPendingByIdSixth(int $id)
     {
         return JoinRequest::with('group')->where('id', $id)

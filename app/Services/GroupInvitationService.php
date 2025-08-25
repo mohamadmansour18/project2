@@ -14,6 +14,7 @@ use App\Repositories\GroupMemberRepository;
 use App\Repositories\GroupRepository;
 use App\Repositories\ProjectFormRepository;
 use App\Repositories\UserRepository;
+use Illuminate\Support\Facades\Auth;
 
 class GroupInvitationService
 {
@@ -208,11 +209,34 @@ class GroupInvitationService
         }
     }
 
-    public function cancel(int $invitationId, User $user): void
+    public function cancel(int $invitedUserId, User $inviter): void
     {
-        $invitation = $this->invitationRepo->findPendingById($invitationId);
+        $user = Auth::user();
+
+        $groupMember = $user->groupMember; // المستخدم عضو بمجموعة واحدة
+        if (!$groupMember) {
+            throw new PermissionDeniedException('خطأ', 'المستخدم غير موجود بأي مجموعة.');
+        }
+
+        $groupId = $groupMember->group_id;
+
+
+        if (!$this->groupMemberRepo->isLeader($groupId, $user->id)) {
+            throw new PermissionDeniedException('صلاحيات', 'فقط قائد المجموعة يستطيع تعبئة الاستمارة.');
+        }
+
+        $invitation = $this->invitationRepo
+            ->findPendingByInviterAndInvitedInUserGroup($inviter->id, $invitedUserId, $groupId);
+
+        if (! $invitation) {
+            throw new \Exception('الطلب غير موجود أو تم التعامل معه');
+        }
 
         $this->invitationRepo->updateStatus($invitation, GroupInvitationStatus::Cancelled);
     }
+
+
+
+
 }
 

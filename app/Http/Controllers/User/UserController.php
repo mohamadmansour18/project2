@@ -9,6 +9,7 @@ use App\Http\Requests\StoreDoctorRequest;
 use App\Http\Requests\StoreStudentRequest;
 use App\Http\Requests\UpdateDoctorFromDashboardRequest;
 use App\Http\Requests\UpdateStudentFromDashboardRequest;
+use App\Http\Resources\DoctorResource;
 use App\Jobs\ProcessDoctorExcelImportJob;
 use App\Jobs\ProcessStudentExcelImportJob;
 use App\Services\DashBoard_Services\HomeDashBoardService;
@@ -162,5 +163,15 @@ class UserController extends Controller
         $this->userManagementService->deleteStudentById($studentId);
 
         return $this->successResponse('تمت العملية بنجاح !' , 'تم حذف الطالب المحدد من النظام الخاص بكلية الهندسة المعلوماتية');
+    }
+
+    public function index(): JsonResponse
+    {
+        $doctors = $this->userService->getAllDoctors();
+
+        return response()->json([
+            'count' => $doctors->count(),
+            'data' => DoctorResource::collection($doctors)
+        ]);
     }
 }
