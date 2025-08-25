@@ -52,7 +52,7 @@ Route::prefix('/student')->group(function (){
 
             //invitations APIs
             Route::post('/groups/{group}/invitation/join', [GroupInvitationController::class, 'store']);
-            Route::delete('/invitations/{invitation}/cancel', [GroupInvitationController::class, 'cancel']);
+
 
             //join request APIs
             Route::get('{group}/join-requests', [JoinRequestController::class, 'index']);
@@ -85,11 +85,13 @@ Route::prefix('/student')->group(function (){
         Route::get('groups/{group}/pending-invitations', [GroupInvitationController::class, 'pendingInvitations']);
         Route::post('/invitations/{invitation}/accept', [GroupInvitationController::class, 'accept']);
         Route::post('/invitations/{invitation}/reject', [GroupInvitationController::class, 'reject']);
+        Route::delete('/invitations/{invitedUser}/cancel', [GroupInvitationController::class, 'cancel']);
 
         //join request APIs
         Route::post('{group}/join-request', [JoinRequestController::class, 'store']);
         Route::get('/join-requests/my', [JoinRequestController::class, 'myRequests']);
-        Route::post('join-request/{id}/cancel', [JoinRequestController::class, 'cancel']);
+        Route::post('join-request/group/{groupId}/cancel', [JoinRequestController::class, 'cancelByGroup']);
+
 
         //users APIs
         Route::get('/students-without-group', [UserController::class, 'getUsersWithoutGroup']);

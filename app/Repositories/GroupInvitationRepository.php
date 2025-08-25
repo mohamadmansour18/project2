@@ -42,6 +42,19 @@ class GroupInvitationRepository
             ->where('status', GroupInvitationStatus::Pending)
             ->first();
     }
+    public function findPendingByInviterAndInvitedInUserGroup(int $inviterId, int $invitedUserId, int $groupId): ?GroupInvitation
+    {
+        return GroupInvitation::where('invited_by_user_id', $inviterId)
+            ->where('invited_user_id', $invitedUserId)
+            ->where('group_id', $groupId)
+            ->where('status', GroupInvitationStatus::Pending->value) // لاحظ استخدام ->value
+            ->first();
+    }
+
+
+
+
+
 
     public function updateStatus(GroupInvitation $invitation, GroupInvitationStatus $status): void
     {

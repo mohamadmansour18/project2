@@ -50,9 +50,9 @@ class JoinRequestController extends Controller
         return $this->successResponse('تم الرفض', 'تم رفض الطلب بنجاح.');
     }
 
-    public function cancel(int $requestId): JsonResponse
+    public function cancelByGroup(int $groupId): JsonResponse
     {
-        $this->service->cancel($requestId, auth()->user());
+        $this->service->cancelByGroup($groupId, auth()->user());
 
         return $this->successResponse('تم الإلغاء', 'تم إلغاء الطلب بنجاح.');
     }
