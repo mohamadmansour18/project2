@@ -61,6 +61,27 @@ class HomeMobileService
         ];
     }
 
+    public function getStudentAnnouncementStatistics(): array
+    {
+        $data = $this->announcementRepository->getCurrentYearAnnouncements();
+
+        $imageAnnouncements = $data->where('type', AnnouncementType::Image)
+            ->where('audience', AnnouncementAudience::All);
+
+        $fileAnnouncements = $data->where('type', AnnouncementType::File)
+            ->where('audience', AnnouncementAudience::All);
+
+        return [
+            'imageAnnouncements' => [
+                'count' => $imageAnnouncements->count(),
+            ],
+            'fileAnnouncements' => [
+                'count' => $fileAnnouncements->count(),
+            ]
+        ];
+    }
+
+
     public function getHomeStatistics(): array
     {
 

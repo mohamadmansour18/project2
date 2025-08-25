@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Favorite;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\DoctorAnnouncementResource;
+use App\Http\Resources\StudentAnnouncementResource;
 use App\Models\Announcement;
 use App\Services\FavoriteService;
 use App\Traits\ApiSuccessTrait;
@@ -21,7 +22,7 @@ class FavoriteController extends Controller
 
         return $this->dataResponse([
             'count' => $favorites->count(),
-            'data' => DoctorAnnouncementResource::collection($favorites)
+            'data' => StudentAnnouncementResource::collection($favorites)
         ]);
     }
 
@@ -31,7 +32,7 @@ class FavoriteController extends Controller
 
         return $this->dataResponse([
             'count' => $favorites->count(),
-            'data' => DoctorAnnouncementResource::collection($favorites)
+            'data' => StudentAnnouncementResource::collection($favorites)
         ]);
     }
 
