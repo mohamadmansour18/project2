@@ -17,6 +17,7 @@ use App\Http\Controllers\Other\FormSubmissionPeriodController;
 use App\Http\Controllers\Other\NotificationsController;
 use App\Http\Controllers\Other\SearchHistoryController;
 use App\Http\Controllers\Other\StatisticsController;
+use App\Http\Controllers\User\ProfileController;
 use App\Http\Controllers\User\UserController;
 use App\Services\FirebaseNotificationService;
 use Illuminate\Support\Facades\Route;
@@ -94,6 +95,18 @@ Route::prefix('/doctor')->group(function (){
             Route::get('/showDoctorFile' , [AnnouncementsController::class , 'showProfessorFileAnnouncements']);
             Route::get('/downloadAnnouncement/{announcement_id}' , [AnnouncementsController::class , 'doctorDownloadAnnouncement'])->middleware('throttle:login');
 
+        });
+
+        //Profile
+        Route::prefix('/profile')->group(function (){
+            Route::get('/showProfile' , [ProfileController::class , 'getDoctorProfile']);
+            Route::post('/updateProfile' , [ProfileController::class , 'updateDoctorProfile']);
+            Route::post('/updateProfilePicture' , [ProfileController::class , 'updateProfileDoctorPicture'])->middleware('throttle:resendOtp');
+        });
+
+        Route::prefix('/notification')->group(function (){
+            Route::get('/showNotifications' , [NotificationsController::class , 'getNotifications']);
+            Route::get('/countNotifications' , [NotificationsController::class , 'unreadCount']);
         });
     });
 });
@@ -221,6 +234,9 @@ Route::prefix('/student')->group(function (){
         //notification
         Route::get('/showNotifications' , [NotificationsController::class , 'getNotifications']);
         Route::get('/countNotifications' , [NotificationsController::class , 'unreadCount']);
+
+        //profile
+        Route::post('/updateProfilePicture' , [ProfileController::class , 'updateProfileStudentPicture'])->middleware('throttle:resendOtp');
     });
 });
 
