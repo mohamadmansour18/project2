@@ -208,6 +208,10 @@ class GroupManagementService
         {
             return 'سنة رابعة';
         }
+        if($status == ProfileStudentStatus::Successful->value)
+        {
+            return 'ناجح في المشروع';
+        }
         return 'اعادة مشروع';
     }
 

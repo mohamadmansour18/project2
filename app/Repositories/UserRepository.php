@@ -163,7 +163,7 @@ class UserRepository
                 break;
 
             case 'student_status' :
-                $query->orderByRaw("FIELD(profiles.student_status, ? , ?)" , [ProfileStudentStatus::Fourth_Year->value , ProfileStudentStatus::Re_Project->value]);
+                $query->orderByRaw("FIELD(profiles.student_status, ? , ? , ? )" , [ProfileStudentStatus::Fourth_Year->value , ProfileStudentStatus::Successful->value , ProfileStudentStatus::Re_Project->value]);
                 break;
 
             case 'student_speciality' :
@@ -182,7 +182,7 @@ class UserRepository
                 'university_number'=> $user->university_number,
                 'name' => $user->name,
                 'email' => $user->email,
-                'student_status' => $user->student_status === ProfileStudentStatus::Fourth_Year->value ? 'سنة رابعة' : 'اعادة مشروع',
+                'student_status' => $this->formatStatus($user->student_status) ,
                 'phone_number' => $user->phone_number,
                 'student_speciality' => '# ' . $user->student_speciality,
             ];
@@ -247,5 +247,18 @@ class UserRepository
                 });
             })
             ->get(['id' , 'name']);
+    }
+
+    public function formatStatus(?string $status): ?string
+    {
+        if($status == ProfileStudentStatus::Fourth_Year->value)
+        {
+            return 'سنة رابعة';
+        }
+        if($status == ProfileStudentStatus::Successful->value)
+        {
+            return 'ناجح في المشروع';
+        }
+        return 'اعادة مشروع';
     }
 }

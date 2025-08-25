@@ -151,6 +151,11 @@ class ProjectManagementService
         $start = Carbon::parse($data['start_date']);
         $end = Carbon::parse($data['end_date']);
 
+        $coveredDays = $start->diffInDays($end) + 1;
+        if ($coveredDays > 7) {
+            throw new ProjectManagementException('ا يمكن إجراء هذه العملية!', 'يجب ألا تتجاوز فترة المقابلات سبعة أيام (بما في ذلك يوم البداية والنهاية)', 422);
+        }
+
         //check if days located in [start date - end date]
         $validDays = [];
         $period = new \DatePeriod($start , new DateInterval('P1D'), $end->copy()->addDay());
@@ -209,6 +214,12 @@ class ProjectManagementService
 
         $start = Carbon::parse($data['start_date']);
         $end = Carbon::parse($data['end_date']);
+
+        $coveredDays = $start->diffInDays($end) + 1;
+        if ($coveredDays > 7) {
+            throw new ProjectManagementException('ا يمكن إجراء هذه العملية !', 'يجب ألا تتجاوز فترة المقابلات سبعة أيام (بما في ذلك يوم البداية والنهاية)', 422);
+        }
+
 
         //check if days located in [start date - end date]
         $validDays = [];
@@ -534,6 +545,11 @@ class ProjectManagementService
 
         if($start->gt($end)){
             throw new ProjectManagementException('خطأ في التواريخ المدخلة !' , 'تاريخ البدء لا يمكن ان يكون بعد تاريخ الانتهاء' , 422);
+        }
+
+        $diff = $start->diffInDays($end);
+        if ($diff < 2) {
+            throw new ProjectManagementException('خطأ في التواريخ المدخلة !', 'يجب أن يفصل بين تاريخ البدء والانتهاء يوم واحد على الأقل', 422);
         }
     }
 

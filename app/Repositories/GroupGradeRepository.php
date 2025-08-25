@@ -23,7 +23,7 @@ class GroupGradeRepository
             ->exists();
     }
 
-    public function updateGrade(ProjectGrade $grade , array $data): void
+    public function updateGrade(ProjectGrade $grade , array $data): ProjectGrade
     {
         $grade->previous_total_grade = $grade->total_grade;
         $grade->presentation_grade   = $data['presentation_grade'] ?? $grade->presentation_grade;
@@ -32,6 +32,7 @@ class GroupGradeRepository
         $grade->is_edited            = true;
         $grade->save();
 
+        return $grade ;
     }
 
     public function createGrade(int $committeeId , array $data): ProjectGrade

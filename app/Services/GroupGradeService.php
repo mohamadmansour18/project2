@@ -2,17 +2,25 @@
 
 namespace App\Services;
 
+use App\Enums\ProfileStudentStatus;
 use App\Exceptions\GradeException;
 use App\Models\InterviewCommittee;
 use App\Models\InterviewSchedule;
 use App\Models\ProjectGrade;
+use App\Repositories\GradeExceptionRepository;
 use App\Repositories\GroupGradeRepository;
+use App\Repositories\GroupMemberRepository;
+use App\Repositories\ProfileRepository;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class GroupGradeService
 {
     public function __construct(
-        protected GroupGradeRepository $groupGradeRepository
+        protected GroupGradeRepository $groupGradeRepository,
+        protected GroupMemberRepository $groupMemberRepository,
+        protected ProfileRepository $profileRepository,
+        protected GradeExceptionRepository $gradeExceptionRepository,
     )
     {}
 
@@ -30,7 +38,7 @@ class GroupGradeService
         $committee = InterviewCommittee::find($committeeId);
         if($committee->supervisor_id !== Auth::id())
         {
-            throw new GradeException('غير مصرح بك !' , 'عذرا غير مصرح بك باضافة علامة لهذا الغروب فقط الدكتور المشرف' , 403);
+            throw new GradeException('غير مصرح بك !' , 'عذرا غير مصرح بك باضافة علامة لهذا الغروب فقط الدكتور المشرف يسمح له بذلك' , 403);
         }
 
         $existing = ProjectGrade::query()
@@ -43,7 +51,28 @@ class GroupGradeService
             throw new GradeException('لايمكنك اجراء هذه العملية !' , 'تم ادخال علامة لهذا الغروب مسبقا' , 400);
         }
 
-        $grade = $this->groupGradeRepository->createGrade($committeeId , $data);
+        DB::transaction(function () use ($committeeId, $data){
+            $grade = $this->groupGradeRepository->createGrade($committeeId , $data);
+
+            $groupId = $grade['group_id'];
+            $total = $grade['total_grade'];
+
+            $studentIds = $this->groupMemberRepository->getGroupMemberIds($groupId);
+
+
+            if($total < 60)
+            {
+                $this->profileRepository->updateStudentStatus($studentIds , ProfileStudentStatus::Re_Project);
+            }
+
+            elseif ($total >= 60 && count($data['exceptions']) > 0)
+            {
+                $this->profileRepository->updateStudentStatus($data['exceptions'] , ProfileStudentStatus::Re_Project);
+            }else {
+                $this->profileRepository->updateStudentStatus($studentIds, ProfileStudentStatus::Successful);
+            }
+        });
+
     }
 
     public function updateGrade(array $data): void
@@ -69,7 +98,22 @@ class GroupGradeService
             throw new GradeException('لايمكنك اجراء العملية !' , 'تم تعديل العلامة مسبقا ولايمكن تعديلها مرة اخرى' , 422);
         }
 
-        $this->groupGradeRepository->updateGrade($grade , $data);
+        DB::transaction(function () use ($grade, $data){
+            $grade = $this->groupGradeRepository->updateGrade($grade , $data);
+
+            $total = $grade['total_grade'];
+
+            $studentIds = $this->groupMemberRepository->getGroupMemberIds($grade['group_id']);
+            $studentExceptionIds = $this->gradeExceptionRepository->getExceptionStudentIdsByGrade($grade['id']) ?? [];
+
+            $nonExceptionIds = array_values(array_diff($studentIds, $studentExceptionIds));
+
+            if ($total < 60) {
+                $this->profileRepository->updateStudentStatus($nonExceptionIds, ProfileStudentStatus::Re_Project);
+            } else {
+                $this->profileRepository->updateStudentStatus($nonExceptionIds, ProfileStudentStatus::Successful);
+            }
+        });
 
     }
 }
