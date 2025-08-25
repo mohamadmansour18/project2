@@ -95,6 +95,7 @@ Route::prefix('/student')->group(function (){
 
         //users APIs
         Route::get('/students-without-group', [UserController::class, 'getUsersWithoutGroup']);
+        Route::get('/doctors', [UserController::class, 'index']);
 
         //form 1 APIs
         Route::post('/project-form-one', [ProjectFormController::class, 'store']);

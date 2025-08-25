@@ -261,4 +261,12 @@ class UserRepository
         }
         return 'اعادة مشروع';
     }
+
+    public function getAllDoctors()
+    {
+        return User::with('Profile')
+            ->where('role', UserRole::Doctor->value)
+            ->whereNotNull('email_verified_at')
+            ->get();
+    }
 }
