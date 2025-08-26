@@ -37,6 +37,33 @@ class notificationsService
         return $formatted;
     }
 
+    public function getNotificationsStudent(): array
+    {
+        $userId = Auth::id();
+
+        $notifications = $this->notificationsRepository->getUserNotifications($userId);
+
+        $formatted = $notifications->map(function ($notification) {
+            return [
+                'id'    => $notification->id,
+                'title' => $notification->data['title'] ?? '',
+                'body'  => $notification->data['body'] ?? '',
+                'date'  => Carbon::parse($notification->created_at)->diffForHumans(),
+            ];
+        })->toArray();
+
+        $unreadIds = $notifications->whereNull('read_at')->pluck('id')->toArray();
+        if(!empty($unreadIds))
+        {
+            $this->notificationsRepository->markAsRead($unreadIds);
+        }
+
+        return [
+            'data' => $formatted,
+            'statusCode' => 200
+        ];
+    }
+
     public function countUnread(): int
     {
         $userId = Auth::id();

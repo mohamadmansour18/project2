@@ -232,7 +232,7 @@ Route::prefix('/student')->group(function (){
         Route::delete('/deleteItem/{item_id}' , [SearchHistoryController::class , 'deleteItem']);
 
         //notification
-        Route::get('/showNotifications' , [NotificationsController::class , 'getNotifications']);
+        Route::get('/showNotifications' , [NotificationsController::class , 'getNotificationsStudent']);
         Route::get('/countNotifications' , [NotificationsController::class , 'unreadCount']);
 
         //profile

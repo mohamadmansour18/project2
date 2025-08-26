@@ -21,6 +21,13 @@ class NotificationsController extends Controller
         return response()->json($data, 200);
     }
 
+    public function getNotificationsStudent(): JsonResponse
+    {
+        $data = $this->notificationsService->getNotificationsStudent();
+
+        return response()->json($data, 200);
+    }
+
     public function unreadCount(): JsonResponse
     {
         $data = $this->notificationsService->countUnread();
