@@ -30,8 +30,8 @@ class InterviewCommitteeService
                 'group_image' => UrlHelper::imageUrl($group->image),
                 'form1' => $this->checkForm1($group),
                 'form2' => $this->checkForm2($group),
-                'interview_date' => $schedule->interview_date,
-                'interview_time' => $this->formatTime($schedule->interview_time),
+                'interview_date' => $schedule->interview_date ? $schedule->interview_date->toDateString() : null,
+                'interview_time' => $schedule->interview_time ? $this->formatTime($schedule->interview_time) : null,
                 'total_grade' => $schedule->total_grade,
             ];
         });
@@ -52,8 +52,8 @@ class InterviewCommitteeService
                 'group_image' => UrlHelper::imageUrl($group->image),
                 'form1' => $this->checkForm1($group),
                 'form2' => $this->checkForm2($group),
-                'interview_date' => $schedule->interview_date,
-                'interview_time' => $this->formatTime($schedule->interview_time),
+                'interview_date' => $schedule->interview_date ? $schedule->interview_date->toDateString() : null,
+                'interview_time' => $schedule->interview_time ? $this->formatTime($schedule->interview_time) : null,
                 'total_grade' => $schedule->total_grade,
             ];
         });
@@ -61,7 +61,7 @@ class InterviewCommitteeService
 
     private function checkForm1($group): ?string
     {
-        $form1 = $group->projectForms()->whereIn('status' , [ProjectFormStatus::Approved->value , ProjectFormStatus::Pending->value])->first();
+        $form1 = $group->projectForm()->whereIn('status' , [ProjectFormStatus::Approved->value , ProjectFormStatus::Pending->value])->first();
 
         return $form1 ? "# استمارة 1" : null ;
     }
@@ -73,11 +73,11 @@ class InterviewCommitteeService
         return $form2 ?"# استمارة 2" : null ;
     }
 
-    private function formatTime($time): string
+    private function formatTime(Carbon $time): string
     {
-        $carbon = Carbon::createFromFormat('H:i:s', $time);
-        $formatted = $carbon->format("h:i");
-        $suffix = $carbon->format('A') === 'AM' ? 'م' : 'ص' ;
+
+        $formatted = $time->format("h:i");
+        $suffix = $time->format('A') === 'AM' ? 'م' : 'ص' ;
         return $formatted . $suffix ;
     }
 }
