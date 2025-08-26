@@ -51,7 +51,7 @@ class TestSeeder extends Seeder
         ];
 
         $group_id_Form = [1,2,3,4,5,6];
-        $user_id_Form = [10,11,12,13,14,15];
+        $user_id_Form = [2,2,2,2,14,15];
 
 
         DB::transaction(function () use (
