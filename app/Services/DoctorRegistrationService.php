@@ -7,6 +7,7 @@ use App\Enums\UserRole;
 use App\Exceptions\LoginException;
 use App\Exceptions\RegistrationException;
 use App\Exceptions\ResetPasswordException;
+use App\Helpers\UrlHelper;
 use App\Jobs\SendOtpCodeJob;
 use App\Models\OtpCode;
 use App\Models\User;
@@ -130,7 +131,7 @@ class DoctorRegistrationService
         return [
             'token' => $token ,
             'name' => "! $user->name مرحبا دكتور "  ,
-            'profile_image' => $user->profile->profile_image ,
+            'profile_image' => UrlHelper::imageUrl($user?->profile?->profile_image) ,
         ];
     }
 

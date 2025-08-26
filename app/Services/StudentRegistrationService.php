@@ -7,6 +7,7 @@ use App\Enums\UserRole;
 use App\Exceptions\LoginException;
 use App\Exceptions\RegistrationException;
 use App\Exceptions\ResetPasswordException;
+use App\Helpers\UrlHelper;
 use App\Jobs\SendOtpCodeJob;
 use App\Models\OtpCode;
 use App\Models\User;
@@ -141,11 +142,11 @@ class StudentRegistrationService
             ]);
         }
 
-        $profileImage = $user->profile->profile_image;
+        $profileImage = $user?->profile?->profile_image;
         return [
             'token' => $token ,
             'name' => "! $user->name مرحبا "  ,
-            'profile_image' => $this->imageService->getFullUrl($profileImage),
+            'profile_image' => UrlHelper::imageUrl($profileImage),
             'is_in_group' => $user->groupMember()->exists(),
         ];
     }
