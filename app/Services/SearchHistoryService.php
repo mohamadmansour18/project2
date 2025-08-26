@@ -19,12 +19,16 @@ class SearchHistoryService
     {
         $userId = Auth::id();
 
-        $history = $this->searchHistoryRepository->getByUser($userId);
-
-        return $history->map(fn($item)=>[
+        $history = $this->searchHistoryRepository->getByUser($userId)->map(fn($item)=>[
             'id' => $item->id,
             'query' => $item->query,
         ])->toArray();
+
+        return [
+            "searchHistory" => $history,
+            "statusCode" => 200
+        ];
+
     }
 
     public function search(string $keyword): array

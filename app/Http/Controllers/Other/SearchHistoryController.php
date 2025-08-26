@@ -21,7 +21,7 @@ class SearchHistoryController extends Controller
     {
         $data = $this->searchHistoryService->getUserHistory();
 
-        return $this->dataResponse($data , 200);
+        return response()->json($data , 200);
     }
 
     public function search(DoctorSearchRequest $request): JsonResponse
