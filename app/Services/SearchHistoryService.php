@@ -38,15 +38,18 @@ class SearchHistoryService
             'query' => $keyword,
         ]);
 
-        $students = $this->searchHistoryRepository->searchStudentByName($keyword);
-
-        return $students->map(fn($student) => [
+        $students = $this->searchHistoryRepository->searchStudentByName($keyword)->map(fn($student) => [
             'id' => $student->id,
             'name' => $student->name ?? '',
             'image' => UrlHelper::imageUrl($student->profile?->profile_image) ?? null,
             'speciality' => $this->formatSpeciality($student->profile?->student_speciality?->value) ?? '',
             'status'     => $this->formatStatus($student->profile?->student_status?->value) ?? ''
         ])->toArray();
+
+        return [
+            "search" => $students,
+            "statusCode" => 200
+        ];
     }
 
     public function delete(int $itemId): void
