@@ -2,7 +2,13 @@
 
 namespace App\Services;
 
+use App\Enums\ConversationType;
+use App\Enums\MessageType;
+use App\Events\BotRepliedEvent;
+use App\Events\MessageCreatedEvent;
 use App\Helpers\UrlHelper;
+use App\Models\FAQ;
+use App\Repositories\ConversationRepository;
 use App\Repositories\MessageRepository;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Broadcast;
@@ -10,7 +16,10 @@ use Illuminate\Support\Facades\Broadcast;
 class MessageService
 {
     public function __construct(
-        protected MessageRepository $messageRepository
+        protected MessageRepository $messageRepository ,
+        protected ConversationRepository $conversationRepository,
+        protected FaqMatcher $faqMatcher,
+        protected FcmNotificationDispatcherService $dispatcherService
     )
     {}
 
@@ -62,5 +71,79 @@ class MessageService
         }
 
         return $carbon->format('d/m/Y');
+    }
+
+    /////////////////////////////////////////////////////////////////////
+
+    /**
+     * @return array{message_id:int, bot_replied:bool, bot_message_id:int|null}
+     */
+    public function send(int $conversationId , array $payload): array
+    {
+        $senderId = Auth::id();
+
+        [$conv , $peer] = $this->messageRepository->getConversationForUserOrFail($conversationId , $senderId);
+
+        $stored = $this->messageRepository->storeMessage($conv , $senderId , $payload);
+
+        broadcast(new MessageCreatedEvent(
+            conversationId : $conv->id,
+            payload : [
+                'id'         => $stored->id,
+                'sender_id'  => $stored->sender_id,
+                'faq_id'     => $stored->faq_id,
+                'type'       => $stored->message_type,
+                'content'    => $stored->message_type === MessageType::Text ? ($stored->content ?? null) : null,
+                'status'     => $stored->status,
+                'messageTime' => $this->displayTimeOrDate($stored->created_at)
+            ]
+        ))->toOthers();
+
+        $botRepliedId = null;
+        if($conv->type === ConversationType::Student_Doctor && $payload['message_type'] === MessageType::Text->value)
+        {
+            $match = $this->faqMatcher->match($payload['content'] ?? '');
+
+            if(!empty($match) && $match['faq'] instanceof FAQ)
+            {
+                $botMsg = $this->messageRepository->storeBotReply($conv , $match['faq']);
+
+                broadcast(new BotRepliedEvent(
+                    conversationId : $conv->id,
+                    payload : [
+                        'id'            => $botMsg->id,
+                        'sender_id'     => null,
+                        'faq_id'        => $match['faq']->id,
+                        'type'          => MessageType::Text->value,
+                        'content'       => $match['faq']->answer,
+                        'attachment_path' => null,
+                        'status'        => $botMsg->status,
+                        'messageTime' => $this->displayTimeOrDate($botMsg->created_at)
+                    ]
+                ));
+                $botRepliedId = $botMsg->id;
+            } else {
+                $this->dispatcherService->sendToUser(
+                    $peer,
+                    title: 'رسالة جديدة',
+                    body:  "لديك رسالة جديدة في محادثاتك من : $peer->name"
+                );
+            }
+        } else {
+
+            if ($peer && $peer->id !== $senderId) {
+                $this->dispatcherService->sendToUser(
+                    $peer,
+                    title: 'رسالة جديدة',
+                    body:   "لديك رسالة جديدة في محادثاتك من : $peer->name"
+                );
+            }
+        }
+
+        return [
+            'message_id'     => $stored->id,
+            'bot_replied'    => (bool) $botRepliedId,
+            'bot_message_id' => $botRepliedId,
+        ];
     }
 }

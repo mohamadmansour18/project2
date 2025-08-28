@@ -225,6 +225,7 @@ Route::prefix('/student')->group(function (){
         Route::post('/search' , [ConversationController::class , 'searchConversation']);
 
         Route::post('/showMessages/{conversation_id}' , [MessageController::class , 'showMessages']);
+        Route::post('/sentMessage/{conversation_id}' ,[MessageController::class , 'send'] );
 
         //Search
         Route::get('/getSearchHistory' , [SearchHistoryController::class , 'getUserSearchHistory']);
