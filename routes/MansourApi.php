@@ -120,7 +120,7 @@ Route::prefix('/doctor')->group(function (){
             Route::post('/showMessages/{conversation_id}' , [MessageController::class , 'showMessages']);
             Route::post('/sentMessage/{conversation_id}' ,[MessageController::class , 'send'] );
 
-            //Route::get('/getUserConversationProfile' , );
+            Route::get('/getUserConversationProfile/{user_id}' , [UserController::class , 'getUserInfoForConversation']);
         });
     });
 });
