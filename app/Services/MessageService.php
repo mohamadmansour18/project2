@@ -4,10 +4,12 @@ namespace App\Services;
 
 use App\Enums\ConversationType;
 use App\Enums\MessageType;
+use App\Enums\UserRole;
 use App\Events\BotRepliedEvent;
 use App\Events\MessageCreatedEvent;
 use App\Helpers\UrlHelper;
 use App\Models\FAQ;
+use App\Models\User;
 use App\Repositories\ConversationRepository;
 use App\Repositories\MessageRepository;
 use Illuminate\Support\Facades\Auth;
@@ -100,7 +102,9 @@ class MessageService
         ))->toOthers();
 
         $botRepliedId = null;
-        if($conv->type === ConversationType::Student_Doctor && $payload['message_type'] === MessageType::Text->value)
+        $senderRole = User::findOrFail($senderId);
+
+        if($conv->type === ConversationType::Student_Doctor && $payload['message_type'] === MessageType::Text->value &&  $senderRole->role === UserRole::Student)
         {
             $match = $this->faqMatcher->match($payload['content'] ?? '');
 

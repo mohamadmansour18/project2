@@ -31,6 +31,13 @@ class ConversationController extends Controller
         return $this->dataResponse($data , 200);
     }
 
+    public function selectUserToStartConversationDoctor(): JsonResponse
+    {
+        $data = $this->conversationService->listUserOptionForConversationsDoctor();
+
+        return $this->dataResponse($data , 200);
+    }
+
     public function createConversation(int $otherUserId): JsonResponse
     {
         $this->conversationService->createConversationBetweenUsers($otherUserId);

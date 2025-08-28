@@ -104,9 +104,23 @@ Route::prefix('/doctor')->group(function (){
             Route::post('/updateProfilePicture' , [ProfileController::class , 'updateProfileDoctorPicture'])->middleware('throttle:resendOtp');
         });
 
+        //Notification
         Route::prefix('/notification')->group(function (){
             Route::get('/showNotifications' , [NotificationsController::class , 'getNotifications']);
             Route::get('/countNotifications' , [NotificationsController::class , 'unreadCount']);
+        });
+
+        //Conversation
+        Route::prefix('/conversation')->group(function (){
+            Route::get('/showConversations' , [ConversationController::class , 'showStudentConversations']);
+            Route::get('/showConversationOption' , [ConversationController::class , 'selectUserToStartConversationDoctor']);
+            Route::get('/createConversation/{otherUserId}' , [ConversationController::class , 'createConversation']);
+            Route::post('/search' , [ConversationController::class , 'searchConversation']);
+
+            Route::post('/showMessages/{conversation_id}' , [MessageController::class , 'showMessages']);
+            Route::post('/sentMessage/{conversation_id}' ,[MessageController::class , 'send'] );
+
+            //Route::get('/getUserConversationProfile' , );
         });
     });
 });

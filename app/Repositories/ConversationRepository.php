@@ -3,15 +3,18 @@
 namespace App\Repositories;
 
 use App\Enums\ConversationType;
+use App\Enums\GroupMemberRole;
 use App\Enums\MessageStatus;
 use App\Enums\MessageType;
 use App\Enums\UserRole;
 use App\Exceptions\ConversationException;
 use App\Helpers\UrlHelper;
 use App\Models\Conversation;
+use App\Models\GroupMember;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
+use function PHPSTORM_META\map;
 
 class ConversationRepository
 {
@@ -178,6 +181,41 @@ class ConversationRepository
             'doctors' => $doctors,
             'myGroup' => $myGroupMembers,
             'students' => $students
+        ];
+    }
+
+    public function getStartConversationDataDoctor(int $userId): array
+    {
+        //get all student in system
+        $students = User::query()->where('role' , UserRole::Student->value)
+            ->whereYear('created_at' , now()->year)
+            ->with(['profile:id,user_id,profile_image'])
+            ->get(['id' , 'name'])
+            ->map(function($doctor){
+                return [
+                    'id' => $doctor->id,
+                    'name' => $doctor->name,
+                    'profile_image' => UrlHelper::imageUrl(optional($doctor->profile)->profile_image),
+                ];
+            })
+            ->values();
+
+        $groupAdmins = GroupMember::query()
+            ->where('role' , GroupMemberRole::Leader->value)
+            ->whereYear('created_at' , now()->year)
+            ->with('user.profile:id,user_id,profile_image')
+            ->get()
+            ->map(function($groupAdmin){
+                return [
+                    'id' => $groupAdmin?->user?->id,
+                    'name' => $groupAdmin?->user?->name,
+                    'profile_image' => UrlHelper::imageUrl(optional($groupAdmin->user->profile)?->profile_image),
+                ];
+            });
+
+        return [
+            'all' => $students,
+            'adminGroups' => $groupAdmins,
         ];
     }
 
