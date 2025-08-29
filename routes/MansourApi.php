@@ -14,12 +14,12 @@ use App\Http\Controllers\Interview\InterviewCommitteeController;
 use App\Http\Controllers\Interview\InterviewPeriodController;
 use App\Http\Controllers\Interview\InterviewSchedulesController;
 use App\Http\Controllers\Other\FormSubmissionPeriodController;
+use App\Http\Controllers\Other\NotificationsController;
+use App\Http\Controllers\Other\SearchHistoryController;
 use App\Http\Controllers\Other\StatisticsController;
+use App\Http\Controllers\User\ProfileController;
 use App\Http\Controllers\User\UserController;
-use App\Models\User;
 use App\Services\FirebaseNotificationService;
-use Illuminate\Notifications\DatabaseNotification;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -95,6 +95,32 @@ Route::prefix('/doctor')->group(function (){
             Route::get('/showDoctorFile' , [AnnouncementsController::class , 'showProfessorFileAnnouncements']);
             Route::get('/downloadAnnouncement/{announcement_id}' , [AnnouncementsController::class , 'doctorDownloadAnnouncement'])->middleware('throttle:login');
 
+        });
+
+        //Profile
+        Route::prefix('/profile')->group(function (){
+            Route::get('/showProfile' , [ProfileController::class , 'getDoctorProfile']);
+            Route::post('/updateProfile' , [ProfileController::class , 'updateDoctorProfile']);
+            Route::post('/updateProfilePicture' , [ProfileController::class , 'updateProfileDoctorPicture'])->middleware('throttle:resendOtp');
+        });
+
+        //Notification
+        Route::prefix('/notification')->group(function (){
+            Route::get('/showNotifications' , [NotificationsController::class , 'getNotifications']);
+            Route::get('/countNotifications' , [NotificationsController::class , 'unreadCount']);
+        });
+
+        //Conversation
+        Route::prefix('/conversation')->group(function (){
+            Route::get('/showConversations' , [ConversationController::class , 'showStudentConversations']);
+            Route::get('/showConversationOption' , [ConversationController::class , 'selectUserToStartConversationDoctor']);
+            Route::get('/createConversation/{otherUserId}' , [ConversationController::class , 'createConversation']);
+            Route::post('/search' , [ConversationController::class , 'searchConversation']);
+
+            Route::post('/showMessages/{conversation_id}' , [MessageController::class , 'showMessages']);
+            Route::post('/sentMessage/{conversation_id}' ,[MessageController::class , 'send'] );
+
+            Route::get('/getUserConversationProfile/{user_id}' , [UserController::class , 'getUserInfoForConversation']);
         });
     });
 });
@@ -213,6 +239,19 @@ Route::prefix('/student')->group(function (){
         Route::post('/search' , [ConversationController::class , 'searchConversation']);
 
         Route::post('/showMessages/{conversation_id}' , [MessageController::class , 'showMessages']);
+        Route::post('/sentMessage/{conversation_id}' ,[MessageController::class , 'send'] );
+
+        //Search
+        Route::get('/getSearchHistory' , [SearchHistoryController::class , 'getUserSearchHistory']);
+        Route::post('/searchStudent' , [SearchHistoryController::class , 'search']);
+        Route::delete('/deleteItem/{item_id}' , [SearchHistoryController::class , 'deleteItem']);
+
+        //notification
+        Route::get('/showNotifications' , [NotificationsController::class , 'getNotificationsStudent']);
+        Route::get('/countNotifications' , [NotificationsController::class , 'unreadCount']);
+
+        //profile
+        Route::post('/updateProfilePicture' , [ProfileController::class , 'updateProfileStudentPicture'])->middleware('throttle:resendOtp');
     });
 });
 

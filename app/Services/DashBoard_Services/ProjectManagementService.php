@@ -56,12 +56,14 @@ class ProjectManagementService
                 'end_date' => $data['end_date'],
             ]);
 
+            $start_date = Carbon::parse($data['start_date'])->format('Y-m-d');
+
             $students = $this->userRepository->getStudentCurrentYear();
             if ($students->isNotEmpty()) {
                 if ($formName == "form1") {
-                    $this->fcmNotificationDispatcherService->sendToUsers($students, 'تعين موعد الاستمارة 1', "قام رئيس القسم بتعين موعد الاستمار واحد بدءا من : $form->start_date");
+                    $this->fcmNotificationDispatcherService->sendToUsers($students, 'تعين موعد الاستمارة 1', "قام رئيس القسم بتعين موعد تقديم الاستمارة واحد بدءا من : $start_date");
                 } elseif ($formName == "form2") {
-                    $this->fcmNotificationDispatcherService->sendToUsers($students, 'تعين موعد الاستمارة 2', "قام رئيس القسم بتعين موعد الاستمار اثنان بدءا من : $form->start_date");
+                    $this->fcmNotificationDispatcherService->sendToUsers($students, 'تعين موعد الاستمارة 2', "قام رئيس القسم بتعين موعد تقديم الاستمارة اثنان بدءا من : $start_date");
                 }
             }
         });
@@ -91,9 +93,9 @@ class ProjectManagementService
             $currentYear = now()->year;
             if ($students->isNotEmpty()) {
                 if ($updateForm->form_name === FormSubmissionPeriodFormName::Form1) {
-                    $this->fcmNotificationDispatcherService->sendToUsers($students, 'تعديل موعد الاستمارة 1', "قام رئيس القسم بتعديل موعد الاستمار واحد للعام : $currentYear");
+                    $this->fcmNotificationDispatcherService->sendToUsers($students, 'تعديل موعد الاستمارة 1', "قام رئيس القسم بتعديل موعد تقديم الاستمارة واحد للعام : $currentYear");
                 } elseif ($updateForm->form_name === FormSubmissionPeriodFormName::Form2) {
-                    $this->fcmNotificationDispatcherService->sendToUsers($students, 'تعديل موعد الاستمارة 2', "قام رئيس القسم بتعديل موعد الاستمار اثنان للعام : $currentYear");
+                    $this->fcmNotificationDispatcherService->sendToUsers($students, 'تعديل موعد الاستمارة 2', "قام رئيس القسم بتعديل موعد تقديم الاستمارة اثنان للعام : $currentYear");
                 }
             }
         });

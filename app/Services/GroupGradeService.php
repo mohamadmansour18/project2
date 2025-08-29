@@ -10,7 +10,9 @@ use App\Models\ProjectGrade;
 use App\Repositories\GradeExceptionRepository;
 use App\Repositories\GroupGradeRepository;
 use App\Repositories\GroupMemberRepository;
+use App\Repositories\InterviewCommitteeRepository;
 use App\Repositories\ProfileRepository;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
@@ -21,6 +23,7 @@ class GroupGradeService
         protected GroupMemberRepository $groupMemberRepository,
         protected ProfileRepository $profileRepository,
         protected GradeExceptionRepository $gradeExceptionRepository,
+        protected InterviewCommitteeRepository $interviewCommitteeRepository
     )
     {}
 
@@ -91,6 +94,14 @@ class GroupGradeService
         if(!$isSupervisor)
         {
             throw new GradeException('لايمكنك اجراء العملية !' , 'غير مصرح لك بتعديل علامة الغروب' , 403);
+        }
+
+        $committee = $this->interviewCommitteeRepository->findOrFillById($grade->comittee_id);
+        $endDateTime = Carbon::parse($committee->days . ' ' . $committee->end_interview_time);
+
+        if(now()->greaterThan($endDateTime))
+        {
+            throw new GradeException('لايمكنك اجراء العملية !', 'لقد انتهى وقت المقابلات الخاصة باللجنة ولا يمكن تعديل العلامة بعد الآن', 422);
         }
 
         if($grade->is_edited)

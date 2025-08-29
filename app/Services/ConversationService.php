@@ -30,6 +30,12 @@ class ConversationService
         return $this->conversationRepository->getStartConversationData($userId);
     }
 
+    public function listUserOptionForConversationsDoctor(): array
+    {
+        $userId = Auth::id();
+
+        return $this->conversationRepository->getStartConversationDataDoctor($userId);
+    }
     public function searchConversation(string $keyword): array
     {
         $myID = Auth::id();

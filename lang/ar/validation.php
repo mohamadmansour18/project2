@@ -164,5 +164,9 @@ return [
         'supervisor_id' => 'معرف الدكتور المشرف',
         'question' => 'نص السؤال' ,
         'answer' => 'الاجابة عن السؤال' ,
+        'phone_number' => 'رقم الهاتف',
+        'birth_date' => 'تاريخ الميلاد',
+        'message_type' => 'نوع الرسالة',
+        'content' => 'المحتوى'
     ],
 ];

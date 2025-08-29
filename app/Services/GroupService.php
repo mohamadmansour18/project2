@@ -320,7 +320,7 @@ class GroupService
 
     private function checkForm1($group): ?string
     {
-        $form1 = $group->projectForms()->whereIn('status' , [ProjectFormStatus::Approved->value , ProjectFormStatus::Pending->value])->first();
+        $form1 = $group->projectForm()->whereIn('status' , [ProjectFormStatus::Approved->value , ProjectFormStatus::Pending->value])->first();
 
         return $form1 ? "# استمارة 1" : null ;
     }

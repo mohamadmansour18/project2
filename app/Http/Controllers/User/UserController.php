@@ -174,4 +174,11 @@ class UserController extends Controller
             'data' => DoctorResource::collection($doctors)
         ]);
     }
+
+    public function getUserInfoForConversation(int $userId): JsonResponse
+    {
+        $data = $this->userService->getUserInfo($userId);
+
+        return response()->json($data , 200);
+    }
 }

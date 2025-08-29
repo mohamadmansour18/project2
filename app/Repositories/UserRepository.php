@@ -269,4 +269,9 @@ class UserRepository
             ->whereNotNull('email_verified_at')
             ->get();
     }
+
+    public function findUserWithProfileAndGroups(int $userId): Model|Collection|Builder|array|null
+    {
+        return User::with('Profile' , 'groupMember')->findOrFail($userId);
+    }
 }
