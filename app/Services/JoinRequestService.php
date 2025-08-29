@@ -72,6 +72,7 @@ class JoinRequestService
                 'id' => $request->id,
                 'group_id' => $request->group_id,
                 'user_id' => $request->user_id,
+                'description' => $request->description,
                 'status' => $request->status->value,
                 'user' => [
                     'name' => $request->user->name,

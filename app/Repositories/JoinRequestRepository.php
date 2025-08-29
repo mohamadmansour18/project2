@@ -47,7 +47,10 @@ class JoinRequestRepository
     {
         return JoinRequest::with(['user.profile'])
             ->where('group_id', $groupId)
-            ->where('status', JoinRequestStatus::Pending)
+            ->whereIn('status', [
+                JoinRequestStatus::Pending,
+                JoinRequestStatus::PendingLeader
+            ])
             ->get();
     }
 

@@ -191,4 +191,18 @@ class GroupRepository
             ])->findOrFail($groupId);
     }
 
+    public function getGroupProject(int $groupId){
+        return Group::with([
+            'projectForm.users.Profile',
+            'projectForm.signatures',
+            'projectForm2',
+            'projectGrade.committee.adminSupervisor',
+            'projectGrade.committee.adminMember',
+        ])->findOrFail($groupId);
+    }
+
+    public function getGroupsWithFiveMembers(){
+        return Group::where('number_of_members', 5)
+            ->get(['id', 'name', 'image']);
+    }
 }

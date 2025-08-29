@@ -63,9 +63,9 @@ Route::prefix('/student')->group(function (){
             Route::post('/project-form-one/{form}/submit', [ProjectFormController::class, 'submit']);
 
             //Sixth student APIs
-            Route::get('/groups/{group}/leader-requests', [JoinRequestController::class, 'leaderRequests']);
-            Route::post('/join-request/{id}/approve', [JoinRequestController::class, 'leaderApprove']);
-            Route::post('/join-request/{id}/reject',  [JoinRequestController::class, 'leaderReject']);
+//            Route::get('/groups/{group}/leader-requests', [JoinRequestController::class, 'leaderRequests']);
+//            Route::post('/join-request/{id}/approve', [JoinRequestController::class, 'leaderApprove']);
+//            Route::post('/join-request/{id}/reject',  [JoinRequestController::class, 'leaderReject']);
         });
 
         //Group APIs
@@ -75,6 +75,10 @@ Route::prefix('/student')->group(function (){
         Route::get('/my-group', [GroupController::class, 'myGroup']);
         Route::get('/showGroupInfoPublic/{groupId}/details', [GroupController::class, 'showPublic']);
         Route::get('/my-group-details', [GroupController::class, 'myGroupDetails']);
+        Route::get('/groups/five-members', [GroupController::class, 'groupsWithFiveMembers']);
+        Route::get('/groups/my/project', [GroupController::class, 'showMyGroupProject']);
+        Route::get('/groups/{id}/project', [GroupController::class, 'showGroupProject']);
+
 
         //group member APIs
         Route::get('/my-group-members', [GroupMemberController::class, 'myGroupMembers']);

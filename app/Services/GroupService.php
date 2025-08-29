@@ -450,4 +450,36 @@ class GroupService
             'group_grade'       => $gradeData,
         ];
     }
+
+    public function getGroupProject(int $groupId){
+        $groups = $this->groupRepo->getGroupProject($groupId);
+
+        if (!$groups) {
+            throw new PermissionDeniedException(
+                'خطأ',
+                'لا يوجد مجموعة بهذا الاسم',
+                404
+            );
+        }
+
+        return $groups;
+    }
+
+    public function groupsWithFiveMembers(){
+        $groups = $this->groupRepo->getGroupsWithFiveMembers();
+
+        if (!$groups) {
+            throw new PermissionDeniedException(
+                'خطأ',
+                'لا يوجد مجموعة بهذا الاسم',
+                404
+            );
+        }
+        $groups->transform(function ($group) {
+            $group->image = UrlHelper::imageUrl($group->image);
+            return $group;
+        });
+
+        return $groups;
+    }
 }

@@ -2,17 +2,20 @@
 
 namespace App\Http\Controllers\Group;
 
+use App\Exceptions\PermissionDeniedException;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ChangeLeadershipRequest;
 use App\Http\Requests\CreateGroupRequest;
 use App\Http\Requests\SearchGroupRequest;
 use App\Http\Requests\UpdateGroupRequest;
+use App\Http\Resources\GroupProjectResource;
 use App\Http\Resources\GroupResource;
 use App\Models\Group;
 use App\Services\DashBoard_Services\GroupManagementService;
 use App\Services\GroupService;
 use App\Traits\ApiSuccessTrait;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Auth;
 
 class GroupController extends Controller
 {
@@ -133,5 +136,41 @@ class GroupController extends Controller
         $data = $this->groupManagementService->getGroupDetails($groupId);
 
         return $this->dataResponse($data, 200);
+    }
+
+    public function showGroupProject($groupId)
+    {
+        $group = $this->groupService->getGroupProject($groupId);
+
+        return $this->dataResponse(['data' => new GroupProjectResource($group)]);
+    }
+
+    public function showMyGroupProject()
+    {
+        $user = Auth::user();
+
+        $groupMember = $user->groupMember;
+        if (!$groupMember) {
+            throw new PermissionDeniedException('خطأ', 'المستخدم غير موجود بأي مجموعة.');
+        }
+
+        $groupId = $groupMember->group_id;
+
+        if (!is_numeric($groupId)) {
+            throw new PermissionDeniedException('خطأ', 'معرّف المجموعة غير صالح.');
+        }
+
+        $group = $this->groupService->getGroupProject((int)$groupId);
+
+        return $this->dataResponse(['data' => new GroupProjectResource($group)]);
+    }
+
+    public function groupsWithFiveMembers(): JsonResponse
+    {
+        $groups = $this->groupService->groupsWithFiveMembers();
+
+        return $this->dataResponse([
+            'groups' => $groups
+        ]);
     }
 }
