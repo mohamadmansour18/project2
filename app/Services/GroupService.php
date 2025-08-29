@@ -482,4 +482,34 @@ class GroupService
 
         return $groups;
     }
+
+    public function leaveGroup(int $groupId): void
+    {
+        $user = Auth::user();
+
+        // تحقق انه عضو بالمجموعة
+        if (!$this->groupMemberRepo->isMember($groupId, $user->id)) {
+            throw new PermissionDeniedException('خطأ', 'أنت لست عضواً في هذه المجموعة.');
+        }
+
+        // إذا كان ليدر
+        if ($this->groupMemberRepo->isLeader($groupId, $user->id)) {
+            throw new PermissionDeniedException('غير مسموح', 'لا يمكنك مغادرة المجموعة بصفتك ليدر، انقل القيادة لعضو آخر أولاً.');
+        }
+
+        // تحقق من الاستمارة الأولى
+
+        $group = $this->groupRepo->getById($groupId);
+        $form1 = $group->projectForm()->first(); // <-- هنا نأخذ النموذج الفعلي
+
+        if ($form1 && $form1->status === ProjectFormStatus::Approved) {
+            throw new PermissionDeniedException('غير مسموح', 'لا يمكن مغادرة المجموعة بعد الموافقة على الاستمارة 1.');
+        }
+
+        // حذف العضو من المجموعة
+        $group->members()->where('user_id', $user->id)->delete();
+
+        // تحديث عدد الأعضاء
+        $group->decrement('number_of_members');
+    }
 }

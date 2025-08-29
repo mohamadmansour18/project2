@@ -54,4 +54,20 @@ class ProfileRepository
             ->exists();
     }
 
+    public function getUserWithProfile(int $userId)
+    {
+        return User::with('profile')->find($userId);
+    }
+
+    public function getCurrentUserWithProfile(): ?User
+    {
+        return auth()->user()->load('profile');
+    }
+
+    public function updateProfileStudent(int $userId, array $data)
+    {
+        $profile = Profile::where('user_id', $userId)->firstOrFail();
+        $profile->update($data);
+        return $profile;
+    }
 }

@@ -119,5 +119,11 @@ class JoinRequestRepository
         ]);
     }
 
+    public function findByIdWithGroup(int $id)
+    {
+        return JoinRequest::with('group', 'user')->findOrFail($id);
+    }
+
+
 
 }

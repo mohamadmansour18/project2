@@ -173,4 +173,11 @@ class GroupController extends Controller
             'groups' => $groups
         ]);
     }
+
+    public function leave(int $groupId): JsonResponse
+    {
+        $this->groupService->leaveGroup($groupId);
+
+        return $this->successResponse('تمت المغادرة', 'تمت مغادرة المجموعة بنجاح.', 200);
+    }
 }
