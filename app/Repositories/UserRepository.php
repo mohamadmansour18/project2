@@ -94,7 +94,7 @@ class UserRepository
                     'email' => $user->email ,
                     'student_status' => $profile->student_status,
                     'phone_number' => $profile->phone_number ?? 'لا يوجد',
-                    'student_speciality' => '# ' . $profile->student_speciality,
+                    'student_speciality' => '# ' . $profile->student_speciality->value,
                 ];
             });
     }
