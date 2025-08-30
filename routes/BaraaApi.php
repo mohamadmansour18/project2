@@ -9,6 +9,7 @@ use App\Http\Controllers\Group\GroupController;
 use App\Http\Controllers\Group\GroupInvitationController;
 use App\Http\Controllers\Group\GroupMemberController;
 use App\Http\Controllers\Group\JoinRequestController;
+use App\Http\Controllers\User\ProfileController;
 use App\Http\Controllers\User\UserController;
 use Illuminate\Support\Facades\Route;
 
@@ -62,10 +63,6 @@ Route::prefix('/student')->group(function (){
             //form 1 APIs
             Route::post('/project-form-one/{form}/submit', [ProjectFormController::class, 'submit']);
 
-            //Sixth student APIs
-            Route::get('/groups/{group}/leader-requests', [JoinRequestController::class, 'leaderRequests']);
-            Route::post('/join-request/{id}/approve', [JoinRequestController::class, 'leaderApprove']);
-            Route::post('/join-request/{id}/reject',  [JoinRequestController::class, 'leaderReject']);
         });
 
         //Group APIs
@@ -75,6 +72,11 @@ Route::prefix('/student')->group(function (){
         Route::get('/my-group', [GroupController::class, 'myGroup']);
         Route::get('/showGroupInfoPublic/{groupId}/details', [GroupController::class, 'showPublic']);
         Route::get('/my-group-details', [GroupController::class, 'myGroupDetails']);
+        Route::get('/groups/five-members', [GroupController::class, 'groupsWithFiveMembers']);
+        Route::get('/groups/my/project', [GroupController::class, 'showMyGroupProject']);
+        Route::get('/groups/{id}/project', [GroupController::class, 'showGroupProject']);
+        Route::delete('/groups/{groupId}/leave', [GroupController::class, 'leave']);
+
 
         //group member APIs
         Route::get('/my-group-members', [GroupMemberController::class, 'myGroupMembers']);
@@ -132,6 +134,11 @@ Route::prefix('/student')->group(function (){
             Route::post('/{announcement}', [FavoriteController::class, 'store']);
             Route::delete('/{announcement}', [FavoriteController::class, 'destroy']);
         });
+
+        //Profile APIs
+        Route::get('/profile', [ProfileController::class, 'show']);
+        Route::get('/users/{user}/profile', [ProfileController::class, 'showUser']);
+        Route::post('/profile', [ProfileController::class, 'updateProfile']);
 
     });
 });

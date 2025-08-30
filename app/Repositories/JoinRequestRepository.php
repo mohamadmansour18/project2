@@ -47,7 +47,10 @@ class JoinRequestRepository
     {
         return JoinRequest::with(['user.profile'])
             ->where('group_id', $groupId)
-            ->where('status', JoinRequestStatus::Pending)
+            ->whereIn('status', [
+                JoinRequestStatus::Pending,
+                JoinRequestStatus::PendingLeader
+            ])
             ->get();
     }
 
@@ -115,6 +118,12 @@ class JoinRequestRepository
             'reviewed_at' => now(),
         ]);
     }
+
+    public function findByIdWithGroup(int $id)
+    {
+        return JoinRequest::with('group', 'user')->findOrFail($id);
+    }
+
 
 
 }

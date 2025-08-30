@@ -38,14 +38,14 @@ class JoinRequestController extends Controller
 
     public function accept(int $requestId): JsonResponse
     {
-        $this->service->accept($requestId, auth()->user());
+        $this->service->acceptUnified($requestId, auth()->user());
 
-        return $this->successResponse('تم القبول', 'تم قبول الطلب بنجاح.');
+        return $this->successResponse('تمت العملية', 'تم التعامل مع الطلب حسب حالة المجموعة.');
     }
 
     public function reject(int $requestId): JsonResponse
     {
-        $this->service->reject($requestId, auth()->user());
+        $this->service->rejectUnified($requestId, auth()->user());
 
         return $this->successResponse('تم الرفض', 'تم رفض الطلب بنجاح.');
     }
