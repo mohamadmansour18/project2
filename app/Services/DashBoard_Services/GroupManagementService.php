@@ -196,9 +196,8 @@ class GroupManagementService
 
     private function formatTime($time): string
     {
-        $carbon = Carbon::createFromFormat('H:i:s', $time);
-        $formatted = $carbon->format('h:i');
-        $suffix = $carbon->format('A') === 'AM' ? 'ص' : 'م';
+        $formatted = $time->format('h:i');
+        $suffix = $time->format('A') === 'AM' ? 'ص' : 'م';
         return $formatted . $suffix;
     }
 
