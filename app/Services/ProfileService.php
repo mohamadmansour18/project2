@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Enums\ProfileGovernorate;
+use App\Enums\ProfileStudentSpeciality;
 use App\Exceptions\PermissionDeniedException;
 use App\Helpers\UrlHelper;
 use App\Repositories\ProfileRepository;
@@ -107,6 +108,16 @@ class ProfileService
             }
         }
 
+        $student_speciality = null;
+
+        if ($profile?->student_speciality) {
+            if ($profile->student_speciality instanceof ProfileStudentSpeciality) {
+                $student_speciality = $profile->student_speciality->value;
+            } else {
+                $student_speciality = ProfileStudentSpeciality::tryFrom($profile->student_speciality)?->value;
+            }
+        }
+
         return [
             'id' => $user->id,
             'name' => $user->name,
@@ -119,7 +130,7 @@ class ProfileService
                 ? Carbon::parse($profile->birth_date)->format('d/m/Y')
                 : null,
             'student_speciality' => $profile?->student_speciality?->name ?? null,
-            'student_status' => $profile?->student_status?->name ?? null,
+            'student_status' => $student_speciality,
             'profile_image' => UrlHelper::imageUrl($profile->profile_image),
             'created_at' => $user->created_at->format('Y-m-d'),
         ];
@@ -145,6 +156,16 @@ class ProfileService
             }
         }
 
+        $student_speciality = null;
+
+        if ($profile?->student_speciality) {
+            if ($profile->student_speciality instanceof ProfileStudentSpeciality) {
+                $student_speciality = $profile->student_speciality->value;
+            } else {
+                $student_speciality = ProfileStudentSpeciality::tryFrom($profile->student_speciality)?->value;
+            }
+        }
+
         return [
             'id' => $user->id,
             'name' => $user->name,
@@ -156,7 +177,7 @@ class ProfileService
             'birth_date' => $profile?->birth_date
                 ? Carbon::parse($profile->birth_date)->format('d/m/Y')
                 : null,
-            'student_speciality' => $profile?->student_speciality?->name ?? null,
+            'student_speciality' =>$student_speciality,
             'student_status' => $profile?->student_status?->name ?? null,
             'profile_image' => UrlHelper::imageUrl($profile->profile_image),
             'created_at' => $user->created_at->format('Y-m-d'),

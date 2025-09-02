@@ -31,7 +31,12 @@ class UpdateProfileRequest extends FormRequest
     {
         return [
             'governorate' => ['required', new Enum(ProfileGovernorate::class)],
-            'phone_number' => ['required', 'string', 'max:20'],
+            'phone_number' => [
+                'required',
+                'string',
+                'size:10',
+                'regex:/^09\d{8}$/',
+            ],
             'birth_date' => ['required', 'date'],
             'student_speciality' => ['required', new Enum(ProfileStudentSpeciality::class)],
         ];
