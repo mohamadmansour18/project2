@@ -4,6 +4,7 @@ namespace App\Repositories;
 
 use App\Enums\GroupMemberRole;
 use App\Enums\GroupType;
+use App\Enums\JoinRequestStatus;
 use App\Enums\ProjectFormStatus;
 use App\Models\GradeException;
 use App\Models\Group;
@@ -66,12 +67,19 @@ class GroupRepository
 
     public function getIncompletePublicGroupsForCurrentYear(): Collection
     {
+        $userId = auth()->id(); // المستخدم الحالي
+
         return Group::query()
             ->where('type', GroupType::Public->value)
             ->whereYear('created_at', now()->year)
             ->where('number_of_members', '<', 5)
+            ->with(['joinRequests' => function ($q) use ($userId) {
+                $q->where('user_id', $userId)
+                ->where('status', JoinRequestStatus::Pending->value);
+            }])
             ->get(['id', 'name', 'image', 'speciality_needed', 'number_of_members']);
     }
+
 
     public function getUserGroup(int $userId)
     {
