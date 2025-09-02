@@ -191,14 +191,26 @@ class GroupRepository
             ])->findOrFail($groupId);
     }
 
-    public function getGroupProject(int $groupId){
-        return Group::with([
+    public function getGroupProject(int $groupId)
+    {
+        $group = Group::with([
             'projectForm.users.Profile',
             'projectForm.signatures',
             'projectForm2',
             'projectGrade.committee.adminSupervisor',
             'projectGrade.committee.adminMember',
         ])->findOrFail($groupId);
+
+        // جلب المقابلة النهائية للغروب (آخر موعد حسب التاريخ)
+        $finalInterview = InterviewSchedule::where('group_id', $groupId)
+            ->with(['committee.adminSupervisor', 'committee.adminMember'])
+            ->orderByDesc('interview_date')
+            ->first();
+
+        // نضيفها كـ property على الموديل عشان الريسورس يقدر يستخدمها
+        $group->final_interview = $finalInterview;
+
+        return $group;
     }
 
     public function getGroupsWithFiveMembers(){
