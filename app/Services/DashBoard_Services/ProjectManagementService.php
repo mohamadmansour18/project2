@@ -540,6 +540,11 @@ class ProjectManagementService
             throw new ProjectManagementException('خطأ في التواريخ المدخلة !', 'يجب أن تكون التواريخ المدخلة ضمن السنة الحالية', 422);
         }
 
+        if ($start->lte(now())) {
+            throw new ProjectManagementException('خطأ في التواريخ المدخلة !', 'تاريخ البدء يجب أن يكون بعد تاريخ اليوم', 422);
+        }
+
+
         if($end->lt($start))
         {
             throw new ProjectManagementException('خطأ في التواريخ المدخلة !' , 'تاريخ الانتهاء لا يمكن ان يكون قبل تاريخ البدء' , 422);

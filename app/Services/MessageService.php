@@ -88,6 +88,15 @@ class MessageService
 
         $stored = $this->messageRepository->storeMessage($conv , $senderId , $payload);
 
+        if($conv->type === ConversationType::Self)
+        {
+            return [
+                'message_id'     => $stored->id,
+                'bot_replied'    => false,
+                'bot_message_id' => null,
+            ];
+        }
+
         broadcast(new MessageCreatedEvent(
             conversationId : $conv->id,
             payload : [
@@ -97,7 +106,7 @@ class MessageService
                 'type'       => $stored->message_type,
                 'content'    => $stored->message_type === MessageType::Text ? ($stored->content ?? null) : null,
                 'status'     => $stored->status,
-                'messageTime' => $this->displayTimeOrDate($stored->created_at)
+                'messageTime' => $this->displayTimeOrDate($stored->created_at),
             ]
         ))->toOthers();
 

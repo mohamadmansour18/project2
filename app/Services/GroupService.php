@@ -272,7 +272,7 @@ class GroupService
             'interview_information' => $schedule ? [
                 'time' => $this->formatTime($schedule->interview_time),
                 'day' => $this->getDayName($schedule->interview_date),
-                'date' => Carbon::parse($schedule->interview_date)->format('d/m/Y')
+                'date' => $schedule->interview_date?->format('d/m/Y')
             ] : [],
 
             'main' => [
@@ -334,9 +334,8 @@ class GroupService
 
     private function formatTime($time): string
     {
-        $carbon = Carbon::createFromFormat('H:i:s', $time);
-        $formatted = $carbon->format('h:i');
-        $suffix = $carbon->format('A') === 'AM' ? 'ص' : 'م';
+        $formatted = $time->format('h:i');
+        $suffix = $time->format('A') === 'AM' ? 'ص' : 'م';
         return $formatted . $suffix;
     }
 
@@ -351,7 +350,7 @@ class GroupService
             'Thursday' => 'الخميس',
             'Friday' => 'الجمعة',
         ];
-        return $days[Carbon::parse($date)->format('l')] ?? '';
+        return $days[$date->format('l')] ?? '';
     }
 
     public function getGroupsWithForms()
@@ -410,7 +409,7 @@ class GroupService
         if($schedule)
         {
             $interviewInformation = [
-                'date' => Carbon::parse($schedule->interview_date)->format('d/m/Y') ,
+                'date' => $schedule->interview_date->format('d/m/Y') ,
                 'day'  => $this->getDayName($schedule->interview_date) ,
             ];
         }

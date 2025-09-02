@@ -92,9 +92,9 @@ class UserRepository
                     'university_number' => $user->university_number ,
                     'name' => $user->name ,
                     'email' => $user->email ,
-                    'student_status' => $profile->student_status,
+                    'student_status' => $profile?->student_status?->value,
                     'phone_number' => $profile->phone_number ?? 'لا يوجد',
-                    'student_speciality' => '# ' . $profile->student_speciality,
+                    'student_speciality' => '# ' . $profile?->student_speciality?->value,
                 ];
             });
     }
