@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Enums\ProfileGovernorate;
 use App\Exceptions\PermissionDeniedException;
 use App\Helpers\UrlHelper;
 use App\Repositories\ProfileRepository;
@@ -96,13 +97,23 @@ class ProfileService
 
         $profile = $user->profile;
 
+        $governorate = null;
+
+        if ($profile?->governorate) {
+            if ($profile->governorate instanceof ProfileGovernorate) {
+                $governorate = $profile->governorate->value;
+            } else {
+                $governorate = ProfileGovernorate::tryFrom($profile->governorate)?->value;
+            }
+        }
+
         return [
             'id' => $user->id,
             'name' => $user->name,
             'email' => $user->email,
             'university_number' => $user->university_number,
             'role' => $user->role,
-            'governorate' => $profile?->governorate?->name ?? null,
+            'governorate' => $governorate,
             'phone_number' => $profile?->phone_number,
             'birth_date' => $profile?->birth_date,
             'student_speciality' => $profile?->student_speciality?->name ?? null,
@@ -122,13 +133,23 @@ class ProfileService
 
         $profile = $user->profile;
 
+        $governorate = null;
+
+        if ($profile?->governorate) {
+            if ($profile->governorate instanceof ProfileGovernorate) {
+                $governorate = $profile->governorate->value;
+            } else {
+                $governorate = ProfileGovernorate::tryFrom($profile->governorate)?->value;
+            }
+        }
+
         return [
             'id' => $user->id,
             'name' => $user->name,
             'email' => $user->email,
             'university_number' => $user->university_number,
             'role' => $user->role,
-            'governorate' => $profile?->governorate?->name ?? null,
+            'governorate' => $governorate,
             'phone_number' => $profile?->phone_number,
             'birth_date' => $profile?->birth_date,
             'student_speciality' => $profile?->student_speciality?->name ?? null,
