@@ -115,7 +115,9 @@ class ProfileService
             'role' => $user->role,
             'governorate' => $governorate,
             'phone_number' => $profile?->phone_number,
-            'birth_date' => $profile?->birth_date,
+            'birth_date' => $profile?->birth_date
+                ? Carbon::parse($profile->birth_date)->format('d/m/Y')
+                : null,
             'student_speciality' => $profile?->student_speciality?->name ?? null,
             'student_status' => $profile?->student_status?->name ?? null,
             'profile_image' => UrlHelper::imageUrl($profile->profile_image),
@@ -151,7 +153,9 @@ class ProfileService
             'role' => $user->role,
             'governorate' => $governorate,
             'phone_number' => $profile?->phone_number,
-            'birth_date' => $profile?->birth_date,
+            'birth_date' => $profile?->birth_date
+                ? Carbon::parse($profile->birth_date)->format('d/m/Y')
+                : null,
             'student_speciality' => $profile?->student_speciality?->name ?? null,
             'student_status' => $profile?->student_status?->name ?? null,
             'profile_image' => UrlHelper::imageUrl($profile->profile_image),
