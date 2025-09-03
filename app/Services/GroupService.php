@@ -121,18 +121,21 @@ class GroupService
 
     public function getIncompletePublicGroups(): array
     {
+        $userId = auth()->id();
         $groups = $this->groupRepo->getIncompletePublicGroupsForCurrentYear();
 
-        return $groups->map(function ($group) {
+        return $groups->map(function ($group) use ($userId) {
             return [
                 'id' => $group->id,
                 'name' => $group->name,
                 'image' => UrlHelper::imageUrl($group->image),
                 'specialities_needed' => $group->speciality_needed,
                 'members_count' => $group->number_of_members,
+                'has_requested_join' => $group->joinRequests->isNotEmpty(), // true/false
             ];
         })->toArray();
     }
+
 
     public function getMyGroup(int $userId): ?array
     {

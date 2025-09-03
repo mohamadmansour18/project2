@@ -24,6 +24,7 @@ class GroupProjectResource extends JsonResource
             'name' => $this->name,
 
             'form1' => $this->projectForm ? [
+                "id"=>$this->projectForm->id,
                 'title' => $this->projectForm->arabic_title,
                 'supervisor' => $this->projectForm->users->name ?? null,
                 'supervisor_profile_image' => $this->projectForm->users->Profile->profile_image ?? null,
@@ -35,6 +36,7 @@ class GroupProjectResource extends JsonResource
             ] : null,
 
             'form2' => $this->projectForm2 ? [
+                "id"=>$this->projectForm2->id,
                 'title' => $this->projectForm2->arabic_project_title,
                 'submission_date' => $this->projectForm2->submission_date
                     ? Carbon::parse($this->projectForm2->submission_date)->format('Y-m-d')
@@ -63,6 +65,23 @@ class GroupProjectResource extends JsonResource
                     'profile_image' => UrlHelper::imageUrl($member->user->Profile->profile_image) ,
                 ];
             }),
+
+            'final_interview' => $this->final_interview ? [
+                'date' => $this->final_interview->interview_date
+                    ? Carbon::parse($this->final_interview->interview_date)->format('Y-m-d')
+                    : null,
+
+                'start_time' => $this->final_interview->interview_time
+                    ? $this->final_interview->interview_time->format('H:i')
+                    : null,
+
+                'end_time' => $this->final_interview->interview_end_time
+                    ? $this->final_interview->interview_end_time->format('H:i')
+                    : null,
+            ] : null,
+
+
+
         ];
     }
 }
