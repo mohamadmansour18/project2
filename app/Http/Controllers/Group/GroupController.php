@@ -36,7 +36,7 @@ class GroupController extends Controller
 
         $this->groupService->createGroup($request, $user);
 
-        return $this->successResponse('انشاء مجموعة', 'تم إنشاء المجموعة بنجاح', 201);
+        return $this->successResponse('! انشاء مجموعة', 'تم إنشاء المجموعة بنجاح', 201);
 
     }
 
@@ -45,7 +45,7 @@ class GroupController extends Controller
 
         $this->groupService->updateGroup($request, $group);
 
-        return $this->successResponse('تعديل مجموعة', 'تم تعديل بيانات المجموعة بنجاح', 200);
+        return $this->successResponse('! تعديل مجموعة', 'تم تعديل بيانات المجموعة بنجاح', 200);
     }
 
     public function show(Group $group): JsonResponse
@@ -57,7 +57,7 @@ class GroupController extends Controller
     public function ChangeLeadership(ChangeLeadershipRequest $request, Group $group): JsonResponse
     {
         $this->groupService->changeLeadership($group, auth()->id(), $request->new_leader_id);
-        return $this->successResponse('نقل القيادة', 'تم نقل القيادة بنجاح', 200);
+        return $this->successResponse('! نقل القيادة', 'تم نقل القيادة بنجاح', 200);
     }
 
     public function getIncompletePublicGroups(): JsonResponse
@@ -151,13 +151,13 @@ class GroupController extends Controller
 
         $groupMember = $user->groupMember;
         if (!$groupMember) {
-            throw new PermissionDeniedException('خطأ', 'المستخدم غير موجود بأي مجموعة.');
+            throw new PermissionDeniedException('! خطأ', 'المستخدم غير موجود بأي مجموعة.');
         }
 
         $groupId = $groupMember->group_id;
 
         if (!is_numeric($groupId)) {
-            throw new PermissionDeniedException('خطأ', 'معرّف المجموعة غير صالح.');
+            throw new PermissionDeniedException('! خطأ', 'معرّف المجموعة غير صالح.');
         }
 
         $group = $this->groupService->getGroupProject((int)$groupId);
@@ -178,6 +178,6 @@ class GroupController extends Controller
     {
         $this->groupService->leaveGroup($groupId);
 
-        return $this->successResponse('تمت المغادرة', 'تمت مغادرة المجموعة بنجاح.', 200);
+        return $this->successResponse('! تمت المغادرة', 'تمت مغادرة المجموعة بنجاح.', 200);
     }
 }

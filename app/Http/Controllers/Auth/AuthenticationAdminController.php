@@ -37,28 +37,28 @@ class AuthenticationAdminController extends Controller
     {
         $this->adminRegistrationService->sendPasswordResetOtp($request->email);
 
-        return $this->successResponse('تأكيد البريد المدخل !' , 'تم إرسال رمز التحقق إلى بريدك الإلكتروني المدخل .');
+        return $this->successResponse('! تأكيد البريد المدخل' , 'تم إرسال رمز التحقق إلى بريدك الإلكتروني المدخل .');
     }
 
     public function forgotPasswordOtp(OtpVerificationRequest $request): JsonResponse
     {
         $this->adminRegistrationService->verifyPasswordResetOtp($request->validated());
 
-        return $this->successResponse('تم التأكيد بنجاح !' , 'تم تأكيد بريدك الالكتروني المستخدم لاعادة تعين كلمة المرور .');
+        return $this->successResponse('! تم التأكيد بنجاح' , 'تم تأكيد بريدك الالكتروني المستخدم لاعادة تعين كلمة المرور .');
     }
 
     public function resetPassword(NewPasswordRequest $request): JsonResponse
     {
         $this->adminRegistrationService->resetPassword($request->validated());
 
-        return $this->successResponse('كلمة مرور جديدة !' , 'تم تعيين كلمة المرور الجديدة بنجاح ، يمكنك تسجيل الدخول الآن');
+        return $this->successResponse('! كلمة مرور جديدة' , 'تم تعيين كلمة المرور الجديدة بنجاح ، يمكنك تسجيل الدخول الآن');
     }
 
     public function resendPasswordResetOtp(ForgotPasswordRequest $request): JsonResponse
     {
         $this->adminRegistrationService->resendPasswordResetOtp($request->email);
 
-        return $this->successResponse('اعادة ارسال الرمز !' , 'تم إرسال رمز تحقق جديد إلى بريدك .');
+        return $this->successResponse('! اعادة ارسال الرمز' , 'تم إرسال رمز تحقق جديد إلى بريدك .');
     }
 
     ///////////////////////////////////////////////////////////////////////////////////
@@ -67,6 +67,6 @@ class AuthenticationAdminController extends Controller
     {
         JWTAuth::invalidate(JWTAuth::getToken());
 
-        return $this->successResponse('عملية تسجيل الخروج !' , 'تم تسجيل الخروج من حسابك بنجاح لاتتأخر في العودة الينا ايها المدير');
+        return $this->successResponse('! عملية تسجيل الخروج' , 'تم تسجيل الخروج من حسابك بنجاح لاتتأخر في العودة الينا ايها المدير');
     }
 }

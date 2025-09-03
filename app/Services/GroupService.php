@@ -101,7 +101,7 @@ class GroupService
     {
         if (!$this->groupMemberRepo->isMember($group->id, $newLeaderId)) {
             throw new PermissionDeniedException(
-                'عضو غير موجود',
+                '! عضو غير موجود',
                 'المستخدم المحدد ليس عضوًا في المجموعة',
                 400
             );
@@ -109,7 +109,7 @@ class GroupService
 
         if ($currentLeaderId === $newLeaderId) {
             throw new PermissionDeniedException(
-                'خطأ في النقل',
+                '! خطأ في النقل',
                 'لا يمكنك نقل القيادة لنفسك',
                 400
             );
@@ -143,7 +143,7 @@ class GroupService
 
         if (!$group) {
             throw new PermissionDeniedException(
-                'خطأ',
+                '! خطأ',
                 'أنت لست عضو في أي مجموعة',
                 404
             );
@@ -190,7 +190,7 @@ class GroupService
 
         if (!$group) {
             throw new PermissionDeniedException(
-                'خطأ',
+                '! خطأ',
                 'أنت لست عضو في أي مجموعة',
                 404
             );
@@ -367,7 +367,7 @@ class GroupService
 
         if ($groups->isEmpty()) {
             throw new PermissionDeniedException(
-                'خطأ',
+                '! خطأ',
                 'لا يوجد مجموعة بهذا الاسم',
                 404
             );
@@ -458,7 +458,7 @@ class GroupService
 
         if (!$groups) {
             throw new PermissionDeniedException(
-                'خطأ',
+                '! خطأ',
                 'لا يوجد مجموعة بهذا الاسم',
                 404
             );
@@ -472,7 +472,7 @@ class GroupService
 
         if (!$groups) {
             throw new PermissionDeniedException(
-                'خطأ',
+                '! خطأ',
                 'لا يوجد مجموعة بهذا الاسم',
                 404
             );
@@ -491,12 +491,12 @@ class GroupService
 
         // تحقق انه عضو بالمجموعة
         if (!$this->groupMemberRepo->isMember($groupId, $user->id)) {
-            throw new PermissionDeniedException('خطأ', 'أنت لست عضواً في هذه المجموعة.');
+            throw new PermissionDeniedException('! خطأ', 'أنت لست عضواً في هذه المجموعة.');
         }
 
         // إذا كان ليدر
         if ($this->groupMemberRepo->isLeader($groupId, $user->id)) {
-            throw new PermissionDeniedException('غير مسموح', 'لا يمكنك مغادرة المجموعة بصفتك ليدر، انقل القيادة لعضو آخر أولاً.');
+            throw new PermissionDeniedException('! غير مسموح', 'لا يمكنك مغادرة المجموعة بصفتك ليدر، انقل القيادة لعضو آخر أولاً.');
         }
 
         // تحقق من الاستمارة الأولى
@@ -505,7 +505,7 @@ class GroupService
         $form1 = $group->projectForm()->first(); // <-- هنا نأخذ النموذج الفعلي
 
         if ($form1 && $form1->status === ProjectFormStatus::Approved) {
-            throw new PermissionDeniedException('غير مسموح', 'لا يمكن مغادرة المجموعة بعد الموافقة على الاستمارة 1.');
+            throw new PermissionDeniedException('! غير مسموح', 'لا يمكن مغادرة المجموعة بعد الموافقة على الاستمارة 1.');
         }
 
         // حذف العضو من المجموعة

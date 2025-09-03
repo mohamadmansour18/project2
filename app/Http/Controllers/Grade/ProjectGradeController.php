@@ -25,14 +25,14 @@ class ProjectGradeController extends Controller
     {
         $this->groupGradeService->createGrade($request->validated());
 
-        return $this->successResponse('تمت العملية بنجاح !', 'تمت اضافة العلامة المحدد الى هذا الغروب',201);
+        return $this->successResponse('! تمت العملية بنجاح', 'تمت اضافة العلامة المحدد الى هذا الغروب',201);
     }
 
     public function updateGroupGrade(UpdateGroupGradeRequest $request): JsonResponse
     {
         $this->groupGradeService->updateGrade($request->validated());
 
-        return $this->successResponse('تمت العملية بنجاح !' , 'تم تعديل علامة هذا الغروب المحدد بنجاح' , 200);
+        return $this->successResponse('! تمت العملية بنجاح' , 'تم تعديل علامة هذا الغروب المحدد بنجاح' , 200);
     }
 
     public function getGrades(): JsonResponse

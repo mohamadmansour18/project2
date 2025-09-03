@@ -97,14 +97,14 @@ class UserController extends Controller
     {
         $this->userManagementService->insertDoctor($request->validated());
 
-        return $this->successResponse('تمت عملية الاضافة بنجاح !' , 'تم اضافة الدكتور المحدد الى نظام الكلية ليتولى المهام المكلف بها' , 201);
+        return $this->successResponse('! تمت عملية الاضافة بنجاح' , 'تم اضافة الدكتور المحدد الى نظام الكلية ليتولى المهام المكلف بها' , 201);
     }
 
     public function insertStudent(StoreStudentRequest $request): JsonResponse
     {
         $this->userManagementService->insertStudent($request->validated());
 
-        return $this->successResponse('تمت عملية الاضافة بنجاح !' , 'تم اضافة الطالب المحدد الى نظام الكلية' , 201);
+        return $this->successResponse('! تمت عملية الاضافة بنجاح' , 'تم اضافة الطالب المحدد الى نظام الكلية' , 201);
     }
 
     public function insertDoctors(ExcelImportRequest $request): JsonResponse
@@ -119,7 +119,7 @@ class UserController extends Controller
 
         ProcessDoctorExcelImportJob::dispatch($path ,$adminEmail);
 
-        return $this->successResponse('تمت عملية الاضافة بنجاح !' , 'يتم معالجة عملية ترحيل بيانات المستخدمين الى قاعدة البيانات في الخلفية' , 201);
+        return $this->successResponse('! تمت عملية الاضافة بنجاح' , 'يتم معالجة عملية ترحيل بيانات المستخدمين الى قاعدة البيانات في الخلفية' , 201);
     }
 
     public function insertStudents(ExcelImportRequest $request): JsonResponse
@@ -134,35 +134,35 @@ class UserController extends Controller
 
         ProcessStudentExcelImportJob::dispatch($path , $adminEmail);
 
-        return $this->successResponse('تمت عملية الاضافة بنجاح !' , 'يتم معالجة عملية ترحيل بيانات المستخدمين الى قاعدة البيانات في الخلفية' , 201);
+        return $this->successResponse('! تمت عملية الاضافة بنجاح' , 'يتم معالجة عملية ترحيل بيانات المستخدمين الى قاعدة البيانات في الخلفية' , 201);
     }
 
     public function editDoctorInfoByAdmin(int $doctorId , UpdateDoctorFromDashboardRequest $request): JsonResponse
     {
         $this->userManagementService->updateDoctorInfo($doctorId , $request->validated());
 
-        return $this->successResponse('تمت العملية بنجاح !' , 'تم تعديل بيانات الدكتور المحددة بنجاح');
+        return $this->successResponse('! تمت العملية بنجاح' , 'تم تعديل بيانات الدكتور المحددة بنجاح');
     }
 
     public function editStudentByAdmin(int $studentId , UpdateStudentFromDashboardRequest $request): JsonResponse
     {
         $this->userManagementService->updateStudentInfo($studentId , $request->validated());
 
-        return $this->successResponse('تمت العملية بنجاح !' , 'تم تعديل بيانات الطالب المحددة بنجاح');
+        return $this->successResponse('! تمت العملية بنجاح' , 'تم تعديل بيانات الطالب المحددة بنجاح');
     }
 
     public function deleteDoctorByAdmin(int $doctorId): JsonResponse
     {
         $this->userManagementService->deleteDoctorById($doctorId);
 
-        return $this->successResponse('تمت العملية بنجاح !' , 'تم حذف الدكتور المحدد من النظام الخاص بكلية الهندسة المعلوماتية');
+        return $this->successResponse('! تمت العملية بنجاح' , 'تم حذف الدكتور المحدد من النظام الخاص بكلية الهندسة المعلوماتية');
     }
 
     public function deleteStudentByAdmin(int $studentId): JsonResponse
     {
         $this->userManagementService->deleteStudentById($studentId);
 
-        return $this->successResponse('تمت العملية بنجاح !' , 'تم حذف الطالب المحدد من النظام الخاص بكلية الهندسة المعلوماتية');
+        return $this->successResponse('! تمت العملية بنجاح' , 'تم حذف الطالب المحدد من النظام الخاص بكلية الهندسة المعلوماتية');
     }
 
     public function index(): JsonResponse

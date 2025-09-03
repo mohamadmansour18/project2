@@ -29,21 +29,21 @@ class ProfileController extends Controller
     {
         $this->profileService->updateProfile($request->validated());
 
-        return $this->successResponse('تمت العملية بنجاح !' , 'تم تحديث معلومات ملفك الشخصي بنجاح' ,200);
+        return $this->successResponse('! تمت العملية بنجاح' , 'تم تحديث معلومات ملفك الشخصي بنجاح' ,200);
     }
 
     public function updateProfileDoctorPicture(UpdatePictureRequest $request): JsonResponse
     {
         $this->profileService->updateDoctorProfilePicture($request->file('profile_image'));
 
-        return $this->successResponse('تمت العملية بنجاح !' , 'تم تحديث صورة الملف الشخصي بنجاح' , 200);
+        return $this->successResponse('! تمت العملية بنجاح' , 'تم تحديث صورة الملف الشخصي بنجاح' , 200);
     }
 
     public function updateProfileStudentPicture(UpdatePictureRequest $request): JsonResponse
     {
         $this->profileService->updateStudentProfilePicture($request->file('profile_image'));
 
-        return $this->successResponse('تمت العملية بنجاح !' , 'تم تحديث صورة الملف الشخصي بنجاح' , 200);
+        return $this->successResponse('! تمت العملية بنجاح' , 'تم تحديث صورة الملف الشخصي بنجاح' , 200);
     }
 
     public function show(): JsonResponse
@@ -57,16 +57,12 @@ class ProfileController extends Controller
         $data = $this->profileService->getProfile($userId);
         return $this->dataResponse(['user' => $data]);
     }
-    
+
     public function updateProfile(UpdateProfileRequest $request): JsonResponse
     {
         $this->profileService->updateCurrentUserProfile($request->validated());
 
-        return $this->successResponse(
-            'تمت العملية بنجاح!',
-            'تم تعديل بيانات الملف الشخصي بنجاح',
-            200
-        );
+        return $this->successResponse('! تمت العملية بنجاح', 'تم تعديل بيانات الملف الشخصي بنجاح', 200);
     }
 
 }

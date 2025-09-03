@@ -40,13 +40,13 @@ class FavoriteController extends Controller
     {
         $this->service->addFavorite(auth()->user(), $announcement);
 
-        return $this->successResponse('الاضافة الى المفضلة', 'تمت الإضافة للمفضلة بنجاح', 201);
+        return $this->successResponse('! الاضافة الى المفضلة', 'تمت الإضافة للمفضلة بنجاح', 201);
     }
 
     public function destroy(Announcement $announcement): JsonResponse
     {
         $this->service->removeFavorite(auth()->user(), $announcement);
 
-        return $this->successResponse('الازالة من المفضلة', 'تمت الازالة من المفضلة بنجاح', 201);
+        return $this->successResponse('! الازالة من المفضلة', 'تمت الازالة من المفضلة بنجاح', 201);
     }
 }

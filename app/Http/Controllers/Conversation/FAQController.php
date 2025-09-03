@@ -29,7 +29,7 @@ class FAQController extends Controller
     {
         $this->faqService->createFaq($request->validated());
 
-        return $this->successResponse('تمت العملية بنجاح !' ,'تم اضافة هذا السؤال واجابته الى نظام المجيب الالي بنجاح' , 201);
+        return $this->successResponse('! تمت العملية بنجاح' ,'تم اضافة هذا السؤال واجابته الى نظام المجيب الالي بنجاح' , 201);
 
     }
 
@@ -37,6 +37,6 @@ class FAQController extends Controller
     {
         $this->faqService->deleteFaq($questionId);
 
-        return $this->successResponse('تمت العملية بنجاح !' ,'تم حذف هذا السؤال واجابته من نظام المجيب الالي بنجاح' , 200);
+        return $this->successResponse('! تمت العملية بنجاح' ,'تم حذف هذا السؤال واجابته من نظام المجيب الالي بنجاح' , 200);
     }
 }

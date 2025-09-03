@@ -28,18 +28,18 @@ class ProjectForm2Service
 
         $groupMember = $user->groupMember;
         if (!$groupMember) {
-            throw new PermissionDeniedException('خطأ', 'المستخدم غير موجود بأي مجموعة.');
+            throw new PermissionDeniedException('! خطأ', 'المستخدم غير موجود بأي مجموعة.');
         }
 
         $groupId = $groupMember->group_id;
 
         if (!$this->groupRepo->isLeader($groupId, $user->id)) {
-            throw new PermissionDeniedException('صلاحيات', 'فقط قائد المجموعة يستطيع تعبئة الاستمارة.');
+            throw new PermissionDeniedException('! صلاحيات', 'فقط قائد المجموعة يستطيع تعبئة الاستمارة.');
         }
 
         if ($this->repository->existsForGroup($groupId, $user->id)) {
             throw new PermissionDeniedException(
-                'عملية مكررة',
+                '! عملية مكررة',
                 'لا يمكنك تعبئة الاستمارة أكثر من مرة لنفس المجموعة.'
             );
         }
@@ -82,11 +82,11 @@ class ProjectForm2Service
             $form->group->leader_id === $user->id;
 
         if (!$isLeaderOrMember) {
-            throw new PermissionDeniedException('غير مصرح','لا يمكنك تحميل هذا الملف.');
+            throw new PermissionDeniedException('! غير مصرح','لا يمكنك تحميل هذا الملف.');
         }
 
         if (!$form->filled_form_file_path || !Storage::disk('public')->exists($form->filled_form_file_path)) {
-            throw new PermissionDeniedException('غير موجود','الملف غير متوفر.');
+            throw new PermissionDeniedException('! غير موجود','الملف غير متوفر.');
         }
 
         return Response::download(
@@ -104,11 +104,11 @@ class ProjectForm2Service
             $form->group->leader_id === $user->id;
 
         if (!$isLeaderOrMember) {
-            throw new PermissionDeniedException('غير مصرح', 'لا يمكنك معاينة هذا الملف.');
+            throw new PermissionDeniedException('! غير مصرح', 'لا يمكنك معاينة هذا الملف.');
         }
 
         if (!$form->filled_form_file_path || !Storage::disk('public')->exists($form->filled_form_file_path)) {
-            throw new PermissionDeniedException('غير موجود', 'الملف غير متوفر.');
+            throw new PermissionDeniedException('! غير موجود', 'الملف غير متوفر.');
         }
 
         $filePath = storage_path('app/public/' . $form->filled_form_file_path);
@@ -133,7 +133,7 @@ class ProjectForm2Service
 
             if ($mime !== 'application/pdf' || $firstBytes !== '%PDF') {
                 throw new PermissionDeniedException(
-                    'صيغة غير مقبولة',
+                    '! صيغة غير مقبولة',
                     'الملفات يجب أن تكون PDF حقيقية حصراً.'
                 );
             }
@@ -172,7 +172,7 @@ class ProjectForm2Service
     {
         if (!$this->periodRepo->isFormPeriodActive($formName)) {
             throw new PermissionDeniedException(
-                'انتهى الوقت',
+                '! انتهى الوقت',
                 'لا يمكنك تعديل أو إرسال هذا النموذج بعد انتهاء الفترة المحددة.'
             );
         }

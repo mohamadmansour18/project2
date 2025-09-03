@@ -29,7 +29,7 @@ class AuthenticationStudentController extends Controller
     {
         $this->studentService->register($request->validated());
 
-        return $this->successResponse('انشاء الحساب !' , 'تم إرسال رمز التحقق إلى بريدك الإلكتروني.' , 201);
+        return $this->successResponse('! انشاء الحساب' , 'تم إرسال رمز التحقق إلى بريدك الإلكتروني.' , 201);
     }
 
 
@@ -37,14 +37,14 @@ class AuthenticationStudentController extends Controller
     {
         $this->studentService->verifyOtp($request->validated());
 
-        return $this->successResponse('تأكيد الحساب !' , 'تم تأكيد بريدك الالكتروني بنجاح');
+        return $this->successResponse('! تأكيد الحساب' , 'تم تأكيد بريدك الالكتروني بنجاح');
     }
 
     public function resendStudentOtp(OtpResendRequest $request ): JsonResponse
     {
         $this->studentService->resendOtp($request->validated());
 
-        return $this->successResponse('اعادة ارسال الرمز !' , 'تم إرسال رمز تحقق جديد إلى بريدك .');
+        return $this->successResponse('! اعادة ارسال الرمز' , 'تم إرسال رمز تحقق جديد إلى بريدك .');
     }
 
     /////////////////////////////////////////////////////////////////////////////////////////
@@ -62,35 +62,35 @@ class AuthenticationStudentController extends Controller
     {
         $this->studentService->sendPasswordResetOtp($request->email);
 
-        return $this->successResponse('تأكيد البريد المدخل !' , 'تم إرسال رمز التحقق إلى بريدك الإلكتروني المدخل .');
+        return $this->successResponse('! تأكيد البريد المدخل' , 'تم إرسال رمز التحقق إلى بريدك الإلكتروني المدخل .');
     }
 
     public function forgotPasswordOtp(OtpVerificationRequest $request): JsonResponse
     {
         $this->studentService->verifyPasswordResetOtp($request->validated());
 
-        return $this->successResponse('تم التأكيد بنجاح !' , 'تم تأكيد بريدك الالكتروني المستخدم لاعادة تعين كلمة المرور .');
+        return $this->successResponse('! تم التأكيد بنجاح' , 'تم تأكيد بريدك الالكتروني المستخدم لاعادة تعين كلمة المرور .');
     }
 
     public function resetPassword(NewPasswordRequest $request): JsonResponse
     {
         $this->studentService->resetPassword($request->validated());
 
-        return $this->successResponse('كلمة مرور جديدة !' , 'تم تعيين كلمة المرور الجديدة بنجاح ، يمكنك تسجيل الدخول الآن');
+        return $this->successResponse('! كلمة مرور جديدة' , 'تم تعيين كلمة المرور الجديدة بنجاح ، يمكنك تسجيل الدخول الآن');
     }
 
     public function resendPasswordResetOtp(ForgotPasswordRequest $request): JsonResponse
     {
         $this->studentService->resendPasswordResetOtp($request->email);
 
-        return $this->successResponse('اعادة ارسال الرمز !' , 'تم إرسال رمز تحقق جديد إلى بريدك .');
+        return $this->successResponse('! اعادة ارسال الرمز' , 'تم إرسال رمز تحقق جديد إلى بريدك .');
     }
 
     public function logout(): JsonResponse
     {
         JWTAuth::invalidate(JWTAuth::getToken());
 
-        return $this->successResponse('عملية تسجيل الخروج !' , 'تم تسجيل الخروج من حسابك بنجاح شكرا لاستخدامك تطبيق جامعتي');
+        return $this->successResponse('! عملية تسجيل الخروج' , 'تم تسجيل الخروج من حسابك بنجاح شكرا لاستخدامك تطبيق جامعتي');
     }
 
 }

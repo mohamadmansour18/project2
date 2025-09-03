@@ -11,7 +11,7 @@ trait ValidationFailedResponse
         $error = $validator->errors()->first();
 
         throw new HttpResponseException(response()->json([
-            'title' => 'خطأ تحقق !',
+            'title' => '! خطأ تحقق',
             'body' => $error,
             'statusCode' => 422,
         ] , 422 ) );

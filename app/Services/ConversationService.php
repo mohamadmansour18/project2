@@ -49,7 +49,7 @@ class ConversationService
 
         if($myId === $otherUserId)
         {
-            throw new ConversationException('لايمكن انشاء المحادثة !' , 'لايمكنك فتح محادثة مع نفسك من هذا التاب' , 422);
+            throw new ConversationException('! لايمكن انشاء المحادثة' , 'لايمكنك فتح محادثة مع نفسك من هذا التاب' , 422);
         }
 
         [$a , $b] = $this->conversationRepository->getUserOrFail($myId , $otherUserId);
@@ -63,7 +63,7 @@ class ConversationService
 
         if($exists)
         {
-            throw new ConversationException('لايمكن انشاء هذه المحادثة !' , 'هذه المحادثة موجودة لديك مسبقا لايمكنك انشائها مرة اخرى' , 422);
+            throw new ConversationException('! لايمكن انشاء هذه المحادثة' , 'هذه المحادثة موجودة لديك مسبقا لايمكنك انشائها مرة اخرى' , 422);
         }
 
         $this->conversationRepository->createConversation([

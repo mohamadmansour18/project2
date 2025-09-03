@@ -93,7 +93,7 @@ class GroupGradeService
 
         if(!$isSupervisor)
         {
-            throw new GradeException('لايمكنك اجراء العملية !' , 'غير مصرح لك بتعديل علامة الغروب' , 403);
+            throw new GradeException('! لايمكنك اجراء العملية' , 'غير مصرح لك بتعديل علامة الغروب' , 403);
         }
 
         $committee = $this->interviewCommitteeRepository->findOrFillById($grade->committee_id);
@@ -102,12 +102,12 @@ class GroupGradeService
 
         if(now()->greaterThan($endDateTime))
         {
-            throw new GradeException('لايمكنك اجراء العملية !', 'لقد انتهى وقت المقابلات الخاصة باللجنة ولا يمكن تعديل العلامة بعد الآن', 422);
+            throw new GradeException('! لايمكنك اجراء العملية', 'لقد انتهى وقت المقابلات الخاصة باللجنة ولا يمكن تعديل العلامة بعد الآن', 422);
         }
 
         if($grade->is_edited)
         {
-            throw new GradeException('لايمكنك اجراء العملية !' , 'تم تعديل العلامة مسبقا ولايمكن تعديلها مرة اخرى' , 422);
+            throw new GradeException('! لايمكنك اجراء العملية' , 'تم تعديل العلامة مسبقا ولايمكن تعديلها مرة اخرى' , 422);
         }
 
         DB::transaction(function () use ($grade, $data){

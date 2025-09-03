@@ -76,7 +76,7 @@ class GradeManagementService
         if($grades->isEmpty())
         {
             return response()->json([
-                'title' => 'لا يمكن إنشاء الملف !',
+                'title' => '! لا يمكن إنشاء الملف',
                 'body' => 'لاتوجد علمات لطلاب السنة الرابعة للسنة الحالية',
                 'statusCode' => 404
             ], 404);
@@ -138,7 +138,7 @@ class GradeManagementService
          if(empty($groupsData))
          {
              return response()->json([
-                 'title' => 'لا يمكن إنشاء الملف !',
+                 'title' => '! لا يمكن إنشاء الملف',
                  'body' => 'لاتوجد بيانات صالحة ليتم توليدها البيانات تواجه خللا ما',
                  'statusCode' => 422
              ], 422);
@@ -199,7 +199,7 @@ class GradeManagementService
                 'message' => $exception->getMessage(),
                 'trace'   => $exception->getTraceAsString(),
             ]);
-            throw new ProjectManagementException('حدث خطأ اثناء التنفيذ !', 'حدث خطا غير متوقع يرجى اعادة المحاولة لاحقا', 500);
+            throw new ProjectManagementException('! حدث خطأ اثناء التنفيذ', 'حدث خطا غير متوقع يرجى اعادة المحاولة لاحقا', 500);
         }
     }
 }

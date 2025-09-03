@@ -30,7 +30,7 @@ class StudentRegistrationService
             ->first();
 
         if (!$user || $user->password) {
-            throw new RegistrationException('لا يمكن إتمام التسجيل.', 'الرقم الجامعي غير موجود أو الاسم غير مسجل.');
+            throw new RegistrationException('! لا يمكن إتمام التسجيل', 'الرقم الجامعي غير موجود أو الاسم غير مسجل.');
         }
 
         $emailUsedByAnother = User::query()
@@ -39,7 +39,7 @@ class StudentRegistrationService
             ->exists();
 
         if ($emailUsedByAnother) {
-            throw new RegistrationException('لا يمكن إتمام التسجيل.', 'البريد الإلكتروني مستخدم مسبقًا.');
+            throw new RegistrationException('! لا يمكن إتمام التسجيل', 'البريد الإلكتروني مستخدم مسبقًا.');
         }
 
         DB::transaction(function () use ($user, $data) {
@@ -66,7 +66,7 @@ class StudentRegistrationService
 
         if(!$user)
         {
-            throw new RegistrationException('المستخدم غير موجود !'  , 'لم يتم العثور على مستخدم بهذا البريد');
+            throw new RegistrationException('! المستخدم غير موجود'  , 'لم يتم العثور على مستخدم بهذا البريد');
         }
 
         $latestOtp = OtpCode::query()
@@ -77,7 +77,7 @@ class StudentRegistrationService
 
         if(!$latestOtp || $latestOtp->otp_code !== $data['otp_code'] || $latestOtp->is_used || $latestOtp->expires_at < now())
         {
-            throw new RegistrationException('رمز غير صالح !' , 'عذرا الرمز الذي قمت باستخدامه غير صالح ، يرجى ادخال الرمز الصحيح');
+            throw new RegistrationException('! رمز غير صالح' , 'عذرا الرمز الذي قمت باستخدامه غير صالح ، يرجى ادخال الرمز الصحيح');
         }
 
         DB::transaction(function () use ($user , $latestOtp){
@@ -97,12 +97,12 @@ class StudentRegistrationService
 
         if(!$user)
         {
-            throw new RegistrationException('المستخدم غير موجود !' , 'لايوجد مستخدم مرتبط بالبريد المدخل لايمكننا ارسال الرمز');
+            throw new RegistrationException('! المستخدم غير موجود' , 'لايوجد مستخدم مرتبط بالبريد المدخل لايمكننا ارسال الرمز');
         }
 
         if($user->email_verified_at)
         {
-            throw new RegistrationException('البريد المؤكد !' , 'عزيزي المستخدم لقد تم تأكيد بريدك الالكتروني مسبقا');
+            throw new RegistrationException('! البريد المؤكد' , 'عزيزي المستخدم لقد تم تأكيد بريدك الالكتروني مسبقا');
         }
 
         $otp = OtpCode::createOtpFor($user->id , OtpCodePurpose::Verification->value);
@@ -118,17 +118,17 @@ class StudentRegistrationService
 
         if(!$user->password)
         {
-            throw new LoginException('فشل تسجيل الدخول !' , 'هذا الحساب غير موجود في النظام بعد قم بانشائه اولا ثم حاول مرة اخرى' , true );
+            throw new LoginException('! فشل تسجيل الدخول' , 'هذا الحساب غير موجود في النظام بعد قم بانشائه اولا ثم حاول مرة اخرى' , true );
         }
 
         if(!$user || !Hash::check($data['password'] , $user->password))
         {
-            throw new LoginException('فشل تسجيل الدخول !' , 'البريد الإلكتروني أو كلمة المرور غير صحيحة' , true );
+            throw new LoginException('! فشل تسجيل الدخول' , 'البريد الإلكتروني أو كلمة المرور غير صحيحة' , true );
         }
 
         if(is_null($user->email_verified_at))
         {
-            throw new LoginException('فشل تسجيل الدخول !' , 'يرجى القيام بتأكيد بريدك الالكتروني وللقيام بذلك اضغط هنا' , false );
+            throw new LoginException('! فشل تسجيل الدخول' , 'يرجى القيام بتأكيد بريدك الالكتروني وللقيام بذلك اضغط هنا' , false );
         }
 
         $token = JWTAuth::fromUser($user);
@@ -159,7 +159,7 @@ class StudentRegistrationService
 
         if(!$user || !$user->password)
         {
-            throw new ResetPasswordException('غير مصرح به !' , 'هذا البريد غير مرتبط بحساب لمشرف في النظام');
+            throw new ResetPasswordException('! غير مصرح به' , 'هذا البريد غير مرتبط بحساب لمشرف في النظام');
         }
 
         $otp = OtpCode::createOtpFor($user->id , OtpCodePurpose::Reset->value);
@@ -173,7 +173,7 @@ class StudentRegistrationService
 
         if(!$user || !$user->password)
         {
-            throw new ResetPasswordException('غير مصرح به !' , 'هذا البريد غير مرتبط بحساب لمشرف في النظام');
+            throw new ResetPasswordException('! غير مصرح به' , 'هذا البريد غير مرتبط بحساب لمشرف في النظام');
         }
 
         $latestOtp = OtpCode::query()
@@ -184,7 +184,7 @@ class StudentRegistrationService
 
         if(!$latestOtp || $latestOtp->otp_code !== $data['otp_code'] || $latestOtp->is_used || $latestOtp->expires_at < now())
         {
-            throw new RegistrationException('رمز غير صالح !' , 'عذرا الرمز الذي قمت باستخدامه غير صالح ، يرجى ادخال الرمز الصحيح');
+            throw new RegistrationException('! رمز غير صالح' , 'عذرا الرمز الذي قمت باستخدامه غير صالح ، يرجى ادخال الرمز الصحيح');
         }
 
         $latestOtp->update([
@@ -198,12 +198,12 @@ class StudentRegistrationService
 
         if(!$user || !$user->password)
         {
-            throw new ResetPasswordException('غير مصرح به !' , 'هذا البريد غير مرتبط بحساب لمشرف في النظام');
+            throw new ResetPasswordException('! غير مصرح به' , 'هذا البريد غير مرتبط بحساب لمشرف في النظام');
         }
 
         if(Hash::check($data['password'] , $user->password))
         {
-            throw new ResetPasswordException('كلمة مرور غير صالحة !' , 'يرجى اختيار كلمة مرور مختلفة عن الحالية');
+            throw new ResetPasswordException('! كلمة مرور غير صالحة' , 'يرجى اختيار كلمة مرور مختلفة عن الحالية');
         }
 
         $user->update([
@@ -217,7 +217,7 @@ class StudentRegistrationService
 
         if(!$user || !$user->password)
         {
-            throw new RegistrationException('المستخدم غير موجود !' , 'لايوجد مستخدم مرتبط بالبريد المدخل لايمكننا ارسال الرمز');
+            throw new RegistrationException('! المستخدم غير موجود' , 'لايوجد مستخدم مرتبط بالبريد المدخل لايمكننا ارسال الرمز');
         }
 
 

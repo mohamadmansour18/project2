@@ -31,17 +31,17 @@ class GroupInvitationService
     public function send(int $groupId, int $userId, User $inviter): void
     {
         if ($this->projectForm1Repo->isApprovedForGroup($groupId)) {
-            throw new PermissionDeniedException('غير مسموح', 'لا يمكنك دعوة احد بعد الموافقة على الاستمارة الأولى.',403);
+            throw new PermissionDeniedException('! غير مسموح', 'لا يمكنك دعوة احد بعد الموافقة على الاستمارة الأولى.',403);
         }
 
         if (!$this->formPeriodRepo->isFormPeriodActive(FormSubmissionPeriodFormName::Form1->value)) {
-            throw new PermissionDeniedException('غير مسموح', 'انتهت فترة الانضمام، لم يعد ممكناً دعوة احد للمجموعة.',403);
+            throw new PermissionDeniedException('! غير مسموح', 'انتهت فترة الانضمام، لم يعد ممكناً دعوة احد للمجموعة.',403);
         }
 
         //not me
         if ($inviter->id === $userId) {
             throw new PermissionDeniedException(
-                'غير مسموح',
+                '! غير مسموح',
                 'لا يمكنك إرسال دعوة لنفسك',
                 403
             );
@@ -51,7 +51,7 @@ class GroupInvitationService
         $targetUser = $this->userRepo->findById($userId);
         if (!$targetUser || $targetUser->role !== UserRole::Student) {
             throw new PermissionDeniedException(
-                'صلاحية غير مناسبة',
+                '! صلاحية غير مناسبة',
                 'يمكن فقط دعوة الطلاب إلى المجموعات',
                 403
             );
@@ -60,7 +60,7 @@ class GroupInvitationService
         // isMember
         if ($this->groupMemberRepo->isMember($groupId, $userId)) {
             throw new PermissionDeniedException(
-                'عضو موجود',
+                '! عضو موجود',
                 'هذا المستخدم هو بالفعل عضو في المجموعة',
                 403
             );
@@ -69,7 +69,7 @@ class GroupInvitationService
         // is Already Invited
         if ($this->invitationRepo->isAlreadyInvited($groupId, $userId)) {
             throw new PermissionDeniedException(
-                'دعوة موجودة',
+                '! دعوة موجودة',
                 'تم إرسال دعوة لهذا المستخدم مسبقاً',
                 403
             );
@@ -79,7 +79,7 @@ class GroupInvitationService
         $memberCount = $this->groupRepo->getMemberCount($groupId);
         if ($memberCount >= 5) {
             throw new PermissionDeniedException(
-                'عدد الأعضاء ممتلئ',
+                '! عدد الأعضاء ممتلئ',
                 'لا يمكن إرسال دعوة، الحد الأقصى لعدد الأعضاء هو 5',
                 403
             );
@@ -90,7 +90,7 @@ class GroupInvitationService
 
         // إرسال إشعار للمستخدم المدعو
         $group = $this->groupRepo->getById($groupId);
-        $title = 'دعوة للانضمام إلى المجموعة';
+        $title = '! دعوة للانضمام إلى المجموعة';
         $body = "قام {$inviter->name} بدعوتك للانضمام إلى مجموعة {$group->name}";
         $this->dispatcherService->sendToUser($targetUser, $title, $body);
     }
@@ -122,7 +122,7 @@ class GroupInvitationService
     {
         if (!$this->groupMemberRepo->isMember($group, $userId) && !$this->groupMemberRepo->isLeader($group, $userId)) {
             throw new PermissionDeniedException(
-                'لست عضو',
+                '! لست عضو',
                 'لا يمكنك رؤية الدعوات المرسلة انت لست عضو في هذه المجموعة ',
                 403
             );
@@ -154,7 +154,7 @@ class GroupInvitationService
 
         if (!$invitation) {
             throw new PermissionDeniedException(
-                'غير مسموح',
+                '! غير مسموح',
                 'الدعوة غير موجودة أو غير صالحة.',
                 403
             );
@@ -164,7 +164,7 @@ class GroupInvitationService
 
         if ($group->number_of_members >= 5){
             throw new PermissionDeniedException(
-                'غير مسموح',
+                '! غير مسموح',
                 'المجموعة ممتلئة بالفعل.',
                 403
             );
@@ -179,7 +179,7 @@ class GroupInvitationService
         // إشعار قائد المجموعة
         $leader = $this->groupMemberRepo->getLeader($group->id);
         if ($leader) {
-            $title = 'تم قبول الدعوة';
+            $title = '! تم قبول الدعوة';
             $body = "{$user->name} قبل الدعوة وانضم إلى مجموعتك {$group->name}";
             $this->dispatcherService->sendToUser($leader, $title, $body);
         }
@@ -191,7 +191,7 @@ class GroupInvitationService
 
         if (!$invitation) {
             throw new PermissionDeniedException(
-                'غير مسموح',
+                '! غير مسموح',
                 'الدعوة غير موجودة أو تم التعامل معها سابقاً.',
                 403
             );
@@ -203,7 +203,7 @@ class GroupInvitationService
         $inviter = $this->userRepo->findById($invitation->invited_by_user_id);
         if ($inviter) {
             $group = $invitation->group;
-            $title = 'تم رفض الدعوة';
+            $title = '! تم رفض الدعوة';
             $body = "{$user->name} رفض الانضمام إلى مجموعة {$group->name}";
             $this->dispatcherService->sendToUser($inviter, $title, $body);
         }
@@ -215,14 +215,14 @@ class GroupInvitationService
 
         $groupMember = $user->groupMember; // المستخدم عضو بمجموعة واحدة
         if (!$groupMember) {
-            throw new PermissionDeniedException('خطأ', 'المستخدم غير موجود بأي مجموعة.');
+            throw new PermissionDeniedException('! خطأ', 'المستخدم غير موجود بأي مجموعة.');
         }
 
         $groupId = $groupMember->group_id;
 
 
         if (!$this->groupMemberRepo->isLeader($groupId, $user->id)) {
-            throw new PermissionDeniedException('صلاحيات', 'فقط قائد المجموعة يستطيع تعبئة الاستمارة.');
+            throw new PermissionDeniedException('! صلاحيات', 'فقط قائد المجموعة يستطيع تعبئة الاستمارة.');
         }
 
         $invitation = $this->invitationRepo

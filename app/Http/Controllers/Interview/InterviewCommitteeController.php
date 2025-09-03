@@ -45,7 +45,7 @@ class InterviewCommitteeController extends Controller
     {
         $this->projectManagementService->createCommittee($request->doctor1_id, $request->doctor2_id, $request->supervisor_id);
 
-        return $this->successResponse('تمت العملية بنجاح !' , 'تم انشاء لجنة المقابلة المحددة بنجاح' , 201);
+        return $this->successResponse('! تمت العملية بنجاح' , 'تم انشاء لجنة المقابلة المحددة بنجاح' , 201);
     }
 
     public function getInterviewCommittee(): JsonResponse
@@ -59,14 +59,14 @@ class InterviewCommitteeController extends Controller
     {
         $this->projectManagementService->deleteCommittee($committeeId);
 
-        return $this->successResponse('تمت العملية بنجاح !' , 'تم حذف اللجنة المحددة ' , 200);
+        return $this->successResponse('! تمت العملية بنجاح' , 'تم حذف اللجنة المحددة ' , 200);
     }
 
     public function notifyCommittee(): JsonResponse
     {
         $this->projectManagementService->notifyInterviewCommitteeDoctors();
 
-        return $this->successResponse('تمت العملية بنجاح !' , 'تم ارسال اشعارات للدكاترة في جميع لجان المقابلة للسنة الحالية' , 200);
+        return $this->successResponse('! تمت العملية بنجاح' , 'تم ارسال اشعارات للدكاترة في جميع لجان المقابلة للسنة الحالية' , 200);
     }
 
     public function generateAndDownloadCommittee(): BinaryFileResponse|JsonResponse

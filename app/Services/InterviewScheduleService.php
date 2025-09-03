@@ -51,7 +51,7 @@ class InterviewScheduleService
         if($disk->exists($relPath))
         {
             return response()->json([
-                'title' => 'لايمكن اتمام عملية الانشاء !',
+                'title' => '! لايمكن اتمام عملية الانشاء',
                 'body' => 'يوجد ملف مقابلات منشأ مسبقًا لهذه السنة. احذفه أولًا قبل إعادة الإنشاء',
                 'statusCode' => 422
             ] , 422);
@@ -62,7 +62,7 @@ class InterviewScheduleService
         if (!$period)
         {
             return response()->json([
-                'title' => 'لايمكن اتمام عملية الانشاء !',
+                'title' => '! لايمكن اتمام عملية الانشاء',
                 'body' => 'لا توجد فترة مقابلات مخزنة للسنة الحالية قم بتعيناه اولا ومن ثم حاول مرة اخرى',
                 'statusCode' => 422
             ] , 422);
@@ -72,7 +72,7 @@ class InterviewScheduleService
         if($this->repo->interviewSchedulesExistForYear())
         {
             return response()->json([
-                'title' => 'لايمكن اتمام عملية الانشاء !',
+                'title' => '! لايمكن اتمام عملية الانشاء',
                 'body' => 'هناك مواعيد مقابلات مخزّنة مسبقًا لهذه السنة. لا يمكن الإنشاء مجددًا',
                 'statusCode' => 422
             ] , 422);
@@ -97,7 +97,7 @@ class InterviewScheduleService
         if(empty($dateList))
         {
             return response()->json([
-                'title' => 'لايمكن اتمام عملية الانشاء !',
+                'title' => '! لايمكن اتمام عملية الانشاء',
                 'body' => 'لا توجد أيام مقابلات فعلية ضمن الفترة المحددة بين بدء موعد المقابلات وانتهاء موعد المقابلات',
                 'statusCode' => 422
             ] , 422);
@@ -108,7 +108,7 @@ class InterviewScheduleService
         if ($committees->isEmpty())
         {
             return response()->json([
-                'title' => 'لايمكن اتمام عملية الانشاء !',
+                'title' => '! لايمكن اتمام عملية الانشاء',
                 'body' => 'لم تقم بتعيين لجان مقابلات للسنة الحالية قم بتعينهم اولا ومن ثم حاول مرة اخرى',
                 'statusCode' => 422
             ] , 422);
@@ -117,7 +117,7 @@ class InterviewScheduleService
         if ($committees->count() < count($dateList))
         {
             return response()->json([
-                'title' => 'لايمكن اتمام عملية الانشاء !',
+                'title' => '! لايمكن اتمام عملية الانشاء',
                 'body' => 'عدد اللجان أقل من عدد أيام المقابلات الرجاء زيادة عدد اللجان ومن ثم حاول مرة اخرى',
                 'statusCode' => 422
             ] , 422);
@@ -128,7 +128,7 @@ class InterviewScheduleService
         if($eligibleGroups->isEmpty())
         {
             return response()->json([
-                'title' => 'لايمكن اتمام عملية الانشاء !',
+                'title' => '! لايمكن اتمام عملية الانشاء',
                 'body' => 'لاتوجد غروبات مؤهلة لأن تترشح الى المقابلات النهائية',
                 'statusCode' => 422
             ] , 422);
@@ -139,7 +139,7 @@ class InterviewScheduleService
         if($eligibleGroups->count() > $capacity)
         {
             return response()->json([
-                'title' => 'لايمكن اتمام عملية الانشاء !',
+                'title' => '! لايمكن اتمام عملية الانشاء',
                 'body' => 'عدد اللجان غير كافي ليغطي جميع الغروبات التي يحق لها التقدم لمقابلة , الرجاء زيادة عدد اللجان ومن ثم المحاولة لاحقا',
                 'statusCode' => 422
             ] , 422);
@@ -364,7 +364,7 @@ class InterviewScheduleService
                 'trace'   => $e->getTraceAsString(),
             ]);
             return response()->json([
-                'title' => 'حدث خطا غير متوقع اثناء عملية انشاء/تنزيل الملف !' ,
+                'title' => '! حدث خطا غير متوقع اثناء عملية انشاء/تنزيل الملف' ,
                 'message' => 'تم حفظ المواعيد وتحديث اللجان، لكن فشل إنشاء/تنزيل الملف',
             ], 500);
         }
@@ -382,7 +382,7 @@ class InterviewScheduleService
 
         if (!$disk->exists($relPath)) {
             return response()->json([
-                'title' => 'لايمكن اتمام عملية الحذف !',
+                'title' => '! لايمكن اتمام عملية الحذف',
                 'body' => 'لا يوجد ملف مواعيد للسنة الحالية ليتم حذفه',
             ], 404);
         }
@@ -391,7 +391,7 @@ class InterviewScheduleService
         if(!$period)
         {
             return response()->json([
-                'title' => 'لايمكن اتمام عملية الحذف !',
+                'title' => '! لايمكن اتمام عملية الحذف',
                 'body' => 'لا توجد فترة مقابلات محدّدة لهذه السنة للتحقق من صلاحية الحذف',
             ], 422);
         }
@@ -402,7 +402,7 @@ class InterviewScheduleService
         if($today > $startDate)
         {
             return response()->json([
-                'title' => 'لايمكن اتمام عملية الحذف !',
+                'title' => '! لايمكن اتمام عملية الحذف',
                 'body' => 'لا يمكن حذف ملف هذه السنة بعد بدء فترة المقابلات',
             ], 422);
         }
@@ -411,14 +411,14 @@ class InterviewScheduleService
             if (!$disk->delete($relPath)) {
                 Log::error("Failed to delete file: {$relPath}");
                 return response()->json([
-                    'title' => 'حدث خطا غير متوقع اثناء عملية حذف الملف !' ,
+                    'title' => '! حدث خطا غير متوقع اثناء عملية حذف الملف' ,
                     'message' => 'تعذر حذف الملف من نظام الملفات.',
                 ], 500);
             }
         }catch (\Throwable $e) {
             Log::error('Filesystem delete failed', ['message' => $e->getMessage()]);
             return response()->json([
-                'title' => 'حدث خطا غير متوقع اثناء عملية حذف الملف !' ,
+                'title' => '! حدث خطا غير متوقع اثناء عملية حذف الملف' ,
                 'message' => 'حدث غير متوقع اثناء اتمام العملية الرجاء المحاولة لاحقا',
             ], 500);
         }
@@ -430,7 +430,7 @@ class InterviewScheduleService
             });
 
             return response()->json([
-                'title' => 'تمت عملية العملية بنجاح !' ,
+                'title' => '! تمت عملية العملية بنجاح' ,
                 'body' => 'تم حذف الملف بنجاح والتراجع عن جميع التعديلات في الداتا بيز' ,
             ] , 200);
         }catch (\Throwable $e) {
@@ -440,7 +440,7 @@ class InterviewScheduleService
             ]);
 
             return response()->json([
-                'title' => 'حدث خطا غير متوقع اثناء عملية حذف المعطيات من جداول الداتابيز !' ,
+                'title' => '! حدث خطا غير متوقع اثناء عملية حذف المعطيات من جداول الداتابيز' ,
                 'body' => 'تم حذف الملف، لكن فشلت عملية التراجع عن تغييرات الداتابيس',
             ], 500);
         }

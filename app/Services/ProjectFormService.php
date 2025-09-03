@@ -28,18 +28,18 @@ class ProjectFormService
 
         $groupMember = $user->groupMember;
         if (!$groupMember) {
-            throw new PermissionDeniedException('خطأ', 'المستخدم غير موجود بأي مجموعة.');
+            throw new PermissionDeniedException('! خطأ', 'المستخدم غير موجود بأي مجموعة.');
         }
 
         $groupId = $groupMember->group_id;
 
         if (!$this->groupRepo->isLeader($groupId, $user->id)) {
-            throw new PermissionDeniedException('صلاحيات', 'فقط قائد المجموعة يستطيع تعبئة الاستمارة.');
+            throw new PermissionDeniedException('! صلاحيات', 'فقط قائد المجموعة يستطيع تعبئة الاستمارة.');
         }
 
         // منع التكرار
         if ($this->repository->existsForGroupByLeader($groupId, $user->id)) {
-            throw new PermissionDeniedException('عملية مكررة', 'لا يمكنك تعبئة الاستمارة أكثر من مرة لنفس المجموعة.');
+            throw new PermissionDeniedException('! عملية مكررة', 'لا يمكنك تعبئة الاستمارة أكثر من مرة لنفس المجموعة.');
         }
 
         $this->ensureFormPeriodIsActive("form1");
@@ -66,7 +66,7 @@ class ProjectFormService
 
         if ($form->status !== ProjectFormStatus::Draft) {
             throw new PermissionDeniedException(
-                'غير ممكن التوقيع',
+                '! غير ممكن التوقيع',
                 'لا يمكن التوقيع إلا عندما تكون الاستمارة في وضع المسودة.'
             );
         }
@@ -75,14 +75,14 @@ class ProjectFormService
 
         if (!$isMember) {
             throw new PermissionDeniedException(
-                'صلاحيات غير كافية',
+                '! صلاحيات غير كافية',
                 'فقط أعضاء المجموعة يمكنهم التوقيع.'
             );
         }
 
         if ($this->repository->hasUserSigned($form->id, $user->id)) {
             throw new PermissionDeniedException(
-                'مكرر',
+                '! مكرر',
                 'لقد قمت بتوقيع هذه الاستمارة مسبقاً.'
             );
         }
@@ -107,24 +107,24 @@ class ProjectFormService
 
         $groupMember = $user->groupMember;
         if (!$groupMember) {
-            throw new PermissionDeniedException('خطأ', 'المستخدم غير موجود بأي مجموعة.');
+            throw new PermissionDeniedException('! خطأ', 'المستخدم غير موجود بأي مجموعة.');
         }
 
         $groupId = $groupMember->group_id;
 
         if (!$this->groupRepo->isLeader($groupId, $user->id)) {
-            throw new PermissionDeniedException('صلاحيات', 'فقط قائد المجموعة يستطيع تعبئة الاستمارة.');
+            throw new PermissionDeniedException('! صلاحيات', 'فقط قائد المجموعة يستطيع تعبئة الاستمارة.');
         }
 
         if (!in_array($form->status, [ProjectFormStatus::Draft, ProjectFormStatus::Rejected])) {
-            throw new PermissionDeniedException('لا يمكن التعديل', 'لا يمكنك تعديل الاستمارة في حالتها الحالية.');
+            throw new PermissionDeniedException('! لا يمكن التعديل', 'لا يمكنك تعديل الاستمارة في حالتها الحالية.');
         }
 
         if ($form->status === ProjectFormStatus::Rejected) {
             $hasChanged = $this->repository->hasFormChanged($form, $data);
 
             if (!$hasChanged) {
-                throw new PermissionDeniedException('طلب مكرر', 'قم بتعديل معلومات الاستمارة أو اختر مشرفًا مختلفًا.');
+                throw new PermissionDeniedException('! طلب مكرر', 'قم بتعديل معلومات الاستمارة أو اختر مشرفًا مختلفًا.');
             }
         }
 
@@ -138,11 +138,11 @@ class ProjectFormService
     {
 
         if (!in_array($form->status, [ProjectFormStatus::Draft, ProjectFormStatus::Rejected])) {
-            throw new PermissionDeniedException('لا يمكن الإرسال', 'لا يمكن إرسال الاستمارة في هذه الحالة.');
+            throw new PermissionDeniedException('! لا يمكن الإرسال', 'لا يمكن إرسال الاستمارة في هذه الحالة.');
         }
 
         if ($form->status === ProjectFormStatus::Rejected && $form->updated_at <= $form->submission_date) {
-            throw new PermissionDeniedException('لم يتم التعديل', 'قم بتعديل النموذج قبل إعادة الإرسال.');
+            throw new PermissionDeniedException('! لم يتم التعديل', 'قم بتعديل النموذج قبل إعادة الإرسال.');
         }
 
         $this->ensureFormPeriodIsActive("form1");
@@ -153,7 +153,7 @@ class ProjectFormService
 
         if (!empty($unsigned)) {
             throw new PermissionDeniedException(
-                'لم يتم التوقيع',
+                '! لم يتم التوقيع',
                 'جميع أعضاء المجموعة يجب أن يوقعوا قبل الإرسال للمشرف.'
             );
         }
@@ -162,7 +162,7 @@ class ProjectFormService
 
         // إشعار المشرف
         if ($form->user) {
-            $title = 'استمارة مشروع بانتظار المراجعة';
+            $title = '! استمارة مشروع بانتظار المراجعة';
             $body = "استمارة المشروع الخاصة بالمجموعة {$form->group->name} جاهزة للمراجعة.";
             $this->dispatcherService->sendToUser($form->user, $title, $body);
         }
@@ -177,11 +177,11 @@ class ProjectFormService
         $isMember = $this->groupRepo->isMember($form->group_id, $user->id);
 
         if (!$isSupervisor && !$isMember) {
-            throw new PermissionDeniedException('غير مصرح', 'لا يمكنك رؤية هذا الملف غير مخول لك بهذا.');
+            throw new PermissionDeniedException('! غير مصرح', 'لا يمكنك رؤية هذا الملف غير مخول لك بهذا.');
         }
 
         if (!$form->filled_form_file_path || !Storage::disk('public')->exists($form->filled_form_file_path)) {
-            throw new PermissionDeniedException('غير موجود', 'الملف غير متوفر أو لم يتم إنشاؤه بعد.');
+            throw new PermissionDeniedException('! غير موجود', 'الملف غير متوفر أو لم يتم إنشاؤه بعد.');
         }
 
         $filePath = storage_path('app/public/' . $form->filled_form_file_path);
@@ -232,7 +232,7 @@ class ProjectFormService
     {
         if (!$this->periodRepo->isFormPeriodActive($formName)) {
             throw new PermissionDeniedException(
-                'انتهى الوقت',
+                '! انتهى الوقت',
                 'لا يمكنك تعديل أو إرسال هذا النموذج بعد انتهاء الفترة المحددة.'
             );
         }
@@ -244,17 +244,22 @@ class ProjectFormService
 
         if(!$form)
         {
-            throw new ProjectManagementException('لايمكنك اجراء هذه العملية !','الاستمارة التي تحاول الوصول اليها غير موجودة', 404);
+            throw new ProjectManagementException('! لايمكنك اجراء هذه العملية','الاستمارة التي تحاول الوصول اليها غير موجودة', 404);
         }
 
         if($form->status === ProjectFormStatus::Approved)
         {
-            throw new ProjectManagementException('لايمكنك اجراء هذه العملية !' , 'الاستمارة موقعة اساسا ولايمكنك اعادة توقيعها مرة اخرى' , 422);
+            throw new ProjectManagementException('! لايمكنك اجراء هذه العملية' , 'الاستمارة موقعة اساسا ولايمكنك اعادة توقيعها مرة اخرى' , 422);
+        }
+
+        if($form->status === ProjectFormStatus::Rejected)
+        {
+            throw new ProjectManagementException('! لايمكنك اجراء هذه العملية' , 'لايمكنك قبول استمارة بعد ان قمت برفضها' , 422);
         }
 
         if($form->user_id !== Auth::id())
         {
-            throw new ProjectManagementException('لايمكنك اجراء هذه العملية !' , 'غير مصرح لك بتوقيع هذه الاستمارة لانك لست المشرف عليها' , 403);
+            throw new ProjectManagementException('! لايمكنك اجراء هذه العملية' , 'غير مصرح لك بتوقيع هذه الاستمارة لانك لست المشرف عليها' , 403);
         }
 
         $this->repository->approve($form);
@@ -263,7 +268,7 @@ class ProjectFormService
         $leader = $this->repository->getLeaderGroupFromForm($form->group_id);
         $doctor = $form->users->name;
 
-        $this->dispatcherService->sendToUser($leader->user , 'موافقة على فكرة الاستمارة !' , " بالموفقة على الاستمارة الواحد الخاصة بكم$doctor قام الدكتور ");
+        $this->dispatcherService->sendToUser($leader->user , '! موافقة على فكرة الاستمارة' , " بالموفقة على الاستمارة الواحد الخاصة بكم$doctor قام الدكتور ");
     }
 
     public function rejectForm(int $formId ): void
@@ -272,22 +277,22 @@ class ProjectFormService
 
         if(!$form)
         {
-            throw new ProjectManagementException('لايمكنك اجراء هذه العملية !','الاستمارة التي تحاول الوصول اليها غير موجودة', 404);
+            throw new ProjectManagementException('! لايمكنك اجراء هذه العملية','الاستمارة التي تحاول الوصول اليها غير موجودة', 404);
         }
 
         if($form->status === ProjectFormStatus::Approved)
         {
-            throw new ProjectManagementException('لايمكنك اجراء هذه العملية !' , 'لا يمكن رفض استمارة تم توقيعها بالفعل' , 422);
+            throw new ProjectManagementException('! لايمكنك اجراء هذه العملية' , 'لا يمكن رفض استمارة تم توقيعها بالفعل' , 422);
         }
 
         if($form->status === ProjectFormStatus::Rejected)
         {
-            throw new ProjectManagementException('لايمكنك اجراء هذه العملية !' , 'الاستمارة مرفوضة بالفعل ولايمكنك رفضها مرة اخرى' , 422);
+            throw new ProjectManagementException('! لايمكنك اجراء هذه العملية' , 'الاستمارة مرفوضة بالفعل ولايمكنك رفضها مرة اخرى' , 422);
         }
 
         if($form->user_id !== Auth::id())
         {
-            throw new ProjectManagementException('لايمكنك اجراء هذه العملية !' , 'غير مصرح لك برفض هذه الاستمارة لانك لست المشرف عليها' , 403);
+            throw new ProjectManagementException('! لايمكنك اجراء هذه العملية' , 'غير مصرح لك برفض هذه الاستمارة لانك لست المشرف عليها' , 403);
         }
 
         $this->repository->reject($form);
@@ -296,7 +301,7 @@ class ProjectFormService
         $leader = $this->repository->getLeaderGroupFromForm($form->group_id);
         $doctor = $form->users->name;
 
-        $this->dispatcherService->sendToUser($leader->user , 'رفض فكرة الاستمارة !' , " برفض الاستمارة الواحد الخاصة بكم الرجاء المعاودة بتقديم فكرة اخرى$doctor قام الدكتور ");
+        $this->dispatcherService->sendToUser($leader->user , '! رفض فكرة الاستمارة' , " برفض الاستمارة الواحد الخاصة بكم الرجاء المعاودة بتقديم فكرة اخرى$doctor قام الدكتور ");
     }
 
     public function downloadFormForDoctor(int $formId)
@@ -305,14 +310,14 @@ class ProjectFormService
 
         if(!$form)
         {
-            throw new ProjectManagementException('لايمكنك اجراء هذه العملية !','الاستمارة التي تحاول الوصول اليها غير موجودة', 404);
+            throw new ProjectManagementException('! لايمكنك اجراء هذه العملية','الاستمارة التي تحاول الوصول اليها غير موجودة', 404);
         }
 
         $filePath = $this->repository->getFilePath($form);
 
         if(!$filePath)
         {
-            throw new ProjectManagementException('لايمكنك اجراء هذه العملية !','ملف الاستمارة التي تحاول تنزيلها غير موجود اساسا', 404);
+            throw new ProjectManagementException('! لايمكنك اجراء هذه العملية','ملف الاستمارة التي تحاول تنزيلها غير موجود اساسا', 404);
         }
 
         return response()->download($filePath , basename($filePath) , ['Content-Type' => 'application/pdf']);

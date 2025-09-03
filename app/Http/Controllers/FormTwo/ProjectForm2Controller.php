@@ -23,7 +23,7 @@ class ProjectForm2Controller extends Controller
     public function store(StoreProjectForm2Request $request): JsonResponse
     {
         $this->service->store($request->validated());
-        return $this->successResponse('تم الحفظ', 'تم إنشاء الاستمارة 2 بنجاح.', 201);
+        return $this->successResponse('! تم الحفظ', 'تم إنشاء الاستمارة 2 بنجاح.', 201);
     }
 
     public function download(ProjectForm2 $form)

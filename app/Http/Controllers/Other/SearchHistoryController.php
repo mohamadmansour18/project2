@@ -35,6 +35,6 @@ class SearchHistoryController extends Controller
     {
         $this->searchHistoryService->delete($itemId);
 
-        return $this->successResponse('تمت العملية بنجاح !' , 'تم حذف هذا العنصر من سجل البحث بنجاح' , 200);
+        return $this->successResponse('! تمت العملية بنجاح' , 'تم حذف هذا العنصر من سجل البحث بنجاح' , 200);
     }
 }

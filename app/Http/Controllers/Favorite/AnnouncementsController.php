@@ -43,14 +43,14 @@ class AnnouncementsController extends Controller
     {
         $this->service->createAnnouncement($request->validated(), auth()->user());
 
-        return $this->successResponse('إنشاء إعلان', 'تم إنشاء الإعلان بنجاح', 201);
+        return $this->successResponse('! إنشاء إعلان', 'تم إنشاء الإعلان بنجاح', 201);
     }
 
     public function destroy(Announcement $announcement): JsonResponse
     {
         $this->service->deleteAnnouncement($announcement);
 
-        return $this->successResponse('حذف إعلان', 'تم حذف الإعلان بنجاح', 200);
+        return $this->successResponse('! حذف إعلان', 'تم حذف الإعلان بنجاح', 200);
     }
 
     public function download(int $announcement)

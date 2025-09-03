@@ -138,7 +138,7 @@ class MessageService
             } else {
                 $this->dispatcherService->sendToUser(
                     $peer,
-                    title: 'رسالة جديدة',
+                    title: '! رسالة جديدة',
                     body:  "لديك رسالة جديدة في محادثاتك من : $peer->name"
                 );
             }
@@ -147,7 +147,7 @@ class MessageService
             if ($peer && $peer->id !== $senderId) {
                 $this->dispatcherService->sendToUser(
                     $peer,
-                    title: 'رسالة جديدة',
+                    title: '! رسالة جديدة',
                     body:   "لديك رسالة جديدة في محادثاتك من : $peer->name"
                 );
             }

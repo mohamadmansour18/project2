@@ -56,7 +56,7 @@ class AnnouncementService
     public function previewAttachment(Announcement $announcement)
     {
         if (!Storage::disk('public')->exists($announcement->attachment_path)) {
-            throw new NotFoundException('الملف غير موجود', 'المرفق المطلوب غير موجود في السيرفر');
+            throw new NotFoundException('! الملف غير موجود', 'المرفق المطلوب غير موجود في السيرفر');
         }
 
         if ($announcement->type === AnnouncementType::Image) {
@@ -64,7 +64,7 @@ class AnnouncementService
         }
 
         throw new PermissionDeniedException(
-            'لا يمكن معاينة الملف',
+            '! لا يمكن معاينة الملف',
             'هذا النوع من الملفات لا يدعم المعاينة، الرجاء التحميل بدلاً من ذلك'
         );
     }
@@ -160,14 +160,14 @@ class AnnouncementService
 
         if(!$announcement)
         {
-            throw new AnnouncementException('لايمكنك اجراء هذه العملية !', 'الإعلان الذي تحاول الوصول اليه غير موجود', 404);
+            throw new AnnouncementException('! لايمكنك اجراء هذه العملية', 'الإعلان الذي تحاول الوصول اليه غير موجود', 404);
         }
 
         $filePath = $this->repo->getAnnouncementPath($announcement);
 
         if(!$filePath)
         {
-            throw new AnnouncementException('لايمكنك اجراء هذه العملية !', 'ملف الإعلان الذي تحاول تنزيله غير موجود أساساً', 404);
+            throw new AnnouncementException('! لايمكنك اجراء هذه العملية', 'ملف الإعلان الذي تحاول تنزيله غير موجود أساساً', 404);
         }
 
         return response()->download($filePath , basename($filePath));

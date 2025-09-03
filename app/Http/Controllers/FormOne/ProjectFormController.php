@@ -25,14 +25,14 @@ class ProjectFormController extends Controller
     {
         $this->service->store($request->validated());
 
-        return $this->successResponse('تعبئة الاستمارة' , 'تم تعبئة الاستمارة بنجاح.' , 201);
+        return $this->successResponse('! تعبئة الاستمارة' , 'تم تعبئة الاستمارة بنجاح.' , 201);
     }
 
     public function sign(ProjectForm $form): JsonResponse
     {
         $this->service->sign($form);
 
-        return $this->successResponse('تم التوقيع', 'تم توقيع الاستمارة بنجاح.');
+        return $this->successResponse('! تم التوقيع', 'تم توقيع الاستمارة بنجاح.');
     }
 
     public function update(StoreProjectFormRequest $request, ProjectForm $form): JsonResponse
@@ -40,14 +40,14 @@ class ProjectFormController extends Controller
 
         $this->service->update($form, $request->validated());
 
-        return $this->successResponse('تم التعديل', 'تم تعديل بيانات الاستمارة بنجاح.');
+        return $this->successResponse('! تم التعديل', 'تم تعديل بيانات الاستمارة بنجاح.');
     }
 
     public function submit(ProjectForm $form): JsonResponse
     {
         $this->service->submitToSupervisor($form);
 
-        return $this->successResponse('تم الإرسال', 'تم إرسال الاستمارة للمشرف بنجاح.');
+        return $this->successResponse('! تم الإرسال', 'تم إرسال الاستمارة للمشرف بنجاح.');
     }
 
     public function preview(ProjectForm $form): JsonResponse
@@ -62,14 +62,14 @@ class ProjectFormController extends Controller
     {
         $this->service->signForm($formId);
 
-        return $this->successResponse('تمت العملية بنجاح !' , 'تم توقيع هذه الاستمارة بنجاح' , 200);
+        return $this->successResponse('! تمت العملية بنجاح' , 'تم توقيع هذه الاستمارة بنجاح' , 200);
     }
 
     public function rejectForm(int $formId): JsonResponse
     {
         $this->service->rejectForm($formId);
 
-        return $this->successResponse('تمت العملية بنجاح !' , 'تم رفض هذه الاستمارة بنجاح' , 200);
+        return $this->successResponse('! تمت العملية بنجاح' , 'تم رفض هذه الاستمارة بنجاح' , 200);
     }
 
     public function downloadForm(int $formId): BinaryFileResponse

@@ -44,7 +44,7 @@ class ProjectManagementService
 
         if($exists)
         {
-            throw new ProjectManagementException('لايمكن اتمام هذه العملية !' , 'لايمكنك انشاء مواعيد جديدة للسنة الحالية للاستمارة لانه يوجد مواعيد حالية' , 422);
+            throw new ProjectManagementException('! لايمكن اتمام هذه العملية' , 'لايمكنك انشاء مواعيد جديدة للسنة الحالية للاستمارة لانه يوجد مواعيد حالية' , 422);
         }
 
         $this->checkDate($data);
@@ -78,7 +78,7 @@ class ProjectManagementService
 
         if(!$form)
         {
-            throw new ProjectManagementException('لايمكنك اجراء هذه العملية !' , 'لم يتم العثور على الاستمارة المطلوبة' , 404);
+            throw new ProjectManagementException('! لايمكن اتمام هذه العملية' , 'لم يتم العثور على الاستمارة المطلوبة' , 404);
         }
 
         $this->checkDate($data);
@@ -110,7 +110,7 @@ class ProjectManagementService
 
         if(!$form)
         {
-            throw new ProjectManagementException('لايمكنك اجراء هذه العملية !' , 'لم يتم العثور على الاستمارة المطلوبة' , 404);
+            throw new ProjectManagementException('! لايمكن اتمام هذه العملية' , 'لم يتم العثور على الاستمارة المطلوبة' , 404);
         }
 
         $this->formSubmissionPeriodRepository->deleteForm($form);
@@ -125,7 +125,7 @@ class ProjectManagementService
 
         if(!$form)
         {
-            throw new ProjectManagementException('لايمكنك اجراء هذه العملية !' , 'لم يتم العثور على الاستمارة المطلوبة' , 404);
+            throw new ProjectManagementException('! لايمكن اتمام هذه العملية' , 'لم يتم العثور على الاستمارة المطلوبة' , 404);
         }
 
         return [
@@ -145,7 +145,7 @@ class ProjectManagementService
         $interview = $this->formSubmissionPeriodRepository->existsFormForCurrentYear(FormSubmissionPeriodFormName::Interviews->value);
         if($interview)
         {
-            throw new ProjectManagementException('لا يمكن إجراء هذه العملية!', 'تم تعيين موعد مقابلات نهائية بالفعل لهذه السنة', 422);
+            throw new ProjectManagementException('! لايمكن اتمام هذه العملية', 'تم تعيين موعد مقابلات نهائية بالفعل لهذه السنة', 422);
         }
 
         $this->checkDate($data);
@@ -155,7 +155,7 @@ class ProjectManagementService
 
         $coveredDays = $start->diffInDays($end) + 1;
         if ($coveredDays > 7) {
-            throw new ProjectManagementException('ا يمكن إجراء هذه العملية!', 'يجب ألا تتجاوز فترة المقابلات سبعة أيام (بما في ذلك يوم البداية والنهاية)', 422);
+            throw new ProjectManagementException('! لايمكن اتمام هذه العملية', 'يجب ألا تتجاوز فترة المقابلات سبعة أيام (بما في ذلك يوم البداية والنهاية)', 422);
         }
 
         //check if days located in [start date - end date]
@@ -192,7 +192,7 @@ class ProjectManagementService
             {
                 $this->fcmNotificationDispatcherService->sendToUsers(
                     $students,
-                    'تعيين موعد المقابلات النهائية',
+                    '! تعيين موعد المقابلات النهائية',
                     "قام رئيس القسم بتحديد موعد المقابلات النهائية بدءًا من : {$start->format('Y-m-d')}"
                 );
             }
@@ -206,7 +206,7 @@ class ProjectManagementService
 
         if(!$form)
         {
-            throw new ProjectManagementException('لا يمكن اجراء هذه العملية !', 'لا يوجد مواعيد مقابلات حالية للسنة الحالية', 404);
+            throw new ProjectManagementException('! لايمكن اتمام هذه العملية', 'لا يوجد مواعيد مقابلات حالية للسنة الحالية', 404);
         }
 
         $this->checkDate($data);
@@ -219,7 +219,7 @@ class ProjectManagementService
 
         $coveredDays = $start->diffInDays($end) + 1;
         if ($coveredDays > 7) {
-            throw new ProjectManagementException('ا يمكن إجراء هذه العملية !', 'يجب ألا تتجاوز فترة المقابلات سبعة أيام (بما في ذلك يوم البداية والنهاية)', 422);
+            throw new ProjectManagementException('! لايمكن اتمام هذه العملية', 'يجب ألا تتجاوز فترة المقابلات سبعة أيام (بما في ذلك يوم البداية والنهاية)', 422);
         }
 
 
@@ -235,7 +235,7 @@ class ProjectManagementService
         {
             if(!in_array($day, $validDays , true))
             {
-                throw new ProjectManagementException('خطأ في الأيام !',"اليوم $day لا يقع ضمن الفترة المحددة", 422);
+                throw new ProjectManagementException('! خطأ في الأيام',"اليوم $day لا يقع ضمن الفترة المحددة", 422);
             }
         }
 
@@ -248,7 +248,7 @@ class ProjectManagementService
             {
                 $this->fcmNotificationDispatcherService->sendToUsers(
                     $students,
-                    'تعديل موعد المقابلات النهائية',
+                    '! تعديل موعد المقابلات النهائية',
                     "قام رئيس القسم بتعديل موعد المقابلات النهائية: من {$data['start_date']} إلى {$data['end_date']}"
                 );
             }
@@ -265,7 +265,7 @@ class ProjectManagementService
 
             if(!$formSubmissionPeriod)
             {
-                throw new ProjectManagementException('لا يمكن اجراء هذه العملية !', 'سجل مواعيد المقابلات النهائية المحدد الذي تحاول الوصول اليه غير موجود', 404);
+                throw new ProjectManagementException('! لا يمكن اجراء هذه العملية', 'سجل مواعيد المقابلات النهائية المحدد الذي تحاول الوصول اليه غير موجود', 404);
             }
 
             $this->interviewPeriodRepository->forceDelete($interview);
@@ -279,7 +279,7 @@ class ProjectManagementService
 
         if(!$interview)
         {
-            throw new ProjectManagementException('لايمكنك اجراء هذه العملية !' , 'لم يتم العثور على مواعيد مقابلات للسنة الحالية' , 404);
+            throw new ProjectManagementException('! لايمكنك اجراء هذه العملية' , 'لم يتم العثور على مواعيد مقابلات للسنة الحالية' , 404);
         }
 
         return [
@@ -302,7 +302,7 @@ class ProjectManagementService
             //verify if data exists or not
             if (!$form1 && !$form2 && !$interview) {
                return response()->json([
-                   'title' => 'لا يمكن إنشاء الملف !',
+                   'title' => '! لا يمكن إنشاء الملف',
                    'body' => 'لا توجد مواعيد للاستمارتيْن أو للمقابلات النهائية في السنة الحالية',
                    'statusCode' => 422
                ], 422);
@@ -378,7 +378,7 @@ class ProjectManagementService
                 'message' => $exception->getMessage(),
                 'trace'   => $exception->getTraceAsString(),
             ]);
-            throw new ProjectManagementException('حدث خطأ اثناء التنفيذ !', 'حدث خطا غير متوقع يرجى اعادة المحاولة لاحقا', 500);
+            throw new ProjectManagementException('! حدث خطأ اثناء التنفيذ', 'حدث خطا غير متوقع يرجى اعادة المحاولة لاحقا', 500);
         }
     }
     ///////////////////////////////////////////////////////////////////////////////////////////////////
@@ -398,18 +398,18 @@ class ProjectManagementService
         $firstDoctor = $this->interviewCommitteeRepository->existsForDoctorInYear($doctor1ID);
         if($firstDoctor)
         {
-            throw new ProjectManagementException("لايمكن اجراء هذه العملية !","الدكتور {$doctor1ID} موجود بالفعل في لجنة لهذه السنة" , 422);
+            throw new ProjectManagementException("! لايمكن اجراء هذه العملية","الدكتور {$doctor1ID} موجود بالفعل في لجنة لهذه السنة" , 422);
         }
 
         $twoDoctor = $this->interviewCommitteeRepository->existsForDoctorInYear($doctor2ID);
         if($twoDoctor)
         {
-            throw new ProjectManagementException("لايمكن اجراء هذه العملية !","الدكتور {$doctor2ID} موجود بالفعل في لجنة لهذه السنة" , 422);
+            throw new ProjectManagementException("! لايمكن اجراء هذه العملية","الدكتور {$doctor2ID} موجود بالفعل في لجنة لهذه السنة" , 422);
         }
 
         if(!in_array($supervisorId , [$doctor1ID , $doctor2ID]))
         {
-            throw new ProjectManagementException("لايمكن اجراء هذه العملية !","الدكتور المشرف يجب أن يكون أحد الدكتورين المختارين" , 422);
+            throw new ProjectManagementException("! لايمكن اجراء هذه العملية","الدكتور المشرف يجب أن يكون أحد الدكتورين المختارين" , 422);
         }
 
         $memberId = ($supervisorId === $doctor1ID) ? $doctor2ID : $doctor1ID ;
@@ -442,7 +442,7 @@ class ProjectManagementService
 
         if(!is_null($committee->days) || !is_null($committee->start_interview_time) || !is_null($committee->end_interview_time))
         {
-            throw new ProjectManagementException('لايمكن اتمام هذه العملية !' , 'لا يمكن حذف اللجنة بعد تحديد مواعيد المقابلات لها' , 422);
+            throw new ProjectManagementException('! لايمكن اجراء هذه العملية' , 'لا يمكن حذف اللجنة بعد تحديد مواعيد المقابلات لها' , 422);
         }
 
         $this->interviewCommitteeRepository->forceDelete($committee);
@@ -454,7 +454,7 @@ class ProjectManagementService
 
         if($doctors->isEmpty())
         {
-            throw new ProjectManagementException('لايوجد لجان للسنة الحالية !' , 'لم يتم العثور على اي دكتور ضمن اي لجنة في السنة الحلية حتى يتم ارسال اشعار له' , 404);
+            throw new ProjectManagementException('! لايوجد لجان للسنة الحالية' , 'لم يتم العثور على اي دكتور ضمن اي لجنة في السنة الحلية حتى يتم ارسال اشعار له' , 404);
         }
 
         $this->fcmNotificationDispatcherService->sendToUsers($doctors,'تم اختيارك كلجنة مقابلة', 'لقد تم اختيارك لتكون ضمن لجنة مقابلة في السنة الحالية');
@@ -467,7 +467,7 @@ class ProjectManagementService
         if($committees->isEmpty())
         {
             return response()->json([
-                'title' => 'لا يمكن إنشاء الملف !',
+                'title' => '! لا يمكن إنشاء الملف',
                 'body' => 'لاتوجد لجان مقابلات للسنة الحالية قم بتعين لجان اولا',
                 'statusCode' => 404
             ], 404);
@@ -524,7 +524,7 @@ class ProjectManagementService
                 'message' => $exception->getMessage(),
                 'trace'   => $exception->getTraceAsString(),
             ]);
-            throw new ProjectManagementException('حدث خطأ اثناء التنفيذ !', 'حدث خطا غير متوقع يرجى اعادة المحاولة لاحقا', 500);
+            throw new ProjectManagementException('! حدث خطأ اثناء التنفيذ', 'حدث خطا غير متوقع يرجى اعادة المحاولة لاحقا', 500);
         }
     }
 
@@ -537,26 +537,26 @@ class ProjectManagementService
 
         if($start->year !== $currentYear || $end->year !== $currentYear)
         {
-            throw new ProjectManagementException('خطأ في التواريخ المدخلة !', 'يجب أن تكون التواريخ المدخلة ضمن السنة الحالية', 422);
+            throw new ProjectManagementException('! خطأ في التواريخ المدخلة', 'يجب أن تكون التواريخ المدخلة ضمن السنة الحالية', 422);
         }
 
         if ($start->lte(now())) {
-            throw new ProjectManagementException('خطأ في التواريخ المدخلة !', 'تاريخ البدء يجب أن يكون بعد تاريخ اليوم', 422);
+            throw new ProjectManagementException('! خطأ في التواريخ المدخلة', 'تاريخ البدء يجب أن يكون بعد تاريخ اليوم', 422);
         }
 
 
         if($end->lt($start))
         {
-            throw new ProjectManagementException('خطأ في التواريخ المدخلة !' , 'تاريخ الانتهاء لا يمكن ان يكون قبل تاريخ البدء' , 422);
+            throw new ProjectManagementException('! خطأ في التواريخ المدخلة' , 'تاريخ الانتهاء لا يمكن ان يكون قبل تاريخ البدء' , 422);
         }
 
         if($start->gt($end)){
-            throw new ProjectManagementException('خطأ في التواريخ المدخلة !' , 'تاريخ البدء لا يمكن ان يكون بعد تاريخ الانتهاء' , 422);
+            throw new ProjectManagementException('! خطأ في التواريخ المدخلة' , 'تاريخ البدء لا يمكن ان يكون بعد تاريخ الانتهاء' , 422);
         }
 
         $diff = $start->diffInDays($end);
         if ($diff < 2) {
-            throw new ProjectManagementException('خطأ في التواريخ المدخلة !', 'يجب أن يفصل بين تاريخ البدء والانتهاء يوم واحد على الأقل', 422);
+            throw new ProjectManagementException('! خطأ في التواريخ المدخلة', 'يجب أن يفصل بين تاريخ البدء والانتهاء يوم واحد على الأقل', 422);
         }
     }
 

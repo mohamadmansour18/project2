@@ -141,13 +141,13 @@ class GroupManagementService
 
         if(!$form || !$form->filled_form_file_path)
         {
-            throw new ProjectManagementException('لا يمكنك اجراء هذه العملية !' , 'الاستمارة التي تحاول تنزيلها غير موجودة' , 404);
+            throw new ProjectManagementException('! لا يمكنك اجراء هذه العملية' , 'الاستمارة التي تحاول تنزيلها غير موجودة' , 404);
         }
 
         $filePath = $form->filled_form_file_path;
         if(!Storage::disk('public')->exists($filePath))
         {
-            throw new ProjectManagementException('لا يمكنك اجراء هذه العملية !' , 'الاستمارة التي تحاول تنزيلها غير موجودة ضمن ملفات النظام' , 404);
+            throw new ProjectManagementException('! لا يمكنك اجراء هذه العملية' , 'الاستمارة التي تحاول تنزيلها غير موجودة ضمن ملفات النظام' , 404);
         }
 
         return Storage::disk('public')->download($filePath);
@@ -159,13 +159,13 @@ class GroupManagementService
 
         if(!$form || !$form->filled_form_file_path)
         {
-            throw new ProjectManagementException('لا يمكنك اجراء هذه العملية !' , 'الاستمارة التي تحاول تنزيلها غير موجودة' , 404);
+            throw new ProjectManagementException('! لا يمكنك اجراء هذه العملية' , 'الاستمارة التي تحاول تنزيلها غير موجودة' , 404);
         }
 
         $filePath = $form->filled_form_file_path;
         if(!Storage::disk('public')->exists($filePath))
         {
-            throw new ProjectManagementException('لا يمكنك اجراء هذه العملية !' , 'الاستمارة التي تحاول تنزيلها غير موجودة ضمن ملفات النظام' , 404);
+            throw new ProjectManagementException('! لا يمكنك اجراء هذه العملية' , 'الاستمارة التي تحاول تنزيلها غير موجودة ضمن ملفات النظام' , 404);
         }
 
         return Storage::disk('public')->download($filePath);

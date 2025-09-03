@@ -49,21 +49,21 @@ class FormSubmissionPeriodController extends Controller
     {
         $this->projectManagementService->createForm($request->validated() , FormSubmissionPeriodFormName::Form1->value);
 
-        return $this->successResponse('تم هذا الاجراء بنجاح !' , 'ان عملية تحديد مواعيد للاستمارة واحد تمت بنجاح' , 201);
+        return $this->successResponse('! تم هذا الاجراء بنجاح' , 'ان عملية تحديد مواعيد للاستمارة واحد تمت بنجاح' , 201);
     }
 
     public function updateForm1(int $formId , UpdateFormRequest $request): JsonResponse
     {
         $this->projectManagementService->updateForm($formId , $request->validated());
 
-        return $this->successResponse('تم هذا الاجراء بنجاح !' , 'ان عملية تعديل مواعيد للاستمارة واحد تمت بنجاح' , 200);
+        return $this->successResponse('! تم هذا الاجراء بنجاح' , 'ان عملية تعديل مواعيد للاستمارة واحد تمت بنجاح' , 200);
     }
 
     public function deleteForm1(int $formId): JsonResponse
     {
         $this->projectManagementService->forceDeleteForm($formId);
 
-        return $this->successResponse('تم هذا الاجراء بنجاح !' , 'ان عملية حذف مواعيد للاستمارة واحد تمت بنجاح' , 200);
+        return $this->successResponse('! تم هذا الاجراء بنجاح' , 'ان عملية حذف مواعيد للاستمارة واحد تمت بنجاح' , 200);
     }
 
     public function getForm1(): JsonResponse
@@ -79,21 +79,21 @@ class FormSubmissionPeriodController extends Controller
     {
         $this->projectManagementService->createForm($request->validated() , FormSubmissionPeriodFormName::Form2->value);
 
-        return $this->successResponse('تم هذا الاجراء بنجاح !' , 'ان عملية تحديد مواعيد للاستمارة اثنان تمت بنجاح' , 201);
+        return $this->successResponse('! تم هذا الاجراء بنجاح' , 'ان عملية تحديد مواعيد للاستمارة اثنان تمت بنجاح' , 201);
     }
 
     public function updateForm2(int $formId , UpdateFormRequest $request): JsonResponse
     {
         $this->projectManagementService->updateForm($formId , $request->validated());
 
-        return $this->successResponse('تم هذا الاجراء بنجاح !' , 'ان عملية تعديل مواعيد للاستمارة اثنان تمت بنجاح' , 200);
+        return $this->successResponse('! تم هذا الاجراء بنجاح' , 'ان عملية تعديل مواعيد للاستمارة اثنان تمت بنجاح' , 200);
     }
 
     public function deleteForm2(int $formId): JsonResponse
     {
         $this->projectManagementService->forceDeleteForm($formId);
 
-        return $this->successResponse('تم هذا الاجراء بنجاح !' , 'ان عملية حذف مواعيد للاستمارة اثنان تمت بنجاح' , 200);
+        return $this->successResponse('! تم هذا الاجراء بنجاح' , 'ان عملية حذف مواعيد للاستمارة اثنان تمت بنجاح' , 200);
     }
 
     public function getForm2(): JsonResponse
@@ -109,21 +109,21 @@ class FormSubmissionPeriodController extends Controller
     {
         $this->projectManagementService->createInterview($request->validated());
 
-        return $this->successResponse('تم هذا الاجراء بنجاح !' , 'ان عملية تحديد مواعيد المقابلات النهائية تم بنجاح' , 201);
+        return $this->successResponse('! تم هذا الاجراء بنجاح' , 'ان عملية تحديد مواعيد المقابلات النهائية تم بنجاح' , 201);
     }
 
     public function updateFormInterview(UpdateInterviewRequest $request , int $interPeriodId): JsonResponse
     {
         $this->projectManagementService->updateInterview($request->validated() , $interPeriodId);
 
-        return $this->successResponse('تم تعديل موعد المقابلات النهائية بنجاح !' , 'ان عملية تعديل مواعيد المقابلة النهائية تم بنجاح' , 200);
+        return $this->successResponse('! تم تعديل موعد المقابلات النهائية بنجاح' , 'ان عملية تعديل مواعيد المقابلة النهائية تم بنجاح' , 200);
     }
 
     public function deleteFormInterview(int $periodId): JsonResponse
     {
         $this->projectManagementService->deleteInterview($periodId);
 
-        return $this->successResponse('تم هذا الاجراء بنجاح !' , 'ان عملية حذف مواعيد المقابلات النهائية تم بنجاح' , 200);
+        return $this->successResponse('! تم هذا الاجراء بنجاح' , 'ان عملية حذف مواعيد المقابلات النهائية تم بنجاح' , 200);
     }
 
     public function getFormInterview(): JsonResponse

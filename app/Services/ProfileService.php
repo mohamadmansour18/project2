@@ -93,7 +93,7 @@ class ProfileService
         $user = $this->profileRepository->getUserWithProfile($userId);
 
         if (!$user) {
-            throw new PermissionDeniedException('غير موجود', 'المستخدم غير موجود');
+            throw new PermissionDeniedException('! غير موجود', 'المستخدم غير موجود');
         }
 
         $profile = $user->profile;
@@ -141,7 +141,7 @@ class ProfileService
         $user = $this->profileRepository->getCurrentUserWithProfile();
 
         if (!$user) {
-            throw new PermissionDeniedException('غير موجود', 'المستخدم غير موجود');
+            throw new PermissionDeniedException('! غير موجود', 'المستخدم غير موجود');
         }
 
         $profile = $user->profile;
@@ -189,7 +189,7 @@ class ProfileService
         $user = Auth::user();
 
         if (!$user) {
-            throw new PermissionDeniedException('غير موجود', 'المستخدم غير موجود');
+            throw new PermissionDeniedException('! غير موجود', 'المستخدم غير موجود');
         }
 
         $birthDate = Carbon::createFromFormat('d/m/Y', $data['birth_date'])->format('Y-m-d');

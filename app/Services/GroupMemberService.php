@@ -38,7 +38,7 @@ class GroupMemberService
         $groupMember = $user->groupMember;
 
         if (!$groupMember) {
-            throw new PermissionDeniedException('خطا','لايوجد اعضاء في هذه المجموعة');
+            throw new PermissionDeniedException('! خطا','لايوجد اعضاء في هذه المجموعة');
         }
 
         return $this->groupMemberRepo->getMembersWithProfile($groupMember->group_id);

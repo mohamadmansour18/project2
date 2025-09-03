@@ -29,7 +29,7 @@ class MessageController extends Controller
         $data = $this->messageService->send($convId , $request->validated());
 
         return response()->json([
-            'message'          => 'تم إرسال الرسالة.',
+            'message'          => 'تم إرسال الرسالة',
             'message_id'       => $data['message_id'],
             'bot_replied'      => $data['bot_replied'],
             'bot_message_id'   => $data['bot_message_id'],

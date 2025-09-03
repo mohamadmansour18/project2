@@ -42,7 +42,7 @@ class ConversationController extends Controller
     {
         $this->conversationService->createConversationBetweenUsers($otherUserId);
 
-        return $this->successResponse('تمت العملية بنجاح !' , 'تم انشاء محادثة بينك وبين المستخدم المختار بنجاح' , 201);
+        return $this->successResponse('! تمت العملية بنجاح' , 'تم انشاء محادثة بينك وبين المستخدم المختار بنجاح' , 201);
     }
 
     public function searchConversation(ConversationSearchRequest $request): JsonResponse

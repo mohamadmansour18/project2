@@ -323,7 +323,7 @@ class UserManagementService
 
         if($doctor->role !== UserRole::Doctor)
         {
-            throw new PermissionDeniedException('لايمكنك اجراء هذا التعديل' , 'المستخدم الذي تحاول تعديل بياناته ليس دكتورا !' , 403);
+            throw new PermissionDeniedException('! لايمكنك اجراء هذا التعديل' , 'المستخدم الذي تحاول تعديل بياناته ليس دكتورا' , 403);
         }
 
         $user = $this->userRepository->updateUser($doctor , $data);
@@ -353,7 +353,7 @@ class UserManagementService
 
         if($student->role !== UserRole::Student)
         {
-            throw new PermissionDeniedException('لايمكنك اجراء هذا التعديل' , 'المستخدم الذي تحاول تعديل بياناته ليس طالبا !' , 403);
+            throw new PermissionDeniedException('! لايمكنك اجراء هذا التعديل' , 'المستخدم الذي تحاول تعديل بياناته ليس طالبا' , 403);
         }
 
         DB::transaction(function () use ($student, $data){
@@ -390,12 +390,12 @@ class UserManagementService
 
         if($doctor->role !== UserRole::Doctor)
         {
-            throw new DeleteDoctorException('لايمكنك حذف المستخدم !' , 'هذا المستخدم المحدد ليس دكتورا في النظام' , 403);
+            throw new DeleteDoctorException('! لايمكنك حذف المستخدم' , 'هذا المستخدم المحدد ليس دكتورا في النظام' , 403);
         }
 
         if($this->formSubmissionPeriodRepository->isInForm1PeriodNow())
         {
-            throw new DeleteDoctorException('لايمكنك حذف المستخدم !' , 'لايمكنك حذف الدكتور اثناء فترة التقديم على الاستمارة واحد' , 422);
+            throw new DeleteDoctorException('! لايمكنك حذف المستخدم' , 'لايمكنك حذف الدكتور اثناء فترة التقديم على الاستمارة واحد' , 422);
         }
 
         if($this->interviewCommitteeRepository->isDoctorInInterviewCommitteeThisYear($doctorId))
@@ -404,17 +404,17 @@ class UserManagementService
 
             if(!$interviewPeriod)
             {
-                throw  new DeleteDoctorException('لايمكنك حذف المستخدم !' , 'لايمكنك حذف الدكتور لانه ضمن لجان المقابلة ولم يتم تحديد موعد المقابلات بعد , قم بحذفه من اللجنة اولا' , 422);
+                throw  new DeleteDoctorException('! لايمكنك حذف المستخدم' , 'لايمكنك حذف الدكتور لانه ضمن لجان المقابلة ولم يتم تحديد موعد المقابلات بعد , قم بحذفه من اللجنة اولا' , 422);
             }
 
             if(now()->between($interviewPeriod->start_date , $interviewPeriod->end_date))
             {
-                throw new DeleteDoctorException('لايمكنك حذف المستخدم !' , 'لايمكنك حذف الدكتور اثناء فترة المقابلات' , 422);
+                throw new DeleteDoctorException('! لايمكنك حذف المستخدم' , 'لايمكنك حذف الدكتور اثناء فترة المقابلات' , 422);
             }
 
             if(now() <= $interviewPeriod->start_date)
             {
-                throw new DeleteDoctorException('لايمكنك حذف المستخدم !' , 'لايمكنك حذف الدكتور في الفترة قبل بدء موعد المقابلات' , 422);
+                throw new DeleteDoctorException('! لايمكنك حذف المستخدم' , 'لايمكنك حذف الدكتور في الفترة قبل بدء موعد المقابلات' , 422);
             }
         }
 
@@ -427,7 +427,7 @@ class UserManagementService
 
         if($student->role !== UserRole::Student)
         {
-            throw new PermissionDeniedException('لايمكنك حذف المستخدم !' , 'هذا المستخدم المحدد ليس طالبا في النظام' , 403);
+            throw new PermissionDeniedException('! لايمكنك حذف المستخدم' , 'هذا المستخدم المحدد ليس طالبا في النظام' , 403);
         }
 
         $this->userRepository->softDeleteUserWithProfile($student);

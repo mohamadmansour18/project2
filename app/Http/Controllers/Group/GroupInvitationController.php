@@ -21,7 +21,7 @@ class GroupInvitationController extends Controller
     {
         $this->invitationService->send($group->id, $request->user_id, auth()->user());
 
-        return $this->successResponse('دعوة مرسلة', 'تم إرسال الدعوة بنجاح');
+        return $this->successResponse('! دعوة مرسلة', 'تم إرسال الدعوة بنجاح');
     }
 
     public function index(): JsonResponse
@@ -43,21 +43,21 @@ class GroupInvitationController extends Controller
     {
         $this->invitationService->accept($invitationId, auth()->user());
 
-        return $this->successResponse('انضمام الى مجموعة', 'تم الانضمام للمجموعة بنجاح');
+        return $this->successResponse('! انضمام الى مجموعة', 'تم الانضمام للمجموعة بنجاح');
     }
 
     public function reject(int $invitationId): JsonResponse
     {
         $this->invitationService->reject($invitationId, auth()->user());
 
-        return $this->successResponse('رفض الانضمام الى مجموعة', 'تم رفض الدعوة بنجاح');
+        return $this->successResponse('! رفض الانضمام الى مجموعة', 'تم رفض الدعوة بنجاح');
     }
 
     public function cancel(Request $request, int $invitedUserId): JsonResponse
     {
         $this->invitationService->cancel($invitedUserId, $request->user());
 
-        return $this->successResponse('إلغاء الدعوة', 'تم إلغاء الدعوة بنجاح');
+        return $this->successResponse('! إلغاء الدعوة', 'تم إلغاء الدعوة بنجاح');
     }
 
 
