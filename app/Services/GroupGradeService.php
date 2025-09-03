@@ -96,7 +96,8 @@ class GroupGradeService
             throw new GradeException('لايمكنك اجراء العملية !' , 'غير مصرح لك بتعديل علامة الغروب' , 403);
         }
 
-        $committee = $this->interviewCommitteeRepository->findOrFillById($grade->comittee_id);
+        $committee = $this->interviewCommitteeRepository->findOrFillById($grade->committee_id);
+
         $endDateTime = Carbon::parse($committee->days . ' ' . $committee->end_interview_time);
 
         if(now()->greaterThan($endDateTime))
