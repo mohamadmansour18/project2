@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Helpers\ArabicText;
 use App\Models\FAQ;
+use Illuminate\Support\Facades\Log;
 
 class FaqMatcher
 {
@@ -12,7 +13,9 @@ class FaqMatcher
         //نقوم بتجريد سؤال الطالب من اي اضافات
         $normalized = ArabicText::normalize($studentText);
 
-        $studentTokens = $this->tokenize($normalized);
+        $studentTokens = ArabicText::tokens($normalized);
+        $studentB2 = ArabicText::shingles($studentTokens , 2);
+        $studentSet = array_values(array_unique(array_merge($studentTokens , $studentB2)));
 
         $minTokens = (int) config('faq_bot.min_tokens' , 2);
 
@@ -25,12 +28,13 @@ class FaqMatcher
             ];
         }
 
-        $result = FAQ::search($normalized)
-            ->take(1)
-            ->get()
-            ->first();
+        $results = FAQ::search($normalized , function ($ms , $query , $options){
+            $options['limit'] = 5;
+            $options['filter'] = 'is_active = 1';
+            return $ms->search($query , $options);
+        })->get();
 
-        if(!$result)
+        if($results->isEmpty())
         {
             return [
                 'faq' => null ,
@@ -39,64 +43,83 @@ class FaqMatcher
             ];
         }
 
-        $faqTokens = $this->tokenize(ArabicText::normalize($result->question));
-        $coverage = $this->coverage($studentTokens , $faqTokens);
+        $best = null ;
+        $bestScore = 0.0;
 
-        $threshold = (float) config('faq_bot.threshold' , 0.70);
-        if($coverage >= $threshold)
+        foreach ($results as $result)
         {
+            $faqNorm = ArabicText::normalize($result->question);
+            $faqTokens = ArabicText::tokens($faqNorm);
+            $faqB2     = ArabicText::shingles($faqTokens, 2);
+            $faqSet    = array_values(array_unique(array_merge($faqTokens, $faqB2)));
+
+            $score = $this->dice($studentSet , $faqSet);
+            if($score > $bestScore)
+            {
+                $bestScore = $score ;
+                $best = $result ;
+            }
+        }
+
+        $threshold = (float) config('faq_bot.threshold', 0.70);
+        if($best && $bestScore >= $threshold)
+        {
+            Log::info("the bestScore matching is : $bestScore");
             return [
-                'faq' => $result ,
-                'coverage' => $coverage ,
+                'faq' => $best ,
+                'coverage' => $bestScore,
                 'tokens' => $studentTokens
             ];
         }
+        Log::info("the bestScore dose not matching is : $bestScore");
 
-        return [
-            'faq' => null ,
-            'coverage' => $coverage ,
-            'tokens' => $studentTokens
-        ];
+        return ['faq' => null, 'coverage' => $bestScore, 'tokens' => $studentTokens];
     }
 
-    /**
-     * تقطيع بسيط للكلمات + إزالة الفراغات، وإرجاع مجموعة (unique حسب الإعداد).
-     */
-    private function tokenize(string $text): array
+    private function dice(array $a , array $b): float|int
     {
-        //تقسيم الجملة الى مصفوفة من الكلمات حيث يتم قسم الكلمة عند رؤية فراغ او tab او new line
-        $parts = preg_split('/\s+/u', trim($text)) ? : [];
-
-        //وظيفة ال array_filter هي فلترة المصفوفة حسب شرط معين وهو : يتم حساب طول الكلمة عبر التابع mb_strlen اذا كانت اكبر من الصفر تبقى في المصفوفة والا يتم حذفها
-        //بعد تطبيق array filter قد ينتج مفاتيح غير متسلسلة تصاعديا فيتم اعادة ترتيبها باستخدام array values ابتداءا من الواحد
-        $parts = array_values(array_filter($parts , fn($w) => mb_strlen($w) > 0));
-
-        if(config('faq_bot.unique_tokens' , true))
-        {
-            // يتم ازالة الكلمات المكررة من المصفوفة باستخدام array unique
-            $parts = array_values(array_unique($parts));
-        }
-        return $parts;
-    }
-
-    private function coverage(array $studentTokens, array $faqTokens)
-    {
-        if(count($studentTokens) === 0)
+        if(!$a || !$b)
         {
             return 0.0;
         }
 
-        //يقوم تابع ال array flip بقلب ال key الى value وال value الى key
-        $feqSet = array_flip($faqTokens);
-
-        $common = 0 ;
-        foreach ($studentTokens as $token)
+        $a = array_values(array_unique($a));
+        $b = array_values(array_unique($b));
+        $setB = array_flip($b);
+        $inter = 0 ;
+        foreach ($a as $token)
         {
-            if(isset($feqSet[$token]))
+            if(isset($setB[$token]))
             {
-                $common++;
+                $inter++;
             }
         }
-        return $common/count($studentTokens);
+        return (2.0 * $inter)/(count($a) + count($b));
     }
+
+    private function jaccard(array $a , array $b): float|int
+    {
+        if(!$a || !$b)
+        {
+            return 0.0;
+        }
+
+        $a = array_values(array_unique($a));
+        $b = array_values(array_unique($b));
+        $setB = array_flip($b);
+        $inter = 0 ;
+        foreach ($a as $token)
+        {
+            if(isset($setB[$token]))
+            {
+                $inter++;
+            }
+        }
+
+        $union = count($a) + count($b) - $inter ;
+
+        return $union ? ($inter / $union) : 0.0;
+
+    }
+
 }

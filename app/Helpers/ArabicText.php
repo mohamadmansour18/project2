@@ -41,4 +41,21 @@ class ArabicText
 
     //After :
     //$text = "اهلا ومرحبا سلام مصطفى 123 abc hello";
+
+    public static function tokens (string $normalized, int $minLen = 2): array
+    {
+        $parts = preg_split('/\s+/u' , trim($normalized)) ? : [];
+        return array_values(array_filter($parts , fn($w) => mb_strlen($w) >= $minLen));
+    }
+
+    public static function shingles(array $tokens , int $n): array|string
+    {
+        $out = [];
+        $count = count($tokens);
+        for($i = 0 ; $i <= $count - $n ; $i++)
+        {
+            $out = implode(' ' , array_slice($tokens , $i , $n));
+        }
+        return $out ;
+    }
 }

@@ -259,7 +259,7 @@ Route::prefix('/student')->group(function (){
 Route::get('/test-fcm', function (FirebaseNotificationService $fcm) {
     try {
         $fcm->send(
-            'hellooooo aboooooddddd',
+            'hellooooo carmoushheeeee',
             'Test',
             ['cmPxVuMxTtqUaT5z28ocbL:APA91bGr5yWRwRKWMGcfjlheRU_i8EI4Csti5ETW1Eqi7I9dQhzoQdtKRo-Dq6StZ6BmDJ5feOYUTyMUtirBhriyYHcYT2cg4fr72LoVSJY8601rJDLmc8g']
         );

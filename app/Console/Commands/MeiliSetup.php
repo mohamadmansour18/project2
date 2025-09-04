@@ -33,6 +33,19 @@ class MeiliSetup extends Command
             'searchableAttributes' => ['arr_question_normalized' , 'question'],
             'displayedAttributes'  => ['id', 'question', 'answer', 'is_active'] ,
             'filterableAttributes' => ['is_active'],
+            'typoTolerance' => [
+                'enabled' => true,
+                'minWordSizeForTypos' => ['oneTypo' => 4, 'twoTypos' => 8],
+                'disableOnWords' => [],
+                'disableOnAttributes' => ['arr_question_normalized'],
+            ],
+            'rankingRules' => [
+                'words',
+                'typo',
+                'proximity',
+                'attribute',
+                'exactness',
+            ],
         ]);
 
         $index->updateStopWords([

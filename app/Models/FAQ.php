@@ -41,12 +41,19 @@ class FAQ extends Model
 
     public function toSearchableArray(): array
     {
+        $norm = ArabicText::normalize($this->question);
+        $tokens = ArabicText::tokens($norm);
+        $b2 = ArabicText::shingles($tokens , 2);
+        $b3 = ArabicText::shingles($tokens , 3);
+
+        $arr = array_values(array_unique(array_merge($tokens , $b2 , $b3)));
+
         return [
             'id' => $this->id,
             'question' => $this->question,
             'answer' => $this->answer,
             'is_active' => (bool) $this->is_active,
-            'arr_question_normalized' => ArabicText::normalize($this->question)
+            'arr_question_normalized' => $arr
         ];
     }
 
