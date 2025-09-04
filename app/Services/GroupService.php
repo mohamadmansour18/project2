@@ -494,18 +494,24 @@ class GroupService
             throw new PermissionDeniedException('! خطأ', 'أنت لست عضواً في هذه المجموعة.');
         }
 
-        // إذا كان ليدر
-        if ($this->groupMemberRepo->isLeader($groupId, $user->id)) {
-            throw new PermissionDeniedException('! غير مسموح', 'لا يمكنك مغادرة المجموعة بصفتك ليدر، انقل القيادة لعضو آخر أولاً.');
-        }
-
-        // تحقق من الاستمارة الأولى
-
         $group = $this->groupRepo->getById($groupId);
-        $form1 = $group->projectForm()->first(); // <-- هنا نأخذ النموذج الفعلي
+        $form1 = $group->projectForm()->first();
 
         if ($form1 && $form1->status === ProjectFormStatus::Approved) {
             throw new PermissionDeniedException('! غير مسموح', 'لا يمكن مغادرة المجموعة بعد الموافقة على الاستمارة 1.');
+        }
+
+        $membersCount = $group->members()->count();
+
+        if ($membersCount === 1) {
+            // آخر عضو (هو ليدر) -> soft delete للمجموعة
+            $group->delete();
+            return;
+        }
+
+        // إذا كان عضو عادي وليس آخر عضو
+        if ($this->groupMemberRepo->isLeader($groupId, $user->id)) {
+            throw new PermissionDeniedException('! غير مسموح', 'لا يمكنك مغادرة المجموعة بصفتك ليدر، انقل القيادة لعضو آخر أولاً.');
         }
 
         // حذف العضو من المجموعة
@@ -513,5 +519,11 @@ class GroupService
 
         // تحديث عدد الأعضاء
         $group->decrement('number_of_members');
+    }
+
+
+    public function getTopProjectsByYear($year, $limit = 5)
+    {
+        return $this->groupRepo->getTopProjectsByYear($year, $limit);
     }
 }

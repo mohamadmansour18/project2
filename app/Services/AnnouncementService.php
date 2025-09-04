@@ -172,4 +172,9 @@ class AnnouncementService
 
         return response()->download($filePath , basename($filePath));
     }
+
+    public function getStudentAnnouncementsStatistics(): array
+    {
+        return $this->repo->getStudentAnnouncementsStatistics();
+    }
 }
