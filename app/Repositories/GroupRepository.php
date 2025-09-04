@@ -225,4 +225,15 @@ class GroupRepository
         return Group::where('number_of_members', 5)
             ->get(['id', 'name', 'image']);
     }
+
+    public function getTopProjectsByYear($year, $limit = 5)
+    {
+        return Group::select('groups.*')
+            ->join('project_grades', 'project_grades.group_id', '=', 'groups.id')
+            ->whereYear('project_grades.created_at', $year)
+            ->orderByDesc('project_grades.total_grade')
+            ->with(['projectGrade', 'projectForm', 'projectForm2', 'members.user.profile'])
+            ->limit($limit)
+            ->get();
+    }
 }

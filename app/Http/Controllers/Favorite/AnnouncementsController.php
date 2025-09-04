@@ -223,4 +223,10 @@ class AnnouncementsController extends Controller
     {
         return $this->service->downloadAnnouncement($announcementId);
     }
+
+    public function getStudentAnnouncementsStatistics(): JsonResponse
+    {
+        $stats = $this->service->getStudentAnnouncementsStatistics();
+        return $this->dataResponse($stats, 200);
+    }
 }

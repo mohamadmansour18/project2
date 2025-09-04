@@ -44,7 +44,9 @@ Route::prefix('/student')->group(function (){
         Route::get('/logout' , [AuthenticationStudentController::class , 'logout']);
 
         //home APIs
+        Route::get('/groups/top-projects', [GroupController::class, 'topProjects']);
         Route::get('/home/studentannouncementStatistics' , [AnnouncementsController::class , 'getStudentAnnouncementStatistics']);
+        Route::get('/announcements/students/statistics', [AnnouncementsController::class, 'getStudentAnnouncementsStatistics']);
 
         Route::middleware(['leader'])->group(function () {
             //Group APIs

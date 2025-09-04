@@ -46,7 +46,7 @@ class ProjectFormService
 
         $form = $this->repository->create([
             'group_id'          => $groupId,
-            'user_id'           => $user->id,
+            'user_id'           => $data['user_id'],
             'arabic_title'      => $data['arabic_title'],
             'english_title'     => $data['english_title'],
             'description'       => $data['description'],

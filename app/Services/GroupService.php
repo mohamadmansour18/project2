@@ -514,4 +514,9 @@ class GroupService
         // تحديث عدد الأعضاء
         $group->decrement('number_of_members');
     }
+
+    public function getTopProjectsByYear($year, $limit = 5)
+    {
+        return $this->groupRepo->getTopProjectsByYear($year, $limit);
+    }
 }

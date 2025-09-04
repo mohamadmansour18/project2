@@ -10,10 +10,12 @@ use App\Http\Requests\SearchGroupRequest;
 use App\Http\Requests\UpdateGroupRequest;
 use App\Http\Resources\GroupProjectResource;
 use App\Http\Resources\GroupResource;
+use App\Http\Resources\TopGroupProjectResource;
 use App\Models\Group;
 use App\Services\DashBoard_Services\GroupManagementService;
 use App\Services\GroupService;
 use App\Traits\ApiSuccessTrait;
+use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
 
@@ -179,5 +181,12 @@ class GroupController extends Controller
         $this->groupService->leaveGroup($groupId);
 
         return $this->successResponse('! تمت المغادرة', 'تمت مغادرة المجموعة بنجاح.', 200);
+    }
+
+    public function topProjects(Request $request)
+    {
+        $year = $request->query('year', now()->year);
+        $groups = $this->groupService->getTopProjectsByYear($year);
+        return TopGroupProjectResource::collection($groups);
     }
 }

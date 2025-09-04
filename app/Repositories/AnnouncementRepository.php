@@ -168,4 +168,22 @@ class AnnouncementRepository
 
         return Storage::disk('public')->path($Announcement->attachment_path);
     }
+
+    public function getStudentAnnouncementsStatistics(): array
+    {
+        $baseQuery = Announcement::whereYear('created_at', now()->year)
+            ->where('audience', AnnouncementAudience::All->value);
+
+        $total = $baseQuery->count();
+
+        $images = (clone $baseQuery)->where('type', AnnouncementType::Image->value)->count();
+        $files  = (clone $baseQuery)->where('type', AnnouncementType::File->value)->count();
+
+        return [
+            'total' => $total,
+            'images' => $images,
+            'files' => $files,
+        ];
+    }
+
 }
