@@ -48,13 +48,18 @@ class ArabicText
         return array_values(array_filter($parts , fn($w) => mb_strlen($w) >= $minLen));
     }
 
-    public static function shingles(array $tokens , int $n): array|string
+    public static function shingles(array $tokens , int $n): array
     {
         $out = [];
         $count = count($tokens);
+
+        if ($n < 2 || $count < $n) {
+            return $out;
+        }
+
         for($i = 0 ; $i <= $count - $n ; $i++)
         {
-            $out = implode(' ' , array_slice($tokens , $i , $n));
+            $out [] = implode(' ' , array_slice($tokens , $i , $n));
         }
         return $out ;
     }

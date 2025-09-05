@@ -52,22 +52,22 @@ class FAQFactory extends Factory
             [
                 'question' => 'هل يُسمح بإعادة الامتحان؟',
                 'answer'   => 'يعتمد على عذر رسمي وموافقة الكلية خلال 48 ساعة من الامتحان.',
-                'is_active' => false,
+                'is_active' => true,
             ],
             [
                 'question' => 'كيف أتواصل مع الدعم الفني؟',
                 'answer'   => 'عبر البريد support@univ.edu أو مركز الاتصال 1234 من الداخل.',
-                'is_active' => false,
+                'is_active' => true,
             ],
             [
                 'question' => 'ما متطلب سابق لمساق رياضيات 101؟',
                 'answer'   => 'اجتياز مساق أساسيات الرياضيات أو ما يعادله.',
-                'is_active' => false,
+                'is_active' => true,
             ],
             [
                 'question' => 'أين أجد جدول الامتحانات النهائية؟',
                 'answer'   => 'على لوحة الإعلانات الأكاديمية وصفحة كل مساق في النظام.',
-                'is_active' => false,
+                'is_active' => true,
             ],
         ];
 
