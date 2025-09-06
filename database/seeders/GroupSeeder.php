@@ -13,6 +13,6 @@ class GroupSeeder extends Seeder
      */
     public function run(): void
     {
-        Group::factory()->count(30)->create();
+        Group::factory()->count(20)->create();
     }
 }

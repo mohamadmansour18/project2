@@ -267,7 +267,10 @@ class ProjectFormService
         //send notification
         $leader = $this->repository->getLeaderGroupFromForm($form->group_id);
         $doctor = $form->users->name;
-
+        if(!$leader)
+        {
+            throw new ProjectManagementException('! تم توقيع الاستمارة ولكن لن يتم ارسال اشعار','لن يتم ارسال اشعار الى مشرف الغروب لان هذا الغروب ليس لديه مشرف', 404);
+        }
         $this->dispatcherService->sendToUser($leader->user , '! موافقة على فكرة الاستمارة' , " بالموفقة على الاستمارة الواحد الخاصة بكم$doctor قام الدكتور ");
     }
 
@@ -300,7 +303,10 @@ class ProjectFormService
         //send notification
         $leader = $this->repository->getLeaderGroupFromForm($form->group_id);
         $doctor = $form->users->name;
-
+        if(!$leader)
+        {
+            throw new ProjectManagementException('! تم رفض الاستمارة ولكن لن يتم ارسال اشعار','لن يتم ارسال اشعار الى مشرف الغروب لان هذا الغروب ليس لديه مشرف', 404);
+        }
         $this->dispatcherService->sendToUser($leader->user , '! رفض فكرة الاستمارة' , " برفض الاستمارة الواحد الخاصة بكم الرجاء المعاودة بتقديم فكرة اخرى$doctor قام الدكتور ");
     }
 

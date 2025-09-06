@@ -14,11 +14,11 @@ class DatabaseSeeder extends Seeder
     {
         $this->call([
             UserSeeder::class ,
-            FormSubmissionPeriodSeeder::class ,
-            AnnouncementSeeder::class,
-            FavoriteSeeder::class,
-            GroupSeeder::class,
-            FAQSeeder::class,
+//            FormSubmissionPeriodSeeder::class ,
+//            AnnouncementSeeder::class,
+//            FavoriteSeeder::class,
+//            GroupSeeder::class,
+//            FAQSeeder::class,
 //            TestSeeder::class,
         ]);
     }
