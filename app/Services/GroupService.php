@@ -397,7 +397,7 @@ class GroupService
         ];
 
         //form_1
-        $form = $group?->projectForms;
+        $form = $group?->projectForm;
         $formData = $form ? [
             'form_id' => $form->id ,
             'arabic_title' => $form->arabic_title,
