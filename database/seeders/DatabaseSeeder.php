@@ -19,7 +19,7 @@ class DatabaseSeeder extends Seeder
             FavoriteSeeder::class,
             GroupSeeder::class,
             FAQSeeder::class,
-            TestSeeder::class,
+//            TestSeeder::class,
         ]);
     }
 }

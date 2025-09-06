@@ -306,6 +306,7 @@ class UserManagementService
                 ]);
 
                 DB::commit();
+                $inserted[] = $user->id;
             }catch(\Throwable $exception)
             {
                 DB::rollBack();

@@ -45,7 +45,7 @@ class ProcessStudentExcelImportJob implements ShouldQueue
 
             //move correct data from excel to database
             $result = $userManagementService->importStudentsFromExcel($validRows);
-
+            Log::info(count($result['inserted']));
             //merge all errors array in one array like
             $allErrors = array_merge($importErrors, $result['failed']);
 

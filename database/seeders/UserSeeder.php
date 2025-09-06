@@ -30,54 +30,8 @@ class UserSeeder extends Seeder
                    ],
                     'profile' => [
                         'governorate' => 'السويداء' ,
-                        'profile_image' => null ,
+                        'profile_image' => 'doctor_profile_image/rawan.jpg' ,
                         'signature' => null
-                    ]
-                ],
-                [
-                    'user' => [
-                        'name' => 'Carmen Al Shoufi' ,
-                        'email' => 'carmenalshoufi8@gmail.com' ,
-                        'role' => UserRole::Doctor->value
-                    ],
-                    'profile' => [
-
-                    ]
-                ],
-                [
-                    'user' => [
-                        'name' => 'Obeda Al Rahal' ,
-                        'university_number' => '1234' ,
-                        'role' => UserRole::Student->value
-                    ],
-                    'profile' => [
-                        'student_status' => ProfileStudentStatus::Fourth_Year->value
-                    ]
-                ],
-                [
-                    'user' => [
-                        'name' => 'Student One',
-                        'email' => 'student1@gmail.com',
-                        'password' => Hash::make('password'),
-                        'role' => UserRole::Student->value,
-                        'university_number' => '1001',
-                        'email_verified_at' => now()
-                    ],
-                    'profile' => [
-                        'student_status' => ProfileStudentStatus::Fourth_Year->value
-                    ]
-                ],
-                [
-                    'user' => [
-                        'name' => 'Student Two',
-                        'email' => 'student2@gmail.com',
-                        'password' => Hash::make('password'),
-                        'role' => UserRole::Student->value,
-                        'university_number' => '1002',
-                        'email_verified_at' => now()
-                    ],
-                    'profile' => [
-                        'student_status' => ProfileStudentStatus::Fourth_Year->value
                     ]
                 ],
             ];
@@ -94,6 +48,6 @@ class UserSeeder extends Seeder
             }
         });
 
-        User::factory()->count(30)->create();
+
     }
 }
