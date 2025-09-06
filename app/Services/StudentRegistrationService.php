@@ -9,6 +9,7 @@ use App\Exceptions\RegistrationException;
 use App\Exceptions\ResetPasswordException;
 use App\Helpers\UrlHelper;
 use App\Jobs\SendOtpCodeJob;
+use App\Models\FcmToken;
 use App\Models\OtpCode;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
@@ -135,11 +136,10 @@ class StudentRegistrationService
 
         if(!empty($data['fcm_token']))
         {
-            $user->fcmTokens()->updateOrCreate([
-                'token' => $data['fcm_token'],
-            ] , [
-                'user_id' => $user->id ,
-            ]);
+            FcmToken::updateOrCreate(
+                ['token' =>$data['fcm_token']],
+                ['user_id' => $user->id]
+            );
         }
 
         $profileImage = $user?->profile?->profile_image;

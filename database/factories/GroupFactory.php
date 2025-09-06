@@ -31,7 +31,7 @@ class GroupFactory extends Factory
             'type' => $this->faker->randomElement(GroupType::convertEnumToArray()),
             'qr_code' => $this->faker->uuid ,
             'number_of_members' => $this->faker->numberBetween(1,6),
-            'image' => $this->faker->url,
+            'image' => null,
         ];
     }
 }
