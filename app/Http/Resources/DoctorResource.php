@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources;
 
+use App\Enums\ProjectFormStatus;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -27,7 +28,9 @@ class DoctorResource extends JsonResource
             'name' => $this->name,
             'profile_image' => $this->Profile?->profile_image,
             'is_supervisor_of_any_form' => $this->projectForms()->exists(),
-
+            'pending_forms_count' => $this->projectForms()
+                ->where('status', ProjectFormStatus::Pending)
+                ->count(),
         ];
     }
 }
