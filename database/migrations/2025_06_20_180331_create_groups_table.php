@@ -24,6 +24,7 @@ return new class extends Migration
             $table->string('image')->nullable();
             $table->unsignedSmallInteger('number_of_members');
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 
