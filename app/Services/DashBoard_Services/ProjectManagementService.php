@@ -428,9 +428,9 @@ class ProjectManagementService
             return [
                 'id' => $committee->id,
                 'first_doctor' => $committee->adminSupervisor->name,
-                'profileImage_One' => UrlHelper::imageUrl($committee->adminSupervisor->profile->profile_image) ?? null,
+                'profileImage_One' => UrlHelper::imageUrl($committee->adminSupervisor?->profile?->profile_image) ?? null,
                 'second_doctor' => $committee->adminMember->name,
-                'profileImage_two' => UrlHelper::imageUrl($committee->adminMember->profile->profile_image) ?? null,
+                'profileImage_two' => UrlHelper::imageUrl($committee->adminMember?->profile?->profile_image) ?? null,
                 'supervisor_name' => $committee->supervisor_id === $committee->adminSupervisor->id ? $committee->adminSupervisor->name : $committee->adminMember->name,
             ];
         });
