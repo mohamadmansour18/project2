@@ -10,6 +10,7 @@ class FaqMatcher
 {
     public function match(string $studentText): array
     {
+
         //نقوم بتجريد سؤال الطالب من اي اضافات
         $normalized = ArabicText::normalize($studentText);
 
@@ -30,7 +31,7 @@ class FaqMatcher
 
         $results = FAQ::search($normalized , function ($ms , $query , $options){
             $options['limit'] = 5;
-            $options['filter'] = 'is_active = 1';
+            $options['filter'] = 'is_active = true';
             return $ms->search($query , $options);
         })->get();
 
@@ -61,7 +62,7 @@ class FaqMatcher
             }
         }
 
-        $threshold = (float) config('faq_bot.threshold', 0.70);
+        $threshold = (float) config('faq_bot.threshold', 0.65);
         if($best && $bestScore >= $threshold)
         {
             Log::info("the bestScore matching is : $bestScore");

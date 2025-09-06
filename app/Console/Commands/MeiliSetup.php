@@ -31,7 +31,7 @@ class MeiliSetup extends Command
 
         $index->updateSettings([
             'searchableAttributes' => ['arr_question_normalized' , 'question'],
-            'displayedAttributes'  => ['id', 'question', 'answer', 'is_active'] ,
+            'displayedAttributes'  => ['id', 'question', 'answer', 'is_active' , 'arr_question_normalized'] ,
             'filterableAttributes' => ['is_active'],
             'typoTolerance' => [
                 'enabled' => true,
