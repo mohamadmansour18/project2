@@ -139,7 +139,7 @@ class MessageService
                 $this->dispatcherService->sendToUser(
                     $peer,
                     title: '! رسالة جديدة',
-                    body:  "لديك رسالة جديدة في محادثاتك من : $peer->name"
+                    body:  "$peer->name : لديك رسالة جديدة في محادثاتك من"
                 );
             }
         } else {
@@ -148,7 +148,7 @@ class MessageService
                 $this->dispatcherService->sendToUser(
                     $peer,
                     title: '! رسالة جديدة',
-                    body:   "لديك رسالة جديدة في محادثاتك من : $peer->name"
+                    body:   "$peer->name : لديك رسالة جديدة في محادثاتك من"
                 );
             }
         }

@@ -73,7 +73,7 @@ class GroupFactory extends Factory
             if ($availableUserIds === null) {
                 // جميع المستخدمين المسموح بهم
                 $availableUserIds = User::query()
-                    ->whereBetween('id', [2, 79])
+                    ->whereBetween('id', [3, 80])
                     ->pluck('id')
                     ->all();
 

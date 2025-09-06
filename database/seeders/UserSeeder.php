@@ -34,6 +34,19 @@ class UserSeeder extends Seeder
                         'signature' => null
                     ]
                 ],
+                [
+                    'user' => [
+                        'name' => 'الدكتور تيست',
+                        'email' => '360mohamad360@gmail.com' ,
+                        'password' => Hash::make('admin123'),
+                        'role' => UserRole::Doctor->value ,
+                        'email_verified_at' => now()
+                    ],
+                    'profile' => [
+                        'governorate' => 'دمشق' ,
+                        'profile_image' => null
+                    ]
+                ]
             ];
 
             foreach ($users as $data)
