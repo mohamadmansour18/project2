@@ -28,8 +28,8 @@ class GroupProjectResource extends JsonResource
                 'title' => $this->projectForm->arabic_title,
                 'supervisor' => $this->projectForm->users->name ?? null,
                 'supervisor_profile_image' => $this->projectForm->users->Profile->profile_image ?? null,
-                'submission_date' => $this->projectForm->submission_date
-                    ? Carbon::parse($this->projectForm->submission_date)->format('Y-m-d')
+                'submission_date' => $this->projectForm->created_at
+                    ? $this->projectForm->created_at->format('Y-m-d')
                     : null,
                 'status' => $this->projectForm->status,
                 'signatures_count' => $this->projectForm->signatures->count(),
@@ -38,8 +38,8 @@ class GroupProjectResource extends JsonResource
             'form2' => $this->projectForm2 ? [
                 "id"=>$this->projectForm2->id,
                 'title' => $this->projectForm2->arabic_project_title,
-                'submission_date' => $this->projectForm2->submission_date
-                    ? Carbon::parse($this->projectForm2->submission_date)->format('Y-m-d')
+                'submission_date' => $this->projectForm2->created_at
+                    ? $this->projectForm2->created_at->format('Y-m-d')
                     : null,
 
                 'status' => $this->projectForm2->status,
