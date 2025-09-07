@@ -501,19 +501,18 @@ class GroupService
             throw new PermissionDeniedException('! غير مسموح', 'لا يمكن مغادرة المجموعة بعد التقدم على الاستمارة 1.');
         }
 
-
-        if ($this->groupMemberRepo->isLeader($groupId, $user->id)) {
-            throw new PermissionDeniedException('! غير مسموح', 'لا يمكنك مغادرة المجموعة بصفتك ليدر، انقل القيادة لعضو آخر أولاً.');
-        }
-
         $membersCount = $group->members()->count();
 
         if ($membersCount === 1) {
             $group->delete();
         }
+        else{
+            if ($this->groupMemberRepo->isLeader($groupId, $user->id)) {
+                throw new PermissionDeniedException('! غير مسموح', 'لا يمكنك مغادرة المجموعة بصفتك ليدر، انقل القيادة لعضو آخر أولاً.');
+            }
+        }
 
         $group->members()->where('user_id', $user->id)->delete();
-
 
         $group->decrement('number_of_members');
     }
