@@ -4,6 +4,7 @@ namespace App\Services;
 use App\Enums\ProjectFormStatus;
 use App\Exceptions\ProjectManagementException;
 use App\Exceptions\PermissionDeniedException;
+use App\Models\GroupMember;
 use App\Models\ProjectForm;
 use App\Repositories\FormSubmissionPeriodRepository;
 use App\Repositories\GroupMemberRepository;
@@ -42,9 +43,9 @@ class ProjectFormService
             throw new PermissionDeniedException('! عملية مكررة', 'لا يمكنك تعبئة الاستمارة أكثر من مرة لنفس المجموعة.');
         }
 
-        if(count($groupMember) < 2)
-        {
-            throw new PermissionDeniedException('! عملية خاطئة', 'لا يمكنك التقدم لهذه الاستمارة لان عدد اعضاء الغروب لا يحقق شرط التقدم' , 422);
+        $membersCount = GroupMember::where('group_id', $groupId)->count();
+        if ($membersCount < 2) {
+            throw new PermissionDeniedException('! عملية خاطئة', 'لا يمكنك التقدم لهذه الاستمارة لان عدد اعضاء الغروب لا يحقق شرط التقدم', 422);
         }
 
         $this->ensureFormPeriodIsActive("form1");
