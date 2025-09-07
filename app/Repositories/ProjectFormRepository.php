@@ -97,7 +97,7 @@ class ProjectFormRepository
     public function isApprovedForGroup(int $groupId): bool
     {
         return ProjectForm::where('group_id', $groupId)
-            ->where('status', ProjectFormStatus::Approved)
+            ->whereIn('status',  [ProjectFormStatus::Approved , ProjectFormStatus::Pending])
             ->exists();
     }
 
