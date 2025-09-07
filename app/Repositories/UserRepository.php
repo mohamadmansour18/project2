@@ -13,6 +13,7 @@ use Illuminate\Support\Carbon;
 use Illuminate\Database\Eloquent\Collection;
 use App\Enums\UserRole;
 use App\Models\User;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
 class UserRepository
@@ -36,9 +37,11 @@ class UserRepository
 
     public function getStudentsForCurrentYear(): Collection
     {
-        $currentYear = Carbon::now()->year;
+        $currentYear = now()->year;
+        $userId = Auth::id();
 
         return User::where('role', UserRole::Student->value)
+            ->where('id' , '!=' , $userId)
             ->whereDoesntHave('groupMember')
             ->whereYear('created_at', $currentYear)
             ->whereNotNull('email_verified_at')

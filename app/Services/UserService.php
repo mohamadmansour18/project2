@@ -17,6 +17,7 @@ class UserService
     public function getStudentsForCurrentYear(): array
     {
         return $this->userRepository->getStudentsForCurrentYear()->map(function ($user) {
+
             $profile = optional($user->profile);
             $profileImagePath = $profile->profile_image;
 
