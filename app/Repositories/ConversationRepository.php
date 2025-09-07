@@ -44,7 +44,7 @@ class ConversationRepository
                                 $peer = $conv->type === ConversationType::Self ?
                                     [
                                         'id' => $userId,
-                                        'name' => $conv->firstUser->name,
+                                        'name' => "الرسائل المحفوظة",
                                         'profile_image' => UrlHelper::imageUrl(optional($conv->firstUser->profile)->profile_image),
                                         'role' => $conv->firstUser->role,
                                     ] :
