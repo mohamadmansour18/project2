@@ -28,7 +28,7 @@ class JoinRequestService
     public function send(int $groupId, User $user): void
     {
         if ($this->projectForm1Repo->isApprovedForGroup($groupId)) {
-            throw new PermissionDeniedException('! غير مسموح', 'لا يمكنك الانضمام بعد الموافقة على الاستمارة الأولى.',403);
+            throw new PermissionDeniedException('! غير مسموح', 'لا يمكنك الانضمام بعد التقدم على الاستمارة الأولى.',403);
         }
 
 //        if (!$this->formPeriodRepo->isFormPeriodActive(FormSubmissionPeriodFormName::Form1->value)) {
@@ -209,7 +209,7 @@ class JoinRequestService
     public function sendSixthMemberRequest(int $groupId, User $user, ?string $description = null): void
     {
         if ($this->projectForm1Repo->isApprovedForGroup($groupId)) {
-            throw new PermissionDeniedException('! غير مسموح', 'لا يمكنك الانضمام بعد الموافقة على الاستمارة الأولى.');
+            throw new PermissionDeniedException('! غير مسموح', 'لا يمكنك الانضمام بعد التقدم على الاستمارة الأولى.');
         }
 
         if (!$this->formPeriodRepo->isFormPeriodActive(FormSubmissionPeriodFormName::Form1->value)) {

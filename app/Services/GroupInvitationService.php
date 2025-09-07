@@ -31,7 +31,7 @@ class GroupInvitationService
     public function send(int $groupId, int $userId, User $inviter): void
     {
         if ($this->projectForm1Repo->isApprovedForGroup($groupId)) {
-            throw new PermissionDeniedException('! غير مسموح', 'لا يمكنك دعوة احد بعد الموافقة على الاستمارة الأولى.',403);
+            throw new PermissionDeniedException('! غير مسموح', 'لا يمكنك دعوة احد بعد التقدم على الاستمارة الأولى.',403);
         }
 
         if (!$this->formPeriodRepo->isFormPeriodActive(FormSubmissionPeriodFormName::Form1->value)) {
