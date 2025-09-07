@@ -42,6 +42,11 @@ class ProjectFormService
             throw new PermissionDeniedException('! عملية مكررة', 'لا يمكنك تعبئة الاستمارة أكثر من مرة لنفس المجموعة.');
         }
 
+        if(count($groupMember) < 2)
+        {
+            throw new PermissionDeniedException('! عملية خاطئة', 'لا يمكنك التقدم لهذه الاستمارة لان عدد اعضاء الغروب لا يحقق شرط التقدم' , 422);
+        }
+
         $this->ensureFormPeriodIsActive("form1");
 
         $form = $this->repository->create([
