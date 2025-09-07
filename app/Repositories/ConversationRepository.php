@@ -35,6 +35,8 @@ class ConversationRepository
                                 $query->where('sender_id' , '!=' , $userId)
                                       ->where('status' , '!=' , MessageStatus::Read);
                             }])
+                            ->orderByRaw('CASE WHEN type = ? THEN 0 ELSE 1 END', [ConversationType::Self])
+                            ->orderByDesc('last_message_at')
                             ->get()
                             ->map(function ($conv) use ($userId){
                                 $lastMessage = $conv->messages()->latest()->first();
@@ -54,22 +56,14 @@ class ConversationRepository
                                     'conversation_type' => $conv->type,
                                     'peer' => $peer,
                                     'last_message' => $lastMessage?->sender_id != $userId ? $this->formatMessage($lastMessage) : 'أنت : '.$this->formatMessage($lastMessage),
-                                    'last_message_at' => $this->formatLastMessageAt($lastMessage?->created_at),
+                                    'last_message_at' => $this->formatLastMessageAt($conv->last_message_at),
                                     'unread_count' => $conv->unread_count ?? 0,
                                     'is_self' => $conv->type === ConversationType::Self,
                                 ];
                             })
-                            ->sortByDesc('last_message_at')
                             ->values()
                             ->toArray();
 
-        usort($conversations , function ($a, $b) {
-            if($a['is_self'])
-                return -1;
-            if($b['is_self'])
-                return 1;
-            return 0;
-        });
 
         return $conversations ;
     }
