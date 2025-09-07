@@ -68,7 +68,7 @@ class GroupProjectResource extends JsonResource
 
             'final_interview' => $this->final_interview ? [
                 'date' => $this->final_interview->interview_date
-                    ? Carbon::parse($this->final_interview->interview_date)->format('Y-m-d')
+                    ? $this->final_interview->interview_date->format('Y-m-d')
                     : null,
 
                 'start_time' => $this->final_interview->interview_time
