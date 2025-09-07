@@ -94,7 +94,7 @@ Route::prefix('/student')->group(function (){
         //join request APIs
         Route::post('{group}/join-request', [JoinRequestController::class, 'store']);
         Route::get('/join-requests/my', [JoinRequestController::class, 'myRequests']);
-        Route::post('join-request/group/{groupId}/cancel', [JoinRequestController::class, 'cancelByGroup']);
+        Route::post('/join-request/group/{groupId}/cancel', [JoinRequestController::class, 'cancelByGroup']);
 
 
         //users APIs

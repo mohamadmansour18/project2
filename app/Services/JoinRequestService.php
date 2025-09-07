@@ -31,9 +31,9 @@ class JoinRequestService
             throw new PermissionDeniedException('! غير مسموح', 'لا يمكنك الانضمام بعد الموافقة على الاستمارة الأولى.',403);
         }
 
-        if (!$this->formPeriodRepo->isFormPeriodActive(FormSubmissionPeriodFormName::Form1->value)) {
-            throw new PermissionDeniedException('! غير مسموح', 'انتهت فترة الانضمام، لم يعد ممكناً الانضمام للمجموعة.',403);
-        }
+//        if (!$this->formPeriodRepo->isFormPeriodActive(FormSubmissionPeriodFormName::Form1->value)) {
+//            throw new PermissionDeniedException('! غير مسموح', 'انتهت فترة الانضمام، لم يعد ممكناً الانضمام للمجموعة.',403);
+//        }
 
         if ($this->memberRepo->isInAnyGroup($user->id)) {
             throw new PermissionDeniedException('! طلب مرفوض', 'أنت بالفعل عضو في مجموعة.', 403);
