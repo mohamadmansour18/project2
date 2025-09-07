@@ -497,27 +497,24 @@ class GroupService
         $group = $this->groupRepo->getById($groupId);
         $form1 = $group->projectForm()->first();
 
-        if ($form1 && $form1->status === ProjectFormStatus::Approved) {
-            throw new PermissionDeniedException('! غير مسموح', 'لا يمكن مغادرة المجموعة بعد الموافقة على الاستمارة 1.');
+        if ($form1 && $form1->status === ProjectFormStatus::Approved && $form1->status === ProjectFormStatus::Pending) {
+            throw new PermissionDeniedException('! غير مسموح', 'لا يمكن مغادرة المجموعة بعد التقدم على الاستمارة 1.');
+        }
+
+
+        if ($this->groupMemberRepo->isLeader($groupId, $user->id)) {
+            throw new PermissionDeniedException('! غير مسموح', 'لا يمكنك مغادرة المجموعة بصفتك ليدر، انقل القيادة لعضو آخر أولاً.');
         }
 
         $membersCount = $group->members()->count();
 
         if ($membersCount === 1) {
-            // آخر عضو (هو ليدر) -> soft delete للمجموعة
             $group->delete();
-            return;
         }
 
-        // إذا كان عضو عادي وليس آخر عضو
-        if ($this->groupMemberRepo->isLeader($groupId, $user->id)) {
-            throw new PermissionDeniedException('! غير مسموح', 'لا يمكنك مغادرة المجموعة بصفتك ليدر، انقل القيادة لعضو آخر أولاً.');
-        }
-
-        // حذف العضو من المجموعة
         $group->members()->where('user_id', $user->id)->delete();
 
-        // تحديث عدد الأعضاء
+
         $group->decrement('number_of_members');
     }
 

@@ -147,7 +147,10 @@ class StudentRegistrationService
             'token' => $token ,
             'name' => "! $user->name مرحبا "  ,
             'profile_image' => UrlHelper::imageUrl($profileImage),
-            'is_in_group' => $user->groupMember()->exists(),
+            'is_in_group' => $user->groupMember()->whereHas('group', function ($q) {
+                $q->whereNull('deleted_at');
+            })
+                ->exists(),
         ];
     }
 
