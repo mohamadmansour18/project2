@@ -98,7 +98,8 @@ class GroupGradeService
 
         $committee = $this->interviewCommitteeRepository->findOrFillById($grade->committee_id);
 
-        $endDateTime = Carbon::parse($committee->days . ' ' . $committee->end_interview_time);
+        $endTime = Carbon::parse((string) $committee->end_interview_time)->format('H:i:s');
+        $endDateTime = Carbon::createFromFormat('Y-m-d H:i:s', (string) $committee->days . ' ' . $endTime);
 
         if(now()->greaterThan($endDateTime))
         {

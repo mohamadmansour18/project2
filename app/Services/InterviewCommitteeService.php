@@ -77,7 +77,7 @@ class InterviewCommitteeService
     {
 
         $formatted = $time->format("h:i");
-        $suffix = $time->format('A') === 'AM' ? 'م' : 'ص' ;
+        $suffix = $time->format('A') === 'AM' ? 'ص' : 'م' ;
         return $formatted . $suffix ;
     }
 }
