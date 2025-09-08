@@ -98,10 +98,16 @@ class ProjectFormService
         $this->regeneratePdf($form);
 
         // إشعار باقي أعضاء المجموعة
-        $members = $form->group->members->pluck('user');
+        $members = $form->group->members()
+            ->where('user_id', '!=', $user->id)
+            ->with('user')
+            ->get()
+            ->pluck('user');
+
         $title = 'توقيع استمارة';
         $body = "{$user->name} قام بتوقيع استمارة المشروع.";
         foreach ($members as $member) {
+            if ($member->id === $user->id) continue;
             $this->dispatcherService->sendToUser($member, $title, $body);
         }
     }
